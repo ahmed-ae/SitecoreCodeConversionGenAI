@@ -2,17 +2,22 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useCompletion } from "ai/react";
 
 // Importing the Monaco Editor dynamically to avoid SSR issues
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
-const Home = () => {
+const Stream = () => {
   const [language, setLanguage] = useState<string>("scriban");
   const [sourceCode, setSourceCode] = useState<string>(
     "// paste your code here "
   );
   const [convertedCode, setConvertedCode] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { completion, isLoading, handleInputChange, complete, error } =
+    useCompletion({
+      api: "/api/completion/Convert",
+    });
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       setSourceCode(value);
@@ -20,24 +25,12 @@ const Home = () => {
   };
 
   const convertCode = async () => {
-    setIsLoading(true); // Start loading
     try {
-      const response = await axios.post("/api/convert", {
-        language,
-        sourceCode,
-      });
-      setConvertedCode(
-        response.data.code
-          .replace("```tsx", "")
-          .replace("```", "")
-          .replace("```typescript", "")
-          .replace("```javascript", "")
-      );
+      var message = { language: language, sourceCode: sourceCode };
+      complete(JSON.stringify(message));
     } catch (error) {
       console.error("Error converting code:", error);
       alert("Failed to convert code.");
-    } finally {
-      setIsLoading(false); // End loading
     }
   };
 
@@ -82,6 +75,7 @@ const Home = () => {
           {isLoading ? "Loading..." : "Convert"}
         </button>
       </div>
+
       <div className="d-flex justify-content-between align-items-start mb-4">
         <div className="position-relative flex-fill me-2">
           <MonacoEditor
@@ -98,7 +92,11 @@ const Home = () => {
         <div className="position-relative flex-fill ms-2">
           <MonacoEditor
             defaultLanguage="javascript"
-            value={convertedCode}
+            value={completion
+              .replace("```tsx", "")
+              .replace("```", "")
+              .replace("```typescript", "")
+              .replace("```javascript", "")}
             theme="vs-dark"
             options={{ readOnly: true }}
             height="600px"
@@ -111,6 +109,11 @@ const Home = () => {
           </button>
         </div>
       </div>
+      {error && (
+        <div className="fixed top-0 left-0 w-full p-4 text-center bg-red-500 text-white">
+          {error.message}
+        </div>
+      )}
       <footer className="text-center mt-4" style={{ color: "white" }}>
         Created by:{"  "}
         <a
@@ -134,4 +137,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Stream;
