@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
 // Replace `<Your-OpenAI-Key>` with your actual OpenAI API key
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = process.env.OpenAI_API_KEY;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
