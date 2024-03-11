@@ -7,15 +7,25 @@ const OPENAI_API_KEY = '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';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      const { sourceCode } = req.body;
-      const userPrompt = `Convert the following code into full Sitecore JSS NextJs with TypeScript, and return only the converted code\nFollow these guidelines:\nuse JSX.Element instead of React.FC<props>\nmake sure the code is well formatted\n\nCode:${sourceCode}`;
-      const systemSXAScribanPrompt = "You help to convert code written in Sitecore SXA Scriban into Sitecore JSS Next JS with TypeScript \n";
+      const { sourceCode, language } = req.body;
 
+      let systemMessage = "";
+      let userPrompt = "";
+      if(language === "scriban"){
+          userPrompt =   `Convert the following code into full Sitecore JSS NextJs with TypeScript, and return only the converted code\nuse JSX.Element instead of React.FC<props>\nmake sure the code is well formatted\nif you retrun any instructions make them as js comment section\nCode:${sourceCode}`;
+          systemMessage = "You help to convert code written in Sitecore SXA Scriban into Sitecore JSS Next JS with TypeScript \n";
+      }else if(language === "razor"){
+        userPrompt =   `Convert the following code into full Sitecore JSS NextJs with TypeScript, and return only the converted code\nuse JSX.Element instead of React.FC<props>\nmake sure the code is well formatted\nif you retrun any instructions make them as js comment section\nCode:${sourceCode}`;
+        systemMessage = "You help to convert code written in ASP.NET MVC into Sitecore JSS Next JS with TypeScript \n";
+      }else if(language === "csharp"){
+        userPrompt =   `Convert the following code into full  NextJs with TypeScript, and return only the converted code\nmake sure the code is well formatted\nif you retrun any instructions make them as js comment section\nCode:${sourceCode}`;
+        systemMessage = "You help to convert code written in ASP.NET MVC into  NextJS with TypeScript \n";
+      }
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
         model: 'gpt-4-turbo-preview',
         messages: [
           { role: 'user', content: userPrompt },
-          { role: 'system', content: systemSXAScribanPrompt },
+          { role: 'system', content: systemMessage },
         ],
         temperature: 0.8,
         max_tokens: 4024,
