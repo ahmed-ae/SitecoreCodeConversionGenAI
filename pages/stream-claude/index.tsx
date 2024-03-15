@@ -62,18 +62,11 @@ const Stream = () => {
       </header>
 
       <div className="mb-3 d-flex justify-content-center">
+        <label htmlFor="language-select w-auto me-2">
+          Source Code Language:
+        </label>
         <select
-          className="form-select w-auto me-2"
-          value={model}
-          onChange={(e) => setModel(e.target.value)}
-          style={{ color: "green" }}
-        >
-          <option value="claude3opus">Claude 3 Opus</option>
-          <option value="claude3sonnet">Claude 3 Sonnet</option>
-          <option value="claude3haiku">Claude 3 Haiku</option>
-        </select>
-
-        <select
+          id="language-select"
           className="form-select w-auto me-2"
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
@@ -82,6 +75,19 @@ const Stream = () => {
           <option value="razor">Razor</option>
           <option value="scriban">Sitecore SXA Scriban</option>
           <option value="csharp">C#</option>
+        </select>
+        <br />
+        <label htmlFor="model-select w-auto me-2">Model:</label>
+        <select
+          id="model-select"
+          className="form-select w-auto me-2"
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+          style={{ color: "green" }}
+        >
+          <option value="claude3opus">Claude 3 Opus</option>
+          <option value="claude3sonnet">Claude 3 Sonnet</option>
+          <option value="claude3haiku">Claude 3 Haiku</option>
         </select>
 
         <button
