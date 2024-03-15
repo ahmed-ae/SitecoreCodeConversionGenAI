@@ -8,9 +8,9 @@ import { useCompletion } from "ai/react";
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
 const Stream = () => {
-  const [language, setLanguage] = useState<string>("scriban");
+  const [language, setLanguage] = useState<string>("razor");
   const [sourceCode, setSourceCode] = useState<string>(
-    "// paste your code here "
+    "//paste your source code that you want to convert here"
   );
   const [convertedCode, setConvertedCode] = useState<string>("");
 
@@ -57,13 +57,17 @@ const Stream = () => {
       </header>
 
       <div className="mb-3 d-flex justify-content-center">
+        <label htmlFor="language-select w-auto me-2">
+          Source Code Language:
+        </label>
         <select
+          id="language-select"
           className="form-select w-auto me-2"
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
           style={{ color: "green" }}
         >
-          <option value="razor">Razor</option>
+          <option value="razor">ASP.NET MVC Razor</option>
           <option value="scriban">Sitecore SXA Scriban</option>
           <option value="csharp">C#</option>
         </select>
