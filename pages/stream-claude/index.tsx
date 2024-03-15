@@ -9,6 +9,7 @@ const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
 const Stream = () => {
   const [language, setLanguage] = useState<string>("scriban");
+  const [model, setModel] = useState<string>("claude3opus");
   const [sourceCode, setSourceCode] = useState<string>(
     "// paste your code here "
   );
@@ -16,7 +17,7 @@ const Stream = () => {
 
   const { completion, isLoading, handleInputChange, complete, error } =
     useCompletion({
-      api: "/api/completion/Convert",
+      api: "/api/claude/Convert",
     });
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
@@ -26,7 +27,11 @@ const Stream = () => {
 
   const convertCode = async () => {
     try {
-      var message = { language: language, sourceCode: sourceCode };
+      var message = {
+        language: language,
+        sourceCode: sourceCode,
+        model: model,
+      };
       complete(JSON.stringify(message));
     } catch (error) {
       console.error("Error converting code:", error);
@@ -50,13 +55,24 @@ const Stream = () => {
       <header className="text-center mb-4">
         <h1>Sitecore Code Conversion Tool. Beta 0.1</h1>
         <p>
-          Use GenAI with GPT4 to convert your Sitecore MVC Razor components and
-          Sitecore SXA Scriban components into Sitecore JSS with NextJS
-          components
+          Use GenAI with Claude-3-Opus Model to convert your Sitecore MVC Razor
+          components and Sitecore SXA Scriban components into Sitecore JSS with
+          NextJS components
         </p>
       </header>
 
       <div className="mb-3 d-flex justify-content-center">
+        <select
+          className="form-select w-auto me-2"
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+          style={{ color: "green" }}
+        >
+          <option value="claude3opus">Claude 3 Opus</option>
+          <option value="claude3sonnet">Claude 3 Sonnet</option>
+          <option value="claude3haiku">Claude 3 Haiku</option>
+        </select>
+
         <select
           className="form-select w-auto me-2"
           value={language}
@@ -67,6 +83,7 @@ const Stream = () => {
           <option value="scriban">Sitecore SXA Scriban</option>
           <option value="csharp">C#</option>
         </select>
+
         <button
           className="btn btn-primary"
           onClick={convertCode}

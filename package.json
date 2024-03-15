@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.18.0",
     "@monaco-editor/react": "^4.6.0",
     "@nanostores/react": "github:ai/react",
     "ai": "^3.0.8",
