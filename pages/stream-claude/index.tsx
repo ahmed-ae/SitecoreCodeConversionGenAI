@@ -19,7 +19,7 @@ const Stream = () => {
 
   const { completion, isLoading, handleInputChange, complete, error } =
     useCompletion({
-      api: "/api/claude/Convert",
+      api: "/api/chat/Convert",
     });
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
@@ -90,6 +90,7 @@ const Stream = () => {
           <option value="claude3opus">Claude 3 Opus</option>
           <option value="claude3sonnet">Claude 3 Sonnet</option>
           <option value="claude3haiku">Claude 3 Haiku</option>
+          <option value="gpt4">GPT-4 turbo</option>
         </select>
 
         <button
