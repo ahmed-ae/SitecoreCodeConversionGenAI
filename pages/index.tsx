@@ -8,13 +8,10 @@ import { useCompletion } from "ai/react";
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
 const Stream = () => {
-  const [language, setLanguage] = useState<string>("razor");
+  const [language, setLanguage] = useState<string>("scriban");
   const [model, setModel] = useState<string>("claude3opus");
   const [sourceCode, setSourceCode] = useState<string>(
-    "//paste your source code that you want to convert here"
-  );
-  const [convertedCode, setConvertedCode] = useState<string>(
-    "//Click Convert to see the result"
+    "<!--paste your source code that you want to convert here -->"
   );
 
   const { completion, isLoading, handleInputChange, complete, error } =
@@ -129,7 +126,15 @@ const Stream = () => {
           />
           <button
             className="btn btn-sm btn-secondary position-absolute top-0 end-0 m-2"
-            onClick={() => copyToClipboard(convertedCode)}
+            onClick={() =>
+              copyToClipboard(
+                completion
+                  .replace("```tsx", "")
+                  .replace("```", "")
+                  .replace("```typescript", "")
+                  .replace("```javascript", "")
+              )
+            }
           >
             Copy Code
           </button>
