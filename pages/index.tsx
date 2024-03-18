@@ -51,111 +51,124 @@ const Stream = () => {
   return (
     <div className="container py-5">
       <header className="text-center mb-4">
-        <h1>Sitecore Code Conversion Tool. Beta 0.1</h1>
-        <p>
-          Use GenAI with either GPT4 or Claude 3 LLMS to convert your legacy
-          Sitecore MVC Razor files or Sitecore SXA Scriban scripts into Sitecore
-          Jss Next component
-        </p>
+        <div className="flex flex-col">
+          <div className="mx-auto">
+            <h1 className="font-display inline mx-auto max-w-4xl text-4xl font-extrabold   tracking-normal text-gray-50 sm:text-5xl md:text-6xl"></h1>
+            <h1 className="font-display inline  mx-auto max-w-4xl text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-900 tracking-normal text-gray-300 sm:text-5xl md:text-6xl">
+              Sitecore Code Conversion Tool
+            </h1>
+          </div>
+
+          <h2 className=" mx-auto my-4 max-w-4xl text-lg  text-gray-300 leading-7">
+            Use GenAI with either GPT4 or Claude 3 LLMS to convert your legacy
+            Sitecore MVC Razor files or Sitecore SXA Scriban scripts into
+            Sitecore Jss Next component
+          </h2>
+        </div>
       </header>
 
-      <div className="row mb-3 align-items-center">
-        {/* Column for dropdowns */}
-        <div className="col">
-          <div className="d-flex align-items-center">
-            <label htmlFor="language-select" className="me-2">
-              Source Language:
-            </label>
-            <select
-              id="language-select"
-              className="form-select me-2"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              style={{ color: "green", width: "33%" }}
-            >
-              <option value="razor">ASP.NET MVC Razor</option>
-              <option value="scriban">Sitecore SXA Scriban</option>
-              <option value="csharp">C#</option>
-            </select>
+      <div
+        className="border border-dark rounded-4"
+        style={{ backgroundColor: "#a09a9a", padding: "2%" }}
+      >
+        <div className="row mb-3 align-items-center">
+          {/* Column for dropdowns */}
+          <div className="col">
+            <div className="d-flex align-items-center">
+              <label htmlFor="language-select" className="me-2">
+                Source Language:
+              </label>
+              <select
+                id="language-select"
+                className="form-select me-2"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                style={{ color: "green", width: "33%" }}
+              >
+                <option value="razor">ASP.NET MVC Razor</option>
+                <option value="scriban">Sitecore SXA Scriban</option>
+                <option value="csharp">C#</option>
+              </select>
 
-            <label htmlFor="model-select" className="me-2">
-              Model:
-            </label>
-            <select
-              id="model-select"
-              className="form-select me-2"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              style={{ color: "green", width: "33%" }}
+              <label htmlFor="model-select" className="me-2">
+                Model:
+              </label>
+              <select
+                id="model-select"
+                className="form-select me-2"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                style={{ color: "green", width: "33%" }}
+              >
+                <option value="claude3opus">Claude 3 Opus</option>
+                <option value="claude3sonnet">Claude 3 Sonnet</option>
+                <option value="claude3haiku">Claude 3 Haiku</option>
+                <option value="gpt4">GPT-4 turbo</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Column for Convert button */}
+          <div className="col-auto">
+            <button
+              type="button"
+              className="btn btn-primary me-2"
+              onClick={stop}
+              disabled={!isLoading}
             >
-              <option value="claude3opus">Claude 3 Opus</option>
-              <option value="claude3sonnet">Claude 3 Sonnet</option>
-              <option value="claude3haiku">Claude 3 Haiku</option>
-              <option value="gpt4">GPT-4 turbo</option>
-            </select>
+              Stop
+            </button>
+
+            <button
+              className="btn btn-primary me-2"
+              onClick={convertCode}
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Convert"}
+            </button>
           </div>
         </div>
 
-        {/* Column for Convert button */}
-        <div className="col-auto">
-          <button
-            type="button"
-            className="btn btn-primary me-2"
-            onClick={stop}
-            disabled={!isLoading}
-          >
-            Stop
-          </button>
+        <div className="d-flex justify-content-between align-items-start mb-4">
+          <div className="position-relative flex-fill me-2">
+            <MonacoEditor
+              defaultLanguage={language === "scriban" ? "html" : language}
+              defaultValue={sourceCode}
+              onChange={handleEditorChange}
+              theme="vs-dark"
+              height="600px"
+            />
+          </div>
+          <br />
+          <br />
 
-          <button
-            className="btn btn-primary me-2"
-            onClick={convertCode}
-            disabled={isLoading}
-          >
-            {isLoading ? "Loading..." : "Convert"}
-          </button>
-        </div>
-      </div>
-
-      <div className="d-flex justify-content-between align-items-start mb-4">
-        <div className="position-relative flex-fill me-2">
-          <MonacoEditor
-            defaultLanguage={language === "scriban" ? "html" : language}
-            defaultValue={sourceCode}
-            onChange={handleEditorChange}
-            theme="vs-dark"
-            height="600px"
-          />
-        </div>
-        <br />
-        <br />
-
-        <div className="position-relative flex-fill ms-2">
-          <MonacoEditor
-            defaultLanguage="javascript"
-            value={completion
-              .replace("```tsx", "")
-              .replace("```", "")
-              .replace("```typescript", "")
-              .replace("```javascript", "")}
-            theme="vs-dark"
-            options={{ readOnly: true }}
-            height="600px"
-          />
-          <button
-            className="btn btn-sm btn-secondary position-absolute top-0 end-0 m-2"
-            onClick={() =>
-              copyToClipboard(
-                completion
-                  .replace("```tsx", "")
-                  .replace("```", "")
-                  .replace("```typescript", "")
-                  .replace("```javascript", "")
-              )
-            }
-          >
-            Copy Code
-          </button>
+          <div className="position-relative flex-fill ms-2">
+            <MonacoEditor
+              defaultLanguage="javascript"
+              value={completion
+                .replace("```tsx", "")
+                .replace("```", "")
+                .replace("```typescript", "")
+                .replace("```javascript", "")}
+              theme="vs-dark"
+              options={{ readOnly: true }}
+              height="600px"
+            />
+            <button
+              className="btn btn-sm btn-secondary position-absolute top-0 end-0 m-2"
+              onClick={() =>
+                copyToClipboard(
+                  completion
+                    .replace("```tsx", "")
+                    .replace("```", "")
+                    .replace("```typescript", "")
+                    .replace("```javascript", "")
+                )
+              }
+            >
+              Copy Code
+            </button>
+          </div>
         </div>
       </div>
       {error && (
