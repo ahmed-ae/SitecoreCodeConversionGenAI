@@ -54,9 +54,9 @@ const Stream = () => {
       <header className="text-center mb-4">
         <h1>Sitecore Code Conversion Tool. Beta 0.1</h1>
         <p>
-          Use GenAI with Claude-3-Opus Model to convert your Sitecore MVC Razor
-          components and Sitecore SXA Scriban components into Sitecore JSS with
-          NextJS components
+          Use GenAI with either GPT4 or Claude 3 Models to convert your Sitecore
+          MVC Razor components or Sitecore SXA Scriban components into Sitecore
+          JSS with NextJS components
         </p>
       </header>
 
