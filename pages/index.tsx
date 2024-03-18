@@ -9,15 +9,14 @@ const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
 const Stream = () => {
   const [language, setLanguage] = useState<string>("scriban");
-  const [model, setModel] = useState<string>("claude3opus");
+  const [model, setModel] = useState<string>("gpt4");
   const [sourceCode, setSourceCode] = useState<string>(
     "<!--paste your source code that you want to convert here -->"
   );
 
-  const { completion, isLoading, handleInputChange, complete, error } =
-    useCompletion({
-      api: "/api/chat/Convert",
-    });
+  const { completion, isLoading, stop, complete, error } = useCompletion({
+    api: "/api/chat/Convert",
+  });
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       setSourceCode(value);
@@ -54,49 +53,68 @@ const Stream = () => {
       <header className="text-center mb-4">
         <h1>Sitecore Code Conversion Tool. Beta 0.1</h1>
         <p>
-          Use GenAI with either GPT4 or Claude 3 Models to convert your Sitecore
-          MVC Razor components or Sitecore SXA Scriban components into Sitecore
-          JSS with NextJS components
+          Use GenAI with either GPT4 or Claude 3 LLMS to convert your legacy
+          Sitecore MVC Razor files or Sitecore SXA Scriban scripts into Sitecore
+          Jss Next component
         </p>
       </header>
 
-      <div className="mb-3 d-flex justify-content-center">
-        <label htmlFor="language-select w-auto me-2">
-          Source Code Language:
-        </label>
-        <select
-          id="language-select"
-          className="form-select w-auto me-2"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          style={{ color: "green" }}
-        >
-          <option value="razor">ASP.NET MVC Razor</option>
-          <option value="scriban">Sitecore SXA Scriban</option>
-          <option value="csharp">C#</option>
-        </select>
-        <br />
-        <label htmlFor="model-select w-auto me-2">Model:</label>
-        <select
-          id="model-select"
-          className="form-select w-auto me-2"
-          value={model}
-          onChange={(e) => setModel(e.target.value)}
-          style={{ color: "green" }}
-        >
-          <option value="claude3opus">Claude 3 Opus</option>
-          <option value="claude3sonnet">Claude 3 Sonnet</option>
-          <option value="claude3haiku">Claude 3 Haiku</option>
-          <option value="gpt4">GPT-4 turbo</option>
-        </select>
+      <div className="row mb-3 align-items-center">
+        {/* Column for dropdowns */}
+        <div className="col">
+          <div className="d-flex align-items-center">
+            <label htmlFor="language-select" className="me-2">
+              Source Language:
+            </label>
+            <select
+              id="language-select"
+              className="form-select me-2"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              style={{ color: "green", width: "33%" }}
+            >
+              <option value="razor">ASP.NET MVC Razor</option>
+              <option value="scriban">Sitecore SXA Scriban</option>
+              <option value="csharp">C#</option>
+            </select>
 
-        <button
-          className="btn btn-primary"
-          onClick={convertCode}
-          disabled={isLoading}
-        >
-          {isLoading ? "Loading..." : "Convert"}
-        </button>
+            <label htmlFor="model-select" className="me-2">
+              Model:
+            </label>
+            <select
+              id="model-select"
+              className="form-select me-2"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              style={{ color: "green", width: "33%" }}
+            >
+              <option value="claude3opus">Claude 3 Opus</option>
+              <option value="claude3sonnet">Claude 3 Sonnet</option>
+              <option value="claude3haiku">Claude 3 Haiku</option>
+              <option value="gpt4">GPT-4 turbo</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Column for Convert button */}
+        <div className="col-auto">
+          <button
+            type="button"
+            className="btn btn-primary me-2"
+            onClick={stop}
+            disabled={!isLoading}
+          >
+            Stop
+          </button>
+
+          <button
+            className="btn btn-primary me-2"
+            onClick={convertCode}
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : "Convert"}
+          </button>
+        </div>
       </div>
 
       <div className="d-flex justify-content-between align-items-start mb-4">
