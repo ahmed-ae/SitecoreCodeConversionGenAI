@@ -186,7 +186,7 @@ const Stream = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Github
+          Ahmed Okour
         </a>{" "}
         |
         <a
