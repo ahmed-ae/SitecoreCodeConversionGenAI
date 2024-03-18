@@ -136,8 +136,24 @@ const Stream = () => {
         </div>
       </div>
       {error && (
-        <div className="fixed top-0 left-0 w-full p-4 text-center bg-red-500 text-white">
+        <div
+          id="errorBox"
+          className="fixed top-0 left-0 w-full p-4 text-center bg-red-500 text-white"
+        >
           {error.message}
+          <div className="position-absolute top-0 end-0 m-2">
+            <button
+              className="btn btn-sm btn-danger"
+              onClick={() => {
+                var errorDiv = document.getElementById("errorBox");
+                if (errorDiv) {
+                  errorDiv.style.display = "none";
+                }
+              }}
+            >
+              <i className="bi bi-x">CLOSE</i>
+            </button>
+          </div>
         </div>
       )}
       <footer className="text-center mt-4" style={{ color: "white" }}>
