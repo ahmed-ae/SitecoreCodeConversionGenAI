@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useCompletion } from "ai/react";
+import { parseCode } from "@/lib/util";
 
 // Importing the Monaco Editor dynamically to avoid SSR issues
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
@@ -60,9 +61,9 @@ const Stream = () => {
           </div>
 
           <h2 className=" mx-auto my-4 max-w-4xl text-lg  text-gray-300 leading-7">
-            Use GenAI with either GPT4 or Claude 3 LLMS to convert your legacy
-            Sitecore MVC Razor files or Sitecore SXA Scriban scripts into
-            Sitecore Jss Next component
+            Use GenAI with either GPT4 or Claude 3 LLMS to convert your Sitecore
+            SXA Scriban scripts or Sitecore MVC Razor files into Sitecore Jss
+            Next component
           </h2>
         </div>
       </header>
@@ -101,8 +102,8 @@ const Stream = () => {
                 style={{ color: "green", width: "33%" }}
               >
                 <option value="claude3opus">Claude 3 Opus</option>
-                <option value="claude3sonnet">Claude 3 Sonnet</option>
-                <option value="claude3haiku">Claude 3 Haiku</option>
+                {/* <option value="claude3sonnet">Claude 3 Sonnet</option> */}
+                {/* <option value="claude3haiku">Claude 3 Haiku</option> */}
                 <option value="gpt4">GPT-4 turbo</option>
               </select>
             </div>
@@ -144,27 +145,15 @@ const Stream = () => {
 
           <div className="position-relative flex-fill ms-2">
             <MonacoEditor
-              defaultLanguage="javascript"
-              value={completion
-                .replace("```tsx", "")
-                .replace("```", "")
-                .replace("```typescript", "")
-                .replace("```javascript", "")}
+              defaultLanguage="typescript"
+              value={parseCode(completion)}
               theme="vs-dark"
               options={{ readOnly: true }}
               height="600px"
             />
             <button
               className="btn btn-sm btn-secondary position-absolute top-0 end-0 m-2"
-              onClick={() =>
-                copyToClipboard(
-                  completion
-                    .replace("```tsx", "")
-                    .replace("```", "")
-                    .replace("```typescript", "")
-                    .replace("```javascript", "")
-                )
-              }
+              onClick={() => copyToClipboard(parseCode(completion))}
             >
               Copy Code
             </button>

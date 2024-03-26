@@ -60,7 +60,7 @@ export default async function POST(req: Request) {
           { role: "user", content: promtMessages[0].content },
           { role: "system", content: promtMessages[1].content },
         ],
-        temperature: 0.8,
+        temperature: 0.9,
         max_tokens: 4024,
       });
 
@@ -84,7 +84,7 @@ export default async function POST(req: Request) {
         system: promtMessages[1].content,
         model: selectedModel.valueOf(),
         stream: true,
-        temperature: 0.8,
+        temperature: 0.9,
         max_tokens: 4024,
       });
       // Convert the response into a friendly text-stream
