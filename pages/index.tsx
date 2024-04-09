@@ -194,6 +194,14 @@ const Stream = () => {
         </a>{" "}
         |
         <a
+          href="https://github.com/ahmed-ae/SitecoreCodeConversionGenAI"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github Repo
+        </a>{" "}
+        |
+        <a
           href="https://twitter.com/aokour86"
           target="_blank"
           rel="noopener noreferrer"
