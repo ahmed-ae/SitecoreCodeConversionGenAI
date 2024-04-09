@@ -192,7 +192,7 @@ const Stream = () => {
         >
           Ahmed Okour
         </a>{" "}
-        |
+        |{" "}
         <a
           href="https://github.com/ahmed-ae/SitecoreCodeConversionGenAI"
           target="_blank"
