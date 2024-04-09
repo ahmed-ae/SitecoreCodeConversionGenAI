@@ -62,32 +62,28 @@ export function generatePromptMessages(
     userPrompt = `Convert the following code into full Sitecore JSS NextJs with TypeScript, your output must only contain converted code, don't include any explanations in your responses`;
 
     userPrompt +=
-      "\ninclude this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'";
+      "\n include this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'";
     userPrompt +=
-      "\nfor every component, define  ComponentProps as type ComponentProps = { rendering: ComponentRendering; params: ComponentParams; }";
+      "\n for every component, define  ComponentProps as type ComponentProps = { rendering: ComponentRendering; params: ComponentParams; }";
     userPrompt +=
-      "\ndefine your component props like this example, type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };";
+      "\n extract the component props from SXA scriban code and assign the right type , follow this as an example -> type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };";
     userPrompt +=
-      "\nuse (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
-    userPrompt +=
-      "\nif you return any instructions make them as js comment section\nCode:" +
-      sourceCode;
+      "\n use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
+    userPrompt += "\n Code:" + sourceCode;
     systemMessage =
       "You help to convert code written in Sitecore SXA Scriban into Sitecore JSS Next JS with TypeScript \n";
   } else if (language === "razor") {
     userPrompt = `Convert the following code into full Sitecore JSS NextJs with TypeScript, your output must only contain converted code, don't include any explanations in your responses`;
 
     userPrompt +=
-      "\ninclude this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'";
+      "\n  include this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'";
     userPrompt +=
-      "\nfor every component,  define  ComponentProps as type ComponentProps = { rendering: ComponentRendering; params: ComponentParams; }";
+      "\n for every component,  define  ComponentProps as type ComponentProps = { rendering: ComponentRendering; params: ComponentParams; }";
     userPrompt +=
-      "\ndefine your component props like this example, type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };";
+      "\n define your component props like this example, type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };";
     userPrompt +=
-      "\nuse (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
-    userPrompt +=
-      "\nif you return any instructions make them as js comment section\nCode:" +
-      sourceCode;
+      "\n use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
+    userPrompt += "\n Code:" + sourceCode;
     systemMessage =
       "You help to convert code written in ASP.NET MVC into Sitecore JSS Next JS with TypeScript \n";
   } else if (language === "csharp") {
@@ -104,7 +100,4 @@ export function generatePromptMessages(
   ];
 
   return messages;
-}
-function functionParseCodeResponse(response: any, string: any) {
-  throw new Error("Function not implemented.");
 }

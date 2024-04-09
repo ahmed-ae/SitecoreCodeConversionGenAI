@@ -105,6 +105,8 @@ const Stream = () => {
                 {/* <option value="claude3sonnet">Claude 3 Sonnet</option> */}
                 {/* <option value="claude3haiku">Claude 3 Haiku</option> */}
                 <option value="gpt4">GPT-4 turbo</option>
+                {/* <option value="gemini">Gemini 1.0 Pro</option> */}
+                {/* <option value="CodeLlama">CodeLlama</option> */}
               </select>
             </div>
           </div>
