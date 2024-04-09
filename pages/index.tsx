@@ -10,7 +10,7 @@ const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
 const Stream = () => {
   const [language, setLanguage] = useState<string>("scriban");
-  const [model, setModel] = useState<string>("gpt4");
+  const [model, setModel] = useState<string>("claude3opus");
   const [sourceCode, setSourceCode] = useState<string>(
     "<!--paste your source code that you want to convert here -->"
   );
