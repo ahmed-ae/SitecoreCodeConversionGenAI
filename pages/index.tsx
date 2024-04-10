@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useCompletion } from "ai/react";
 import { parseCode } from "@/lib/util";
 
+
 // Importing the Monaco Editor dynamically to avoid SSR issues
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
