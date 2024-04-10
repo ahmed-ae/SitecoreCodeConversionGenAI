@@ -4,7 +4,7 @@ import { generatePromptMessages, Message } from "@/lib/util";
 import Anthropic from "@anthropic-ai/sdk";
 import {
   GenerateContentRequest,
-  GoogleGenerativeAI,
+  GoogleGenerativeAI,RequestOptions
 } from "@google/generative-ai";
 
 import OpenAI from "openai";
@@ -70,7 +70,7 @@ export default async function POST(req: Request) {
           { role: "user", content: promtMessages[0].content },
           { role: "system", content: promtMessages[1].content },
         ],
-        temperature: 0.5,
+        temperature: 0.6,
         max_tokens: 4024,
       });
 
@@ -99,7 +99,7 @@ export default async function POST(req: Request) {
         system: promtMessages[1].content,
         model: selectedModel.valueOf(),
         stream: true,
-        temperature: 0.5,
+        temperature: 0.6,
         max_tokens: 4024,
       });
       // Convert the response into a friendly text-stream
@@ -110,7 +110,8 @@ export default async function POST(req: Request) {
     } else if (model == "gemini") {
       const generationConfig = {
         maxOutputTokens: 4024,
-        temperature: 0.5,
+        temperature: 0.6,
+        
       };
       const geminiMessages: GenerateContentRequest = {
         contents: promtMessages
@@ -121,13 +122,15 @@ export default async function POST(req: Request) {
             role: message.role === "user" ? "user" : "model",
             parts: [{ text: message.content }],
           })),
+          
       };
       console.log(JSON.stringify(geminiMessages));
+      const options : RequestOptions ={apiVersion:'v1beta'}
       const geminiStream = await geminiAI
         .getGenerativeModel({
           model: selectedModel.valueOf(),
           generationConfig,
-        })
+        }, options)
         .generateContentStream(geminiMessages);
 
       // Convert the response into a friendly text-stream

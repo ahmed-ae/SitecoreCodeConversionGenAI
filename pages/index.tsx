@@ -61,7 +61,7 @@ const Stream = () => {
           </div>
 
           <h2 className=" mx-auto my-4 max-w-4xl text-lg  text-gray-300 leading-7">
-            Use GenAI with either GPT4 or Claude 3 LLMS to convert your Sitecore
+            Use GenAI with different LLMs (GPT4, Claude 3 Opus, Gemini 1.5 Pro) to convert your Sitecore
             SXA Scriban scripts or Sitecore MVC Razor files into Sitecore Jss
             Next component
           </h2>
@@ -105,7 +105,7 @@ const Stream = () => {
                 {/* <option value="claude3sonnet">Claude 3 Sonnet</option> */}
                 {/* <option value="claude3haiku">Claude 3 Haiku</option> */}
                 <option value="gpt4">GPT-4 turbo</option>
-                {/* <option value="gemini">Gemini 1.0 Pro</option> */}
+                <option value="gemini">Gemini 1.5 Pro</option>
                 {/* <option value="CodeLlama">CodeLlama</option> */}
               </select>
             </div>
