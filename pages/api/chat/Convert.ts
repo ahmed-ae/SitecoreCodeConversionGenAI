@@ -59,6 +59,12 @@ export default async function POST(req: Request) {
         { status: 500 }
       );
     }
+    if(sourceCode === '' || sourceCode === '<!--paste your source code that you want to convert here -->'){
+      return NextResponse.json(
+        { error: "Please fill in source code section you want to convert." },
+        { status: 500 }
+      );
+    }
 
     if (model == "gpt4") {
       console.log(JSON.stringify(promtMessages));
