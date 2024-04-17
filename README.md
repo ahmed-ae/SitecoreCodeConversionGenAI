@@ -5,7 +5,8 @@ This is a Sitecore Code conversion for traditional Sitecore MVC or SXA Scriban c
 After cloning the repository
 
 - Update OpenAI_API_KEY inside .env file with your Open AI API Key
-- Update ANTHROPIC_API_KEY inside .env file with your Open AI API Key
+- Update ANTHROPIC_API_KEY inside .env file with your ANTHROPIC API Key
+- Update GOOGLE_API_KEY inside .env file with your google project API Key
 - Run the following commands in your terminal window
 
 ```bash
