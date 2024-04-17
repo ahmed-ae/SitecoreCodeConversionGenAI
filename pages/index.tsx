@@ -89,7 +89,7 @@ const Stream = () => {
               >
                 <option value="razor">ASP.NET MVC Razor</option>
                 <option value="scriban">Sitecore SXA Scriban</option>
-                <option value="csharp">C#</option>
+                
               </select>
 
               <label htmlFor="model-select" className="me-2">
