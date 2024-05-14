@@ -5,13 +5,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useCompletion } from "ai/react";
 import { parseCode } from "@/lib/util";
 
-
 // Importing the Monaco Editor dynamically to avoid SSR issues
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
 const Stream = () => {
   const [language, setLanguage] = useState<string>("scriban");
-  const [model, setModel] = useState<string>("claude3opus");
+  const [model, setModel] = useState<string>("gpt4o");
   const [sourceCode, setSourceCode] = useState<string>(
     "<!--paste your source code that you want to convert here -->"
   );
@@ -62,9 +61,9 @@ const Stream = () => {
           </div>
 
           <h2 className=" mx-auto my-4 max-w-4xl text-lg  text-gray-300 leading-7">
-            Use GenAI with different LLMs (GPT4, Claude 3 Opus, Gemini 1.5 Pro) to convert your Sitecore
-            SXA Scriban scripts or Sitecore MVC Razor files into Sitecore Jss
-            Next component
+            Use GenAI with different LLMs (GPT4, Claude 3 Opus, Gemini 1.5 Pro)
+            to convert your Sitecore SXA Scriban scripts or Sitecore MVC Razor
+            files into Sitecore Jss Next component
           </h2>
         </div>
       </header>
@@ -89,7 +88,6 @@ const Stream = () => {
               >
                 <option value="razor">ASP.NET MVC Razor</option>
                 <option value="scriban">Sitecore SXA Scriban</option>
-                
               </select>
 
               <label htmlFor="model-select" className="me-2">
@@ -106,6 +104,7 @@ const Stream = () => {
                 {/* <option value="claude3sonnet">Claude 3 Sonnet</option> */}
                 {/* <option value="claude3haiku">Claude 3 Haiku</option> */}
                 <option value="gpt4">GPT-4 turbo</option>
+                <option value="gpt4o">GPT-4 Omni</option>
                 <option value="gemini">Gemini 1.5 Pro</option>
                 {/* <option value="CodeLlama">CodeLlama</option> */}
               </select>

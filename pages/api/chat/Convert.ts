@@ -4,7 +4,8 @@ import { generatePromptMessages, Message } from "@/lib/util";
 import Anthropic from "@anthropic-ai/sdk";
 import {
   GenerateContentRequest,
-  GoogleGenerativeAI,RequestOptions
+  GoogleGenerativeAI,
+  RequestOptions,
 } from "@google/generative-ai";
 
 import OpenAI from "openai";
@@ -45,6 +46,8 @@ export default async function POST(req: Request) {
       selectedModel = process.env.CLAUDE_3_HAIKU_MODEL_ID!;
     } else if (model === "gpt4") {
       selectedModel = process.env.GPT_4_MODEL_ID!;
+    } else if (model === "gpt4o") {
+      selectedModel = process.env.GPT_4_O_MODEL_ID!;
     } else if (model === "gemini") {
       selectedModel = process.env.GEMINI_MODEL_ID!;
     } else if (model === "CodeLlama") {
@@ -59,14 +62,18 @@ export default async function POST(req: Request) {
         { status: 500 }
       );
     }
-    if(sourceCode === '' || sourceCode === '<!--paste your source code that you want to convert here -->'){
+    if (
+      sourceCode === "" ||
+      sourceCode ===
+        "<!--paste your source code that you want to convert here -->"
+    ) {
       return NextResponse.json(
         { error: "Please fill in source code section you want to convert." },
         { status: 500 }
       );
     }
 
-    if (model == "gpt4") {
+    if (model == "gpt4" || model == "gpt4o") {
       console.log(JSON.stringify(promtMessages));
       // Ask OpenAI for a streaming chat completion given the prompt
       const response = await openai.chat.completions.create({
@@ -117,7 +124,6 @@ export default async function POST(req: Request) {
       const generationConfig = {
         maxOutputTokens: 4024,
         temperature: 0.6,
-        
       };
       const geminiMessages: GenerateContentRequest = {
         contents: promtMessages
@@ -128,15 +134,17 @@ export default async function POST(req: Request) {
             role: message.role === "user" ? "user" : "model",
             parts: [{ text: message.content }],
           })),
-          
       };
       console.log(JSON.stringify(geminiMessages));
-      const options : RequestOptions ={apiVersion:'v1beta'}
+      const options: RequestOptions = { apiVersion: "v1beta" };
       const geminiStream = await geminiAI
-        .getGenerativeModel({
-          model: selectedModel.valueOf(),
-          generationConfig,
-        }, options)
+        .getGenerativeModel(
+          {
+            model: selectedModel.valueOf(),
+            generationConfig,
+          },
+          options
+        )
         .generateContentStream(geminiMessages);
 
       // Convert the response into a friendly text-stream
