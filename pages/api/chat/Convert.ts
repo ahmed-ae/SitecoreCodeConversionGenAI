@@ -13,10 +13,8 @@ import {
   OpenAIStream,
   StreamingTextResponse,
   AnthropicStream,
-  GoogleGenerativeAIStream,
-  HuggingFaceStream,
+  GoogleGenerativeAIStream
 } from "ai";
-import { HfInference } from "@huggingface/inference";
 // Create an Anthropic API client (that's edge friendly)
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || "",
@@ -27,16 +25,17 @@ const openai = new OpenAI({
   apiKey: process.env.OpenAI_API_KEY,
 });
 const geminiAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
-const Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 // IMPORTANT! Set the runtime to edge
 export const runtime = "edge";
+const temperature = Number(process.env.MODEL_TEMPERATURE);
+const max_tokens = Number(process.env.MODEL_MAX_TOKENS);
 
 export default async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
     const { language, sourceCode, model } = JSON.parse(prompt);
-    console.log("Generating Code using " + model);
+    console.log("Generating Code using " + model + " using temp/max-tokens: " + temperature + "/" + max_tokens);
     let selectedModel: String = "";
     if (model === "claude3opus") {
       selectedModel = process.env.CLAUDE_3_OPUS_MODEL_ID!;
@@ -83,8 +82,8 @@ export default async function POST(req: Request) {
           { role: "user", content: promtMessages[0].content },
           { role: "system", content: promtMessages[1].content },
         ],
-        temperature: 0.6,
-        max_tokens: 4024,
+        temperature: temperature,
+        max_tokens: max_tokens,
       });
 
       // Convert the response into a friendly text-stream
@@ -112,8 +111,8 @@ export default async function POST(req: Request) {
         system: promtMessages[1].content,
         model: selectedModel.valueOf(),
         stream: true,
-        temperature: 0.6,
-        max_tokens: 4024,
+        temperature: temperature,
+        max_tokens: max_tokens,
       });
       // Convert the response into a friendly text-stream
       const stream = AnthropicStream(response);
@@ -122,8 +121,8 @@ export default async function POST(req: Request) {
       return new StreamingTextResponse(stream);
     } else if (model == "gemini") {
       const generationConfig = {
-        maxOutputTokens: 4024,
-        temperature: 0.6,
+        maxOutputTokens: max_tokens,
+        temperature:temperature,
       };
       const geminiMessages: GenerateContentRequest = {
         contents: promtMessages
@@ -152,27 +151,7 @@ export default async function POST(req: Request) {
 
       // Respond with the stream
       return new StreamingTextResponse(stream);
-    } else if (model == "CodeLlama") {
-      const response = Hf.textGenerationStream({
-        model: selectedModel.valueOf(),
-        //inputs: `<|prompter|>${prompt}<|endoftext|><|assistant|>`,
-        inputs: promtMessages[0].content,
-        parameters: {
-          max_new_tokens: 4000,
-          // @ts-ignore (this is a valid parameter specifically in OpenAssistant models)
-          typical_p: 0.2,
-          repetition_penalty: 1,
-          truncate: 1000,
-          return_full_text: false,
-        },
-      });
-
-      // Convert the response into a friendly text-stream
-      const stream = HuggingFaceStream(response);
-
-      // Respond with the stream
-      return new StreamingTextResponse(stream);
-    }
+    } 
   } catch (error) {
     // Check if the error is an APIError
     if (error instanceof Anthropic.APIError) {
