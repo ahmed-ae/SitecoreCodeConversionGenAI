@@ -4,7 +4,8 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useCompletion } from "ai/react";
 import { parseCode } from "@/lib/util";
-
+import { Modal, Button, Form } from "react-bootstrap";
+import { GearFill } from "react-bootstrap-icons";
 // Importing the Monaco Editor dynamically to avoid SSR issues
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
@@ -23,21 +24,35 @@ const Stream = () => {
       setSourceCode(value);
     }
   };
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [customInstructions, setCustomInstructions] = useState<string>("");
 
+  const handleCustomInstructionsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCustomInstructions(e.target.value);
+  };
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
   const convertCode = async () => {
     try {
       var message = {
         language: language,
         sourceCode: sourceCode,
         model: model,
+        customInstructions: customInstructions,
       };
       complete(JSON.stringify(message));
+      closeModal();
     } catch (error) {
       console.error("Error converting code:", error);
       alert("Failed to convert code.");
     }
   };
-
   const copyToClipboard = (code: string) => {
     navigator.clipboard.writeText(code).then(
       () => {
@@ -112,6 +127,13 @@ const Stream = () => {
 
           {/* Column for Convert button */}
           <div className="col-auto">
+          <button
+              type="button"
+              className="btn btn-secondary me-2"
+              onClick={openModal}
+            >
+              <GearFill />
+            </button>
             <button
               type="button"
               className="btn btn-primary me-2"
@@ -209,6 +231,32 @@ const Stream = () => {
           Twitter
         </a>
       </footer>
+      <Modal show={showModal} onHide={closeModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Custom Instructions</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="customInstructionsTextarea">
+              <Form.Label>Enter custom instructions:</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={5}
+                value={customInstructions}
+                onChange={handleCustomInstructionsChange}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={convertCode}>
+            Save Instructions and Convert
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

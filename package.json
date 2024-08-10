@@ -14,6 +14,7 @@
     "@huggingface/inference": "^2.6.6",
     "@monaco-editor/react": "^4.6.0",
     "@nanostores/react": "github:ai/react",
+    "@types/react-bootstrap": "^0.32.37",
     "@vercel/analytics": "^1.2.2",
     "ai": "^3.0.20",
     "axios": "^1.6.7",
@@ -23,6 +24,8 @@
     "node": "^18.17.0",
     "openai": "^4.33.0",
     "react": "^18",
+    "react-bootstrap": "^2.10.4",
+    "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18",
     "react-monaco-editor": "^0.55.0"
   },
