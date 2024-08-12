@@ -109,7 +109,7 @@ const Stream = () => {
           <h1 className="text-4xl font-bold mb-4 text-[#FFFFFF]">
             Sitecore Code Conversion Tool
           </h1>
-          <p className="text-xl text-[#B0B0B0] max-w-2xl mx-auto">
+          <p className="text-xl text-[#B0B0B0] max-w-2x2 mx-auto">
             Use GenAI with different LLMs (GPT, Claude Opus/Sonnet, Gemini Pro)
             to convert your Sitecore SXA Scriban scripts or Sitecore MVC Razor
             files into Sitecore Jss Next components
@@ -118,7 +118,7 @@ const Stream = () => {
 
         <div className="bg-[#2A2A2A] rounded-lg p-6 shadow-md border border-[#3A3A3A]">
           <div className="flex flex-wrap items-center mb-6 space-y-4 md:space-y-0">
-            <div className="w-full md:w-1/2 md:pr-2">
+            <div className="w-full md:w-1/3 pr-2">
               <label
                 htmlFor="language-select"
                 className="block mb-2 text-sm font-medium text-[#E0E0E0]"
@@ -135,50 +135,29 @@ const Stream = () => {
                 <option value="scriban">Sitecore SXA Scriban</option>
               </select>
             </div>
-            <div className="w-full md:w-1/2 md:pl-2">
-              <label
-                htmlFor="model-select"
-                className="block mb-2 text-sm font-medium text-[#E0E0E0]"
+            <div className="w-full md:w-2/3 pl-2 flex justify-end space-x-2">
+              <button
+                className="bg-[#383838] text-[#E0E0E0] border border-[#4A4A4A] px-3 py-2 rounded hover:bg-[#424242] focus:outline-none focus:ring-2 focus:ring-[#9B8AFB]"
+                onClick={openModal}
               >
-                Model:
-              </label>
-              <select
-                id="model-select"
-                className="w-full bg-[#383838] border border-[#4A4A4A] text-[#E0E0E0] rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#9B8AFB]"
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
+                <Settings className="inline-block mr-1" size={16} />
+                Settings
+              </button>
+              <button
+                className="bg-[#6B2B2D] hover:bg-[#7F3436] text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#FF7875]"
+                onClick={stop}
+                disabled={!isLoading}
               >
-                <option value="claude3opus">Claude 3 Opus</option>
-                <option value="claude3sonnet">Claude 3 Sonnet</option>
-                <option value="gpt4">GPT-4 turbo</option>
-                <option value="gpt4o">GPT-4 Omni</option>
-                <option value="gemini">Gemini 1.5 Pro</option>
-              </select>
+                Stop
+              </button>
+              <button
+                className="bg-[#9B8AFB] hover:bg-[#8B7FF8] text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#8B7FF8]"
+                onClick={convertCode}
+                disabled={isLoading}
+              >
+                {isLoading ? "Converting..." : "Convert"}
+              </button>
             </div>
-          </div>
-
-          <div className="flex justify-end space-x-4 mb-6">
-            <button
-              className="bg-[#383838] text-[#E0E0E0] border border-[#4A4A4A] px-4 py-2 rounded hover:bg-[#424242] focus:outline-none focus:ring-2 focus:ring-[#9B8AFB]"
-              onClick={openModal}
-            >
-              <Settings className="inline-block mr-2" size={20} />
-              Custom Instructions
-            </button>
-            <button
-              className="bg-[#6B2B2D] hover:bg-[#7F3436] text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#FF7875]"
-              onClick={stop}
-              disabled={!isLoading}
-            >
-              Stop
-            </button>
-            <button
-              className="bg-[#9B8AFB] hover:bg-[#8B7FF8] text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#8B7FF8]"
-              onClick={convertCode}
-              disabled={isLoading}
-            >
-              {isLoading ? "Converting..." : "Convert"}
-            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -254,9 +233,27 @@ const Stream = () => {
       </div>
 
       <CustomModal isOpen={showModal} onClose={closeModal} onSave={convertCode}>
-        <h2 className="text-2xl font-bold mb-6 text-[#FFFFFF]">
-          Custom Instructions
-        </h2>
+        <h2 className="text-2xl font-bold mb-6 text-[#FFFFFF]">Settings</h2>
+        <div className="mb-6 flex items-center space-x-4">
+          <label
+            htmlFor="model-select"
+            className="text-[#E0E0E0] font-medium w-1/4"
+          >
+            Model:
+          </label>
+          <select
+            id="model-select"
+            className="w-3/4 bg-[#383838] border border-[#4A4A4A] text-[#E0E0E0] rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#9B8AFB]"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+          >
+            <option value="claude3opus">Claude 3 Opus</option>
+            <option value="claude3sonnet">Claude 3 Sonnet</option>
+            <option value="gpt4">GPT-4 turbo</option>
+            <option value="gpt4o">GPT-4 Omni</option>
+            <option value="gemini">Gemini 1.5 Pro</option>
+          </select>
+        </div>
         <div className="flex items-start space-x-4">
           <label
             htmlFor="customInstructions"
