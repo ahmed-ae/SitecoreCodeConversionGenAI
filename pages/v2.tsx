@@ -164,11 +164,11 @@ const Stream = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
-      <header className="bg-gray-800 w-full py-4 px-6 flex justify-between items-center">
+      <header className="bg-gray-800 w-full py-4 px-6 flex flex-col sm:flex-row justify-between items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 400 60"
-          className="h-10"
+          className="h-10 mb-4 sm:mb-0"
         >
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -208,14 +208,18 @@ const Stream = () => {
           </text>
         </svg>
 
-        <div>
+        <div className="mt-4 sm:mt-0">
           {session ? (
-            <div className="flex items-center space-x-4">
-              <span>Hi, {session.user?.name}</span>
-              <span>({maxTries - CountUsage} tries left)</span>
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+              <span className="text-center sm:text-left">
+                Hi, {session.user?.name}
+              </span>
+              <span className="text-center sm:text-left">
+                ({maxTries - CountUsage} tries left)
+              </span>
               <button
                 onClick={() => signOut()}
-                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300"
+                className="bg-red-400 text-gray-800 px-4 py-2 rounded-md hover:bg-red-300 transition duration-300 w-full sm:w-auto"
               >
                 Sign out
               </button>
@@ -223,17 +227,17 @@ const Stream = () => {
           ) : (
             <button
               onClick={() => signIn("google")}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+              className="bg-blue-400 text-gray-800 px-4 py-2 rounded-md hover:bg-blue-300 transition duration-300 w-full sm:w-auto"
             >
               Sign in with Google
             </button>
           )}
         </div>
       </header>
-      <div className="container mx-auto py-12 px-4 max-w-full w-[95%]">
-        <div className="bg-gray-800 rounded-xl p-6 shadow-2xl border border-gray-700">
-          <div className="flex flex-wrap items-center mb-6 space-y-4 md:space-y-0">
-            <div className="w-full md:w-1/3 pr-2">
+      <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
+        <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">
+          <div className="flex flex-col sm:flex-row items-center mb-6 space-y-4 sm:space-y-0">
+            <div className="w-full sm:w-1/3 pr-0 sm:pr-2 mb-4 sm:mb-0">
               <div className="relative">
                 <select
                   className="w-full bg-gray-700 text-gray-100 rounded-md px-3 py-2 appearance-none focus:outline-none focus:ring-2 focus:ring-[#BE6420]"
@@ -249,23 +253,23 @@ const Stream = () => {
                 />
               </div>
             </div>
-            <div className="w-full md:w-2/3 pl-2 flex justify-end space-x-3">
+            <div className="w-full sm:w-2/3 pl-0 sm:pl-2 flex flex-col sm:flex-row justify-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-3">
               <button
-                className="bg-gray-700 text-gray-100 px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 text-sm flex items-center"
+                className="bg-gray-600 text-gray-100 px-4 py-2 rounded-md hover:bg-gray-500 transition duration-300 text-sm flex items-center justify-center"
                 onClick={openModal}
               >
                 <Settings className="mr-1" size={16} />
                 Settings
               </button>
               <button
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition duration-300 text-sm"
+                className="bg-amber-400 hover:bg-amber-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
                 onClick={stop}
                 disabled={!isLoading}
               >
                 Stop
               </button>
               <button
-                className="bg-[#BE6420] hover:bg-[#A85A1B] text-white px-6 py-2 rounded-md transition duration-300 text-sm"
+                className="bg-teal-400 hover:bg-teal-300 text-gray-800 px-6 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
                 onClick={convertCode}
                 disabled={isLoading}
               >
@@ -274,7 +278,7 @@ const Stream = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="relative">
               <MonacoEditor
                 defaultLanguage={language === "scriban" ? "html" : language}
@@ -282,7 +286,7 @@ const Stream = () => {
                 onChange={handleEditorChange}
                 theme="vs-dark"
                 options={{ minimap: { enabled: false } }}
-                className="h-[600px] rounded-md border border-gray-700 overflow-hidden"
+                className="h-[300px] sm:h-[600px] rounded-md border border-gray-700 overflow-hidden"
               />
             </div>
             <div className="relative">
@@ -291,7 +295,7 @@ const Stream = () => {
                 value={parseCode(completion)}
                 theme="vs-dark"
                 options={{ readOnly: true, minimap: { enabled: false } }}
-                className="h-[600px] rounded-md border border-gray-700 overflow-hidden"
+                className="h-[300px] sm:h-[600px] rounded-md border border-gray-700 overflow-hidden"
               />
               <button
                 className="absolute top-2 right-2 bg-gray-700 text-gray-100 px-3 py-1 rounded-md text-xs hover:bg-gray-600 transition duration-300"
@@ -321,7 +325,7 @@ const Stream = () => {
               <p className="mb-6">Please log in to convert code.</p>
               <button
                 onClick={() => signIn("google")}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+                className="bg-blue-400 text-gray-800 px-4 py-2 rounded-md hover:bg-blue-300 transition duration-300"
               >
                 Sign in with Google
               </button>
@@ -334,18 +338,20 @@ const Stream = () => {
             </div>
           </div>
         )}
-        <footer className="text-center mt-12 text-gray-400">
-          <p>
-            Created by:{" "}
-            <a
-              href="https://github.com/ahmed-ae"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-orange-500 hover:text-orange-400 transition duration-300"
-            >
-              Ahmed Okour
-            </a>{" "}
-            |{" "}
+        <footer className="text-center mt-8 sm:mt-12 text-gray-400">
+          <p className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2">
+            <span>
+              Created by:{" "}
+              <a
+                href="https://github.com/ahmed-ae"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-500 hover:text-orange-400 transition duration-300"
+              >
+                Ahmed Okour
+              </a>
+            </span>
+            <span className="hidden sm:inline">|</span>
             <a
               href="https://github.com/ahmed-ae/SitecoreCodeConversionGenAI"
               target="_blank"
@@ -353,8 +359,8 @@ const Stream = () => {
               className="text-orange-500 hover:text-orange-400 transition duration-300"
             >
               Github Repo
-            </a>{" "}
-            |{" "}
+            </a>
+            <span className="hidden sm:inline">|</span>
             <a
               href="https://twitter.com/aokour86"
               target="_blank"
