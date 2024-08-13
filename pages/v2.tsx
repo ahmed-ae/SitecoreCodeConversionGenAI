@@ -167,44 +167,30 @@ const Stream = () => {
       <header className="bg-gray-800 w-full py-4 px-6 flex flex-col sm:flex-row justify-between items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 400 60"
+          viewBox="0 0 200 200"
           className="h-10 mb-4 sm:mb-0"
         >
-          <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop
-                offset="0%"
-                style={{ stopColor: "#BE6420", stopOpacity: 1 }}
-              />
-              <stop
-                offset="100%"
-                style={{ stopColor: "#F0A868", stopOpacity: 1 }}
-              />
-            </linearGradient>
-          </defs>
-
-          <g transform="translate(0, 5)">
-            <path d="M0 25 L15 10 L30 25 L15 40 Z" fill="url(#gradient)" />
-            <path d="M30 25 L45 10 L60 25 L45 40 Z" fill="url(#gradient)" />
-            <line
-              x1="15"
-              y1="25"
-              x2="45"
-              y2="25"
-              stroke="white"
-              strokeWidth="3"
-            />
-          </g>
-
+          <circle cx="100" cy="100" r="90" fill="#FF0000" />
+          <path d="M100 30 A70 70 0 0 1 170 100 L100 100 Z" fill="#FFFFFF" />
+          <path
+            d="M170 100 A70 70 0 0 1 100 170 L100 100 Z"
+            fill="#FFFFFF"
+            opacity="0.7"
+          />
+          <path
+            d="M100 170 A70 70 0 0 1 30 100 L100 100 Z"
+            fill="#FFFFFF"
+            opacity="0.4"
+          />
           <text
-            x="70"
-            y="38"
-            fontFamily="Arial, sans-serif"
-            fontSize="24"
-            fontWeight="bold"
-            fill="url(#gradient)"
+            x="100"
+            y="105"
+            font-family="Arial, sans-serif"
+            font-size="24"
+            fill="#FF0000"
+            text-anchor="middle"
           >
-            Sitecore Code Conversion
+            &lt;/&gt;
           </text>
         </svg>
 
