@@ -1,8 +1,10 @@
 import dynamic from "next/dynamic";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCompletion } from "ai/react";
 import { parseCode } from "@/lib/util";
-import { Settings, X,Code, ChevronDown   } from "lucide-react";
+import { Settings, X, Code, ChevronDown } from "lucide-react";
+import { useSession, signIn, signOut } from "next-auth/react";
+import type { Session } from "next-auth";
 
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
@@ -56,10 +58,42 @@ const Stream = () => {
   );
   const [showModal, setShowModal] = useState<boolean>(false);
   const [customInstructions, setCustomInstructions] = useState<string>("");
+  const { data: session } = useSession() as { data: Session | null };
 
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/chat/Convert",
   });
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      // Fetch user preferences
+      fetch(`/api/user/userPreferences?userId=${session.user.id}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setLanguage(data.language);
+          setModel(data.model);
+          setCustomInstructions(data.customInstructions);
+        });
+    }
+  }, [session]);
+
+  const savePreferences = async () => {
+    console.log("Saving preferences for user id:", session?.user?.id);
+    if (session?.user?.id) {
+      await fetch("/api/user/userPreferences", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session.user.id,
+          language,
+          model,
+          customInstructions,
+        }),
+      });
+    }
+  };
 
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
@@ -102,15 +136,30 @@ const Stream = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans">
       <div className="container mx-auto py-12 px-4 max-w-full w-[95%]">
-        <header className="text-center mb-12">
-          
+        <header className="text-center mb-12 flex justify-between items-center">
           <h1 className="text-6xl font-bold mb-6 text-[#BE6420]">
             Sitecore Code Conversion Tool
           </h1>
-          
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Harness the power of GenAI to transform your Sitecore development workflow
-          </p>
+          <div>
+            {session ? (
+              <div className="flex items-center space-x-4">
+                <span>Hi, {session.user?.name}</span>
+                <button
+                  onClick={() => signOut()}
+                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => signIn("google")}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+              >
+                Sign in with Google
+              </button>
+            )}
+          </div>
         </header>
 
         <div className="bg-gray-800 rounded-xl p-6 shadow-2xl border border-gray-700">
@@ -125,7 +174,10 @@ const Stream = () => {
                   <option value="razor">ASP.NET MVC Razor</option>
                   <option value="scriban">Sitecore SXA Scriban</option>
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <ChevronDown
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={16}
+                />
               </div>
             </div>
             <div className="w-full md:w-2/3 pl-2 flex justify-end space-x-3">
@@ -227,7 +279,14 @@ const Stream = () => {
         </footer>
       </div>
 
-      <CustomModal isOpen={showModal} onClose={closeModal} onSave={convertCode}>
+      <CustomModal
+        isOpen={showModal}
+        onClose={closeModal}
+        onSave={() => {
+          savePreferences();
+          //   convertCode();
+        }}
+      >
         <h2 className="text-2xl font-bold mb-6 text-white">Settings</h2>
         <div className="mb-6 flex items-center space-x-4">
           <label
@@ -249,7 +308,10 @@ const Stream = () => {
               <option value="gpt4o">GPT-4 Omni</option>
               <option value="gemini">Gemini 1.5 Pro</option>
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+            <ChevronDown
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={16}
+            />
           </div>
         </div>
         <div className="flex items-start space-x-4">
