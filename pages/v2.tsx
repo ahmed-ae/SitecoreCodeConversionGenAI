@@ -59,6 +59,9 @@ const Stream = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [customInstructions, setCustomInstructions] = useState<string>("");
   const { data: session } = useSession() as { data: Session | null };
+  const [CountUsage, setCountUsage] = useState<number>(0);
+  const [maxTries, setMaxTries] = useState<number>(0);
+  const [showLoginPrompt, setShowLoginPrompt] = useState<boolean>(false);
 
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/chat/Convert",
@@ -73,12 +76,16 @@ const Stream = () => {
           setLanguage(data.language);
           setModel(data.model);
           setCustomInstructions(data.customInstructions);
+          if (data.lastCodeUsed !== undefined && data.lastCodeUsed !== "") {
+            setSourceCode(data.lastCodeUsed);
+          }
+          setCountUsage(data.CountUsage);
+          setMaxTries(data.maxTries);
         });
     }
   }, [session]);
 
   const savePreferences = async () => {
-    console.log("Saving preferences for user id:", session?.user?.id);
     if (session?.user?.id) {
       await fetch("/api/user/userPreferences", {
         method: "POST",
@@ -87,11 +94,33 @@ const Stream = () => {
         },
         body: JSON.stringify({
           userId: session.user.id,
-          language,
-          model,
-          customInstructions,
+          language: language,
+          model: model,
+          customInstructions: customInstructions,
         }),
       });
+    }
+  };
+
+  const updateUsageCount = async () => {
+    var newCount = CountUsage + 1;
+    setCountUsage(newCount);
+    if (session?.user?.id) {
+      await fetch("/api/user/usageCount", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session.user.id,
+          lastCodeUsed: sourceCode,
+          CountUsage: newCount,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setCountUsage(data.CountUsage);
+        });
     }
   };
 
@@ -101,16 +130,15 @@ const Stream = () => {
     }
   };
 
-  const handleCustomInstructionsChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setCustomInstructions(e.target.value);
-  };
-
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
   const convertCode = async () => {
+    if (!session) {
+      setShowLoginPrompt(true);
+      return;
+    }
+
     try {
       const message = {
         language,
@@ -118,7 +146,8 @@ const Stream = () => {
         model,
         customInstructions,
       };
-      complete(JSON.stringify(message));
+      await complete(JSON.stringify(message));
+      await updateUsageCount();
       closeModal();
     } catch (error) {
       console.error("Error converting code:", error);
@@ -134,34 +163,74 @@ const Stream = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 font-sans">
-      <div className="container mx-auto py-12 px-4 max-w-full w-[95%]">
-        <header className="text-center mb-12 flex justify-between items-center">
-          <h1 className="text-6xl font-bold mb-6 text-[#BE6420]">
-            Sitecore Code Conversion Tool
-          </h1>
-          <div>
-            {session ? (
-              <div className="flex items-center space-x-4">
-                <span>Hi, {session.user?.name}</span>
-                <button
-                  onClick={() => signOut()}
-                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300"
-                >
-                  Sign out
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => signIn("google")}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
-              >
-                Sign in with Google
-              </button>
-            )}
-          </div>
-        </header>
+    <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
+      <header className="bg-gray-800 w-full py-4 px-6 flex justify-between items-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 400 60"
+          className="h-10"
+        >
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop
+                offset="0%"
+                style={{ stopColor: "#BE6420", stopOpacity: 1 }}
+              />
+              <stop
+                offset="100%"
+                style={{ stopColor: "#F0A868", stopOpacity: 1 }}
+              />
+            </linearGradient>
+          </defs>
 
+          <g transform="translate(0, 5)">
+            <path d="M0 25 L15 10 L30 25 L15 40 Z" fill="url(#gradient)" />
+            <path d="M30 25 L45 10 L60 25 L45 40 Z" fill="url(#gradient)" />
+            <line
+              x1="15"
+              y1="25"
+              x2="45"
+              y2="25"
+              stroke="white"
+              strokeWidth="3"
+            />
+          </g>
+
+          <text
+            x="70"
+            y="38"
+            fontFamily="Arial, sans-serif"
+            fontSize="24"
+            fontWeight="bold"
+            fill="url(#gradient)"
+          >
+            Sitecore Code Conversion
+          </text>
+        </svg>
+
+        <div>
+          {session ? (
+            <div className="flex items-center space-x-4">
+              <span>Hi, {session.user?.name}</span>
+              <span>({maxTries - CountUsage} tries left)</span>
+              <button
+                onClick={() => signOut()}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => signIn("google")}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+            >
+              Sign in with Google
+            </button>
+          )}
+        </div>
+      </header>
+      <div className="container mx-auto py-12 px-4 max-w-full w-[95%]">
         <div className="bg-gray-800 rounded-xl p-6 shadow-2xl border border-gray-700">
           <div className="flex flex-wrap items-center mb-6 space-y-4 md:space-y-0">
             <div className="w-full md:w-1/3 pr-2">
@@ -209,7 +278,7 @@ const Stream = () => {
             <div className="relative">
               <MonacoEditor
                 defaultLanguage={language === "scriban" ? "html" : language}
-                defaultValue={sourceCode}
+                value={sourceCode}
                 onChange={handleEditorChange}
                 theme="vs-dark"
                 options={{ minimap: { enabled: false } }}
@@ -245,7 +314,26 @@ const Stream = () => {
             </button>
           </div>
         )}
-
+        {showLoginPrompt && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 text-gray-100 rounded-xl p-6 relative border border-gray-700 shadow-2xl">
+              <h2 className="text-2xl font-bold mb-4">Login Required</h2>
+              <p className="mb-6">Please log in to convert code.</p>
+              <button
+                onClick={() => signIn("google")}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+              >
+                Sign in with Google
+              </button>
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="absolute top-2 right-2 text-gray-400 hover:text-white"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+        )}
         <footer className="text-center mt-12 text-gray-400">
           <p>
             Created by:{" "}
@@ -284,7 +372,8 @@ const Stream = () => {
         onClose={closeModal}
         onSave={() => {
           savePreferences();
-          //   convertCode();
+          convertCode();
+          closeModal();
         }}
       >
         <h2 className="text-2xl font-bold mb-6 text-white">Settings</h2>
@@ -302,11 +391,11 @@ const Stream = () => {
               value={model}
               onChange={(e) => setModel(e.target.value)}
             >
-              <option value="claude3opus">Claude 3 Opus</option>
-              <option value="claude3sonnet">Claude 3 Sonnet</option>
-              <option value="gpt4">GPT-4 turbo</option>
+              {/* <option value="claude3opus">Claude 3 Opus</option> */}
+              <option value="claude3sonnet">Claude 3.5 Sonnet</option>
+              {/* <option value="gpt4">GPT-4 turbo</option> */}
               <option value="gpt4o">GPT-4 Omni</option>
-              <option value="gemini">Gemini 1.5 Pro</option>
+              {/* <option value="gemini">Gemini 1.5 Pro</option> */}
             </select>
             <ChevronDown
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"

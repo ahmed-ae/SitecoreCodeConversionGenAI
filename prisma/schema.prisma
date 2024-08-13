@@ -62,5 +62,8 @@ model UserPreference {
   language String @default("scriban")
   model    String @default("claude3sonnet")
   customInstructions String?
+  lastCodeUsed String?
+  CountUsage Int @default(0)
+  maxTries Int @default(25)
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { getSession } from "next-auth/react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 const prisma = new PrismaClient();
@@ -15,39 +14,7 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  if (req.method === "GET") {
-    const userId = req.query.userId as string;
-    const preferences = await prisma.userPreference.findUnique({
-      where: { userId },
-    });
-    return res.json(
-      preferences || {
-        language: "scriban",
-        model: "claude3sonnet",
-        customInstructions: "",
-        lastCodeUsed: "",
-        CountUsage: 0,
-        maxTries: 0,
-      }
-    );
-  }
-
   if (req.method === "POST") {
-    console.log("Saving User pref : ", req.body);
-    const { userId, language, model, customInstructions } = req.body;
-    const preferences = await prisma.userPreference.upsert({
-      where: { userId },
-      update: { language, model, customInstructions },
-      create: {
-        userId,
-        language,
-        model,
-        customInstructions,
-      },
-    });
-    return res.json(preferences);
-  }
-  if (req.method === "UPDATE") {
     const { userId, CountUsage, lastCodeUsed } = req.body;
     const preferences = await prisma.userPreference.upsert({
       where: { userId },

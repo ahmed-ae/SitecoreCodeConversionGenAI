@@ -53,7 +53,8 @@ export function parseCode(completion: string): string {
 
 export function generatePromptMessages(
   language: string,
-  sourceCode: string
+  sourceCode: string,
+  customInstructions: string
 ): Message[] {
   let systemMessage = "";
   let userPrompt = "";
@@ -69,7 +70,14 @@ export function generatePromptMessages(
       "\n extract the component props from SXA scriban code and assign the right type , follow this as an example -> type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };";
     userPrompt +=
       "\n use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
-    userPrompt += "\n Code:" + sourceCode;
+
+    if (customInstructions && customInstructions != "") {
+      userPrompt +=
+        "\n follow instructions delimited by triple backticks ```" +
+        customInstructions +
+        " ```";
+    }
+    userPrompt += "\n Source Code:" + sourceCode;
     systemMessage =
       "You help to convert code written in Sitecore SXA Scriban into Sitecore JSS Next JS with TypeScript \n";
   } else if (language === "razor") {
@@ -83,15 +91,16 @@ export function generatePromptMessages(
       "\n define your component props like this example, type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };";
     userPrompt +=
       "\n use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
+
+    if (customInstructions && customInstructions != "") {
+      userPrompt +=
+        "\n follow instructions delimited by triple backticks ```" +
+        customInstructions +
+        " ```";
+    }
     userPrompt += "\n Code:" + sourceCode;
     systemMessage =
       "You help to convert code written in ASP.NET MVC into Sitecore JSS Next JS with TypeScript \n";
-  } else if (language === "csharp") {
-    userPrompt =
-      `Convert the following code into full NextJs with TypeScript, your output must only contain converted code\nCode:` +
-      sourceCode;
-    systemMessage =
-      "You help to convert code written in ASP.NET MVC into NextJS with TypeScript \n";
   }
 
   const messages: Message[] = [

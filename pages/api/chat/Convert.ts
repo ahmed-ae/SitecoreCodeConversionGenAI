@@ -13,7 +13,7 @@ import {
   OpenAIStream,
   StreamingTextResponse,
   AnthropicStream,
-  GoogleGenerativeAIStream
+  GoogleGenerativeAIStream,
 } from "ai";
 // Create an Anthropic API client (that's edge friendly)
 const anthropic = new Anthropic({
@@ -34,8 +34,16 @@ export default async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    const { language, sourceCode, model } = JSON.parse(prompt);
-    console.log("Generating Code using " + model + " using temp/max-tokens: " + temperature + "/" + max_tokens);
+    const { language, sourceCode, model, customInstructions } =
+      JSON.parse(prompt);
+    console.log(
+      "Generating Code using " +
+        model +
+        " using temp/max-tokens: " +
+        temperature +
+        "/" +
+        max_tokens
+    );
     let selectedModel: String = "";
     if (model === "claude3opus") {
       selectedModel = process.env.CLAUDE_3_OPUS_MODEL_ID!;
@@ -49,10 +57,12 @@ export default async function POST(req: Request) {
       selectedModel = process.env.GPT_4_O_MODEL_ID!;
     } else if (model === "gemini") {
       selectedModel = process.env.GEMINI_MODEL_ID!;
-    } else if (model === "CodeLlama") {
-      selectedModel = process.env.HuggingFace_MODEL_ID!;
     }
-    const promtMessages = generatePromptMessages(language, sourceCode);
+    const promtMessages = generatePromptMessages(
+      language,
+      sourceCode,
+      customInstructions
+    );
     console.log("Generating Code using " + selectedModel);
 
     if (selectedModel === undefined || selectedModel === "") {
@@ -122,7 +132,7 @@ export default async function POST(req: Request) {
     } else if (model == "gemini") {
       const generationConfig = {
         maxOutputTokens: max_tokens,
-        temperature:temperature,
+        temperature: temperature,
       };
       const geminiMessages: GenerateContentRequest = {
         contents: promtMessages
@@ -151,7 +161,7 @@ export default async function POST(req: Request) {
 
       // Respond with the stream
       return new StreamingTextResponse(stream);
-    } 
+    }
   } catch (error) {
     // Check if the error is an APIError
     if (error instanceof Anthropic.APIError) {
