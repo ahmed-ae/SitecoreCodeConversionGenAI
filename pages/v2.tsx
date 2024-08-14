@@ -8,15 +8,17 @@ import type { Session } from "next-auth";
 
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
-const CustomModal = ({
+const SettingModal = ({
   isOpen,
   onClose,
   onSave,
-  children,
+  onSaveAndConvert,
+  children
 }: {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
+  onSaveAndConvert: () => void;
   children: React.ReactNode;
 }) => {
   if (!isOpen) return null;
@@ -40,7 +42,13 @@ const CustomModal = ({
           </button>
           <button
             onClick={onSave}
-            className="px-4 py-2 bg-[#BE6420] text-white rounded-md hover:bg-[#A85A1B] focus:outline-none focus:ring-2 focus:ring-[#BE6420] text-sm transition duration-300"
+            className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
+          >
+            Save
+          </button>
+          <button
+            onClick={onSaveAndConvert}
+            className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
           >
             Save and Convert
           </button>
@@ -62,6 +70,7 @@ const Stream = () => {
   const [CountUsage, setCountUsage] = useState<number>(0);
   const [maxTries, setMaxTries] = useState<number>(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState<boolean>(false);
+  const [showOutOfTriesModal, setShowOutOfTriesModal] = useState<boolean>(false);
 
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/chat/Convert",
@@ -138,7 +147,10 @@ const Stream = () => {
       setShowLoginPrompt(true);
       return;
     }
-
+    if (maxTries - CountUsage <= 0) {
+      setShowOutOfTriesModal(true);
+      return;
+    }
     try {
       const message = {
         language,
@@ -164,56 +176,60 @@ const Stream = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
-      <header className="bg-gray-800 w-full py-4 px-6 flex flex-col sm:flex-row justify-between items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 200 200"
-          className="h-10 mb-4 sm:mb-0"
-        >
-          <circle cx="100" cy="100" r="90" fill="#FF0000" />
-          <path d="M100 30 A70 70 0 0 1 170 100 L100 100 Z" fill="#FFFFFF" />
-          <path
-            d="M170 100 A70 70 0 0 1 100 170 L100 100 Z"
-            fill="#FFFFFF"
-            opacity="0.7"
-          />
-          <path
-            d="M100 170 A70 70 0 0 1 30 100 L100 100 Z"
-            fill="#FFFFFF"
-            opacity="0.4"
-          />
-          <text
-            x="100"
-            y="105"
-            font-family="Arial, sans-serif"
-            font-size="24"
-            fill="#FF0000"
-            text-anchor="middle"
+      <header className="bg-gray-800 w-full py-2 px-3 sm:px-4 flex flex-wrap items-center justify-between">
+        <div className="flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 200 200"
+            className="h-6 sm:h-7"
           >
-            &lt;/&gt;
-          </text>
-        </svg>
-
-        <div className="mt-4 sm:mt-0">
+            <circle cx="100" cy="100" r="90" fill="#FF0000" />
+            <path d="M100 30 A70 70 0 0 1 170 100 L100 100 Z" fill="#FFFFFF" />
+            <path
+              d="M170 100 A70 70 0 0 1 100 170 L100 100 Z"
+              fill="#FFFFFF"
+              opacity="0.7"
+            />
+            <path
+              d="M100 170 A70 70 0 0 1 30 100 L100 100 Z"
+              fill="#FFFFFF"
+              opacity="0.4"
+            />
+            <text
+              x="100"
+              y="105"
+              fontFamily="Arial, sans-serif"
+              fontSize="24"
+              fill="#FF0000"
+              textAnchor="middle"
+            >
+              &lt;/&gt;
+            </text>
+          </svg>
+          <h1 className="text-base px-4 sm:text-lg font-semibold mr-2 sm:mr-3">
+            Sitecore Code Conversion using GenAI
+          </h1>
+        </div>
+        <div className="flex items-center mt-2 sm:mt-0">
           {session ? (
-            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              <span className="text-center sm:text-left">
+            <>
+              <span className="text-xs sm:text-sm mr-2">
                 Hi, {session.user?.name}
               </span>
-              <span className="text-center sm:text-left">
+              <span className="text-xs sm:text-sm mr-2">
                 ({maxTries - CountUsage} tries left)
               </span>
               <button
                 onClick={() => signOut()}
-                className="bg-red-400 text-gray-800 px-4 py-2 rounded-md hover:bg-red-300 transition duration-300 w-full sm:w-auto"
+                className="bg-red-400 text-gray-800 px-2 py-1 rounded-md hover:bg-red-300 transition duration-300 text-xs sm:text-sm"
               >
                 Sign out
               </button>
-            </div>
+            </>
           ) : (
             <button
               onClick={() => signIn("google")}
-              className="bg-blue-400 text-gray-800 px-4 py-2 rounded-md hover:bg-blue-300 transition duration-300 w-full sm:w-auto"
+              className="bg-red-400 text-gray-800 px-2 py-1 rounded-md hover:bg-red-300 transition duration-300 text-xs sm:text-sm"
             >
               Sign in with Google
             </button>
@@ -248,14 +264,15 @@ const Stream = () => {
                 Settings
               </button>
               <button
-                className="bg-amber-400 hover:bg-amber-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
+                className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
                 onClick={stop}
                 disabled={!isLoading}
               >
                 Stop
               </button>
               <button
-                className="bg-teal-400 hover:bg-teal-300 text-gray-800 px-6 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
+                // className="bg-teal-400 hover:bg-teal-300 text-gray-800 px-6 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
+                className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
                 onClick={convertCode}
                 disabled={isLoading}
               >
@@ -294,7 +311,7 @@ const Stream = () => {
         </div>
 
         {error && (
-          <div className="fixed top-0 left-0 w-full p-4 bg-red-600 text-white text-center">
+          <div className="fixed top-0 left-0 w-full p-4 bg-red-600 text-white text-center errorBox">
             {error.message}
             <button
               className="absolute top-1 right-2 text-white"
@@ -311,7 +328,7 @@ const Stream = () => {
               <p className="mb-6">Please log in to convert code.</p>
               <button
                 onClick={() => signIn("google")}
-                className="bg-blue-400 text-gray-800 px-4 py-2 rounded-md hover:bg-blue-300 transition duration-300"
+                className="bg-red-400 text-gray-800 px-4 py-2 rounded-md hover:bg-red-300 transition duration-300"
               >
                 Sign in with Google
               </button>
@@ -324,47 +341,59 @@ const Stream = () => {
             </div>
           </div>
         )}
+        {showOutOfTriesModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 text-gray-100 rounded-xl p-6 relative border border-gray-700 shadow-2xl">
+              <h2 className="text-2xl font-bold mb-4">Login Required</h2>
+              <p className="mb-6">
+                Sorry! but you ran out of free tries, You can still clone the
+                
+                <a
+                  href="https://github.com/ahmed-ae/SitecoreCodeConversionGenAI"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-red-500 hover:text-red-400 transition duration-300"
+                >
+                  open source repository
+                </a>
+                (For Free!) and use your own OpenAI/Claude API Key
+              </p>
+
+              <button
+                onClick={() => setShowOutOfTriesModal(false)}
+                className="absolute top-2 right-2 text-gray-400 hover:text-white"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+        )}
         <footer className="text-center mt-8 sm:mt-12 text-gray-400">
           <p className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2">
-            <span>
-              Created by:{" "}
-              <a
-                href="https://github.com/ahmed-ae"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-orange-500 hover:text-orange-400 transition duration-300"
-              >
-                Ahmed Okour
-              </a>
-            </span>
             <span className="hidden sm:inline">|</span>
             <a
               href="https://github.com/ahmed-ae/SitecoreCodeConversionGenAI"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-orange-500 hover:text-orange-400 transition duration-300"
+              className="text-red-500 hover:text-red-400 transition duration-300"
             >
-              Github Repo
+              Github
             </a>
             <span className="hidden sm:inline">|</span>
-            <a
-              href="https://twitter.com/aokour86"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-orange-500 hover:text-orange-400 transition duration-300"
-            >
-              Twitter
-            </a>
           </p>
         </footer>
       </div>
 
-      <CustomModal
+      <SettingModal
         isOpen={showModal}
         onClose={closeModal}
-        onSave={() => {
+        onSaveAndConvert={() => {
           savePreferences();
           convertCode();
+          closeModal();
+        }}
+        onSave={() => {
+          savePreferences();
           closeModal();
         }}
       >
@@ -383,9 +412,9 @@ const Stream = () => {
               value={model}
               onChange={(e) => setModel(e.target.value)}
             >
-              {/* <option value="claude3opus">Claude 3 Opus</option> */}
+              <option value="claude3opus">Claude 3 Opus</option>
               <option value="claude3sonnet">Claude 3.5 Sonnet</option>
-              {/* <option value="gpt4">GPT-4 turbo</option> */}
+              <option value="gpt4">GPT-4 turbo</option>
               <option value="gpt4o">GPT-4 Omni</option>
               {/* <option value="gemini">Gemini 1.5 Pro</option> */}
             </select>
@@ -410,7 +439,7 @@ const Stream = () => {
             placeholder="Enter your custom instructions here..."
           />
         </div>
-      </CustomModal>
+      </SettingModal>
     </div>
   );
 };
