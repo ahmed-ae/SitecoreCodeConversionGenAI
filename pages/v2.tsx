@@ -344,9 +344,9 @@ const Stream = () => {
         {showOutOfTriesModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-gray-800 text-gray-100 rounded-xl p-6 relative border border-gray-700 shadow-2xl">
-              <h2 className="text-2xl font-bold mb-4">Login Required</h2>
+              <h2 className="text-2xl font-bold mb-4">Limit Reached!</h2>
               <p className="mb-6">
-                Sorry! but you ran out of free tries, You can still clone the
+                Sorry! but you ran out of free tries, You can still clone the {' '}
                 
                 <a
                   href="https://github.com/ahmed-ae/SitecoreCodeConversionGenAI"
@@ -356,7 +356,7 @@ const Stream = () => {
                 >
                   open source repository
                 </a>
-                (For Free!) and use your own OpenAI/Claude API Key
+                {' '}(For Free!) and use your own OpenAI/Claude API Key
               </p>
 
               <button
