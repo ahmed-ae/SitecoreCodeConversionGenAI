@@ -59,10 +59,10 @@ useEffect(() => {
         setLanguage(preferences.language);
       }
       if (preferences.model) {
-        setLanguage(preferences.model);
+        setModel(preferences.model);
       }
       if (preferences.customInstructions) {
-        setLanguage(preferences.customInstructions);
+        setCustomInstructions(preferences.customInstructions);
       }
       if (preferences.lastCodeUsed) {
         setSourceCode(preferences.lastCodeUsed);
@@ -117,6 +117,17 @@ const savePreferences = async () => {
         .then((data) => {
           setCountUsage(data.CountUsage);
         });
+    }
+    else
+    {
+      // Save preferences to local storage if user is not logged in
+      const preferences = {
+        language,
+        model,
+        customInstructions,
+        lastCodeUsed: sourceCode,
+      };
+      localStorage.setItem('userPreferences', JSON.stringify(preferences));
     }
   };
   const closeModal = () => setShowModal(false);
