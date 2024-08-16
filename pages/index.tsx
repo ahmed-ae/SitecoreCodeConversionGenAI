@@ -1,4 +1,4 @@
-import dynamic from "next/dynamic";
+"use client";
 import React, { useEffect, useState } from "react";
 import { useCompletion } from "ai/react";
 import { parseCode } from "@/lib/util";
@@ -10,11 +10,8 @@ import SettingModal from "@/Components/SettingModal";
 import Footer from "@/Components/Footer";
 import CodeEditor from "@/Components/CodeEditor";
 import ControlPanel from "@/Components/ControlPanel";
-import LoginPrompt from "@/Components/LoginPrompt"
+import LoginPrompt from "@/Components/LoginPrompt";
 import OutOfTriesModal from "@/Components/OutOfTriesModal";
-
-const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
-
 
 const Stream = () => {
   const [language, setLanguage] = useState<string>("scriban");
@@ -28,75 +25,76 @@ const Stream = () => {
   const [CountUsage, setCountUsage] = useState<number>(0);
   const [maxTries, setMaxTries] = useState<number>(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState<boolean>(false);
-  const [showOutOfTriesModal, setShowOutOfTriesModal] = useState<boolean>(false);
-  const disableLoginAndMaxTries = process.env.NEXT_PUBLIC_DISABLE_LOGIN_AND_MAX_TRIES === "true";
+  const [showOutOfTriesModal, setShowOutOfTriesModal] =
+    useState<boolean>(false);
+  const disableLoginAndMaxTries =
+    process.env.NEXT_PUBLIC_DISABLE_LOGIN_AND_MAX_TRIES === "true";
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/chat/Convert",
   });
 
-
-useEffect(() => {
-  if (session?.user?.id) {
-    // Fetch user preferences from API
-    fetch(`/api/user/userPreferences?userId=${session.user.id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setLanguage(data.language);
-        setModel(data.model);
-        setCustomInstructions(data.customInstructions);
-        if (data.lastCodeUsed !== undefined && data.lastCodeUsed !== "") {
-          setSourceCode(data.lastCodeUsed);
+  useEffect(() => {
+    if (session?.user?.id) {
+      // Fetch user preferences from API
+      fetch(`/api/user/userPreferences?userId=${session.user.id}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setLanguage(data.language);
+          setModel(data.model);
+          setCustomInstructions(data.customInstructions);
+          if (data.lastCodeUsed !== undefined && data.lastCodeUsed !== "") {
+            setSourceCode(data.lastCodeUsed);
+          }
+          setCountUsage(data.CountUsage);
+          setMaxTries(data.maxTries);
+        });
+    } else {
+      // Load preferences from local storage if user is not logged in
+      const storedPreferences = localStorage.getItem("userPreferences");
+      if (storedPreferences) {
+        const preferences = JSON.parse(storedPreferences);
+        if (preferences.language) {
+          setLanguage(preferences.language);
         }
-        setCountUsage(data.CountUsage);
-        setMaxTries(data.maxTries);
-      });
-  } else {
-    // Load preferences from local storage if user is not logged in
-    const storedPreferences = localStorage.getItem('userPreferences');
-    if (storedPreferences) {
-      const preferences = JSON.parse(storedPreferences);
-      if (preferences.language) {
-        setLanguage(preferences.language);
-      }
-      if (preferences.model) {
-        setModel(preferences.model);
-      }
-      if (preferences.customInstructions) {
-        setCustomInstructions(preferences.customInstructions);
-      }
-      if (preferences.lastCodeUsed) {
-        setSourceCode(preferences.lastCodeUsed);
+        if (preferences.model) {
+          setModel(preferences.model);
+        }
+        if (preferences.customInstructions) {
+          setCustomInstructions(preferences.customInstructions);
+        }
+        if (preferences.lastCodeUsed) {
+          setSourceCode(preferences.lastCodeUsed);
+        }
       }
     }
-  }
-}, [session]);
+  }, [session]);
 
-const savePreferences = async () => {
-  if (session?.user?.id) {
-    // Save preferences to API if user is logged in
-    await fetch("/api/user/userPreferences", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: session.user.id,
-        language: language,
-        model: model,
-        customInstructions: customInstructions,
-      }),
-    });
-  } else {
-    // Save preferences to local storage if user is not logged in
-    const preferences = {
-      language,
-      model,
-      customInstructions,
-      lastCodeUsed: sourceCode,
-    };
-    localStorage.setItem('userPreferences', JSON.stringify(preferences));
-  }
-};
+  const savePreferences = async () => {
+    if (session?.user?.id) {
+      // Save preferences to API if user is logged in
+      await fetch("/api/user/userPreferences", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session.user.id,
+          language: language,
+          model: model,
+          customInstructions: customInstructions,
+        }),
+      });
+    } else {
+      // Save preferences to local storage if user is not logged in
+      const preferences = {
+        language,
+        model,
+        customInstructions,
+        lastCodeUsed: sourceCode,
+      };
+      localStorage.setItem("userPreferences", JSON.stringify(preferences));
+    }
+  };
 
   const updateUsageCount = async () => {
     var newCount = CountUsage + 1;
@@ -117,9 +115,7 @@ const savePreferences = async () => {
         .then((data) => {
           setCountUsage(data.CountUsage);
         });
-    }
-    else
-    {
+    } else {
       // Save preferences to local storage if user is not logged in
       const preferences = {
         language,
@@ -127,7 +123,7 @@ const savePreferences = async () => {
         customInstructions,
         lastCodeUsed: sourceCode,
       };
-      localStorage.setItem('userPreferences', JSON.stringify(preferences));
+      localStorage.setItem("userPreferences", JSON.stringify(preferences));
     }
   };
   const closeModal = () => setShowModal(false);
@@ -137,7 +133,7 @@ const savePreferences = async () => {
       setShowLoginPrompt(true);
       return;
     }
-    if (!disableLoginAndMaxTries && (maxTries - CountUsage <= 0)) {
+    if (!disableLoginAndMaxTries && maxTries - CountUsage <= 0) {
       setShowOutOfTriesModal(true);
       return;
     }
@@ -166,10 +162,15 @@ const savePreferences = async () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
-     <Header CountUsage={CountUsage} maxTries={maxTries} session={session} disableLoginAndMaxTries={disableLoginAndMaxTries} />
+      <Header
+        CountUsage={CountUsage}
+        maxTries={maxTries}
+        session={session}
+        disableLoginAndMaxTries={disableLoginAndMaxTries}
+      />
       <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
         <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">
-        <ControlPanel
+          <ControlPanel
             language={language}
             onLanguageChange={setLanguage}
             onSettingsClick={() => setShowModal(true)}
@@ -179,7 +180,7 @@ const savePreferences = async () => {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <CodeEditor
+            <CodeEditor
               language={language}
               value={sourceCode}
               onChange={(value) => value !== undefined && setSourceCode(value)}
@@ -194,13 +195,12 @@ const savePreferences = async () => {
         </div>
 
         {error && (
-          <div id="errorBox" className="fixed bottom-0 left-0 w-full p-4 bg-red-400 text-white text-center errorBox">
+          <div
+            id="errorBox"
+            className="fixed bottom-0 left-0 w-full p-4 bg-red-400 text-white text-center errorBox"
+          >
             {error.message}
-            <button
-              className="absolute top-1 right-2 text-white"
-            >
-              
-            </button>
+            <button className="absolute top-1 right-2 text-white"></button>
           </div>
         )}
         {showLoginPrompt && (
@@ -210,7 +210,9 @@ const savePreferences = async () => {
           />
         )}
         {showOutOfTriesModal && (
-          <OutOfTriesModal onClose={() => setShowOutOfTriesModal(false)}></OutOfTriesModal>
+          <OutOfTriesModal
+            onClose={() => setShowOutOfTriesModal(false)}
+          ></OutOfTriesModal>
         )}
         <Footer></Footer>
       </div>
@@ -227,13 +229,11 @@ const savePreferences = async () => {
           savePreferences();
           closeModal();
         }}
-        onModelChange={(value) => setModel(value)}  
+        onModelChange={(value) => setModel(value)}
         onSetCustomInstructions={(value) => setCustomInstructions(value)}
         customInstructions={customInstructions}
         model={model}
-      >
-        
-      </SettingModal>
+      ></SettingModal>
     </div>
   );
 };

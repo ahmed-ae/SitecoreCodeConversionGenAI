@@ -1,5 +1,6 @@
-import React from 'react';
-import dynamic from 'next/dynamic';
+"use client";
+import React from "react";
+import dynamic from "next/dynamic";
 
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
@@ -11,7 +12,13 @@ interface CodeEditorProps {
   onCopy?: () => void;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ language, value, onChange, readOnly = false, onCopy }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({
+  language,
+  value,
+  onChange,
+  readOnly = false,
+  onCopy,
+}) => {
   return (
     <div className="relative">
       <MonacoEditor
