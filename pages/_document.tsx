@@ -4,6 +4,40 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+         {/* Core metadata */}
+         <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#000000" />
+        
+        {/* Default SEO metadata */}
+        <title>Sitecore Code Conversion Tool | Convert Scriban and Razor to JSS</title>
+        <meta name="description" content="Sitecore Code Conversion Tool: Convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI." />
+        <meta name="keywords" content="Sitecore, SXA, Scriban, Razor, JSS, Next.js, code conversion, AI, GPT-4, Claude, Gemini" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://sitecore-gen-ai.vercel.app/" />
+        <meta property="og:title" content="Sitecore Code Conversion Tool" />
+        <meta property="og:description" content="Convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI." />
+        <meta property="og:image" content="https://sitecore-gen-ai.vercel.app//icon.svg" />
+       
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "Sitecore JSS Code Conversion Tool",
+              "description": "Convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI.",
+              "applicationCategory": "DeveloperApplication",
+              "operatingSystem": "Any",
+              "offers": {
+                "@type": "Offer",
+                "price": "0"
+              }
+            }
+          `}
+        </script>
       </Head>
       <body>
         <Main />
