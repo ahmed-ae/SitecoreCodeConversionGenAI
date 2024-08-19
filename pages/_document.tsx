@@ -19,7 +19,7 @@ export default function Document() {
         <meta property="og:url" content="https://sitecore-gen-ai.vercel.app/" />
         <meta property="og:title" content="Sitecore Code Conversion Tool" />
         <meta property="og:description" content="Convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI." />
-        <meta property="og:image" content="https://sitecore-gen-ai.vercel.app//icon.svg" />
+        <meta property="og:image" content="https://sitecore-gen-ai.vercel.app/icon.svg" />
        
         {/* Structured Data */}
         <script type="application/ld+json">
