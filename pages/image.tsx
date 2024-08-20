@@ -16,7 +16,7 @@ import OutOfTriesModal from "@/Components/OutOfTriesModal";
 const Stream = () => {
   const [language, setLanguage] = useState<string>("typescript");
   const [model, setModel] = useState<string>("claude3sonnet");
-  const [imageFile, setImageFile] = useState<File | null>(null);
+
   const [showModal, setShowModal] = useState<boolean>(false);
   const [customInstructions, setCustomInstructions] = useState<string>("");
   const { data: session } = useSession() as { data: Session | null };
@@ -29,18 +29,20 @@ const Stream = () => {
   const disableLoginAndMaxTries =
     process.env.NEXT_PUBLIC_DISABLE_LOGIN_AND_MAX_TRIES === "true";
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<FileList | null>(null);
   const {
     messages,
     stop,
-    input,
-    handleInputChange,
     handleSubmit,
     isLoading,
+    setInput,
     error,
+    handleInputChange,
+    input,
   } = useChat({
-    api: "/api/chat/Convert",
+    api: "/api/image/Convert",
   });
-
+  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (session?.user?.id) {
       // Fetch user preferences from API
@@ -113,36 +115,34 @@ const Stream = () => {
       setShowLoginPrompt(true);
       return;
     }
-    if (!disableLoginAndMaxTries && maxTries - CountUsage <= 0) {
-      setShowOutOfTriesModal(true);
-      return;
-    }
-    if (!imageFile) {
+    // if (!disableLoginAndMaxTries && maxTries - CountUsage <= 0) {
+    //   setShowOutOfTriesModal(true);
+    //   return;
+    // }
+    if (!files) {
       alert("Please upload an image first.");
       return;
     }
     try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64Image = reader.result as string;
-        const message = {
-          language,
-          image: base64Image,
-          model,
-          customInstructions,
-        };
-        //await handleSubmit(e, { files: [imageFile] });
-        await updateUsageCount();
-        closeModal();
+      const message = {
+        model,
+        customInstructions,
       };
-      reader.readAsDataURL(imageFile);
+
+      //setInput(JSON.stringify(message));
+      handleSubmit(e, { body: message, experimental_attachments: files });
+      //setFiles(null);
+      await updateUsageCount();
+      closeModal();
     } catch (error) {
       console.error("Error converting image:", error);
       alert("Failed to convert image.");
     }
   };
   const processFile = (file: File) => {
-    setImageFile(file);
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    setFiles(dataTransfer.files);
 
     // Create image preview
     const reader = new FileReader();
@@ -164,6 +164,7 @@ const Stream = () => {
       }
     }
   };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -180,7 +181,9 @@ const Stream = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setImageFile(file);
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      setFiles(dataTransfer.files);
 
       // Create image preview
       const reader = new FileReader();
@@ -248,14 +251,21 @@ const Stream = () => {
                 htmlFor="image-upload"
                 className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded cursor-pointer"
               >
-                {imageFile ? "Change Image" : "Upload Image"}
+                {files ? "Change Image" : "Upload Image"}
               </label>
-              {imageFile && (
-                <p className="mt-2 text-sm text-gray-400">{imageFile.name}</p>
+              {files && (
+                <p className="mt-2 text-sm text-gray-400">{files[0].name}</p>
               )}
               <p className="mt-4 text-sm text-gray-400">
                 Or paste an image here
               </p>
+              <input
+                ref={inputRef}
+                className="bg-zinc-100 rounded-md px-2 py-1.5 w-full outline-none dark:bg-zinc-700 text-zinc-800 dark:text-zinc-300 md:max-w-[500px] max-w-[calc(100dvw-32px)]"
+                placeholder="Send a message..."
+                value={input}
+                onChange={handleInputChange}
+              />
             </div>
             <CodeEditor
               language="typescript"
