@@ -5,7 +5,7 @@ interface SettingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
-  onSaveAndConvert: () => void;
+  onSaveAndConvert: (e: React.FormEvent<Element>) => void;
   onModelChange: (value: string) => void;
   onSetCustomInstructions: (value: string) => void;
   customInstructions: string;
@@ -19,9 +19,8 @@ const SettingModal: React.FC<SettingModalProps> = ({
   onSaveAndConvert,
   onModelChange,
   onSetCustomInstructions,
-    customInstructions,
-    model,
-  
+  customInstructions,
+  model,
 }) => {
   if (!isOpen) return null;
 

@@ -1,13 +1,13 @@
-import React from 'react';
-import { Settings } from 'lucide-react';
-import LanguageSelector from './LanguageSelector';
+import React from "react";
+import { Settings } from "lucide-react";
+import LanguageSelector from "./LanguageSelector";
 
 interface ControlPanelProps {
   language: string;
   onLanguageChange: (value: string) => void;
   onSettingsClick: () => void;
   onStopClick: () => void;
-  onConvertClick: () => void;
+  onConvertClick: (e: React.FormEvent<Element>) => Promise<void>;
   isLoading: boolean;
 }
 
