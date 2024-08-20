@@ -16,6 +16,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ language, onChange 
       >
         <option value="razor">ASP.NET MVC Razor</option>
         <option value="scriban">Sitecore SXA Scriban</option>
+        <option value="renderingResolver">Rendering Contents Resolver</option>
       </select>
       <ChevronDown
         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
