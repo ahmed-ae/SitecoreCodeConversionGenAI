@@ -43,7 +43,9 @@ const Stream = () => {
     api: "/api/image/Convert",
   });
   const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
+    setInput("Explain this picture");
     if (session?.user?.id) {
       // Fetch user preferences from API
       fetch(`/api/user/userPreferences?userId=${session.user.id}`)
@@ -128,7 +130,7 @@ const Stream = () => {
         model,
         customInstructions,
       };
-
+      setInput("Explain this picture");
       //setInput(JSON.stringify(message));
       handleSubmit(e, { body: message, experimental_attachments: files });
       //setFiles(null);
@@ -260,10 +262,12 @@ const Stream = () => {
                 Or paste an image here
               </p>
               <input
+                hidden
                 ref={inputRef}
                 className="bg-zinc-100 rounded-md px-2 py-1.5 w-full outline-none dark:bg-zinc-700 text-zinc-800 dark:text-zinc-300 md:max-w-[500px] max-w-[calc(100dvw-32px)]"
-                placeholder="Send a message..."
+                placeholder="Add your custom Instructions here..."
                 value={input}
+                defaultValue="Explain this picture"
                 onChange={handleInputChange}
               />
             </div>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generatePromptMessages, Message } from "@/lib/util";
+import { generateImage2CodePrompt } from "@/lib/util";
 import { createAnthropic } from "@ai-sdk/anthropic";
 
 import { createOpenAI } from "@ai-sdk/openai";
@@ -18,12 +18,11 @@ const max_tokens = Number(process.env.MODEL_MAX_TOKENS);
 
 export default async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const { messages, model, customInstructions } = await req.json();
     let languageModel: LanguageModel = openAiProvider(
       process.env.GPT_4_O_MODEL_ID!
     );
-    var model = "claude3sonnet";
-    //const { model, customInstructions } = JSON.parse(prompt);
+    const promtMessages = generateImage2CodePrompt(customInstructions);
     console.log(
       "Generating Code using " +
         model +
@@ -49,11 +48,7 @@ export default async function POST(req: Request) {
       selectedModel = process.env.GPT_4_O_MODEL_ID!;
       languageModel = openAiProvider(process.env.GPT_4_O_MODEL_ID!);
     }
-    // const promtMessages = generatePromptMessages(
-    //   language,
-    //   sourceCode,
-    //   customInstructions
-    // );
+
     console.log("Generating Code using " + selectedModel);
 
     if (selectedModel === undefined || selectedModel === "") {
@@ -62,26 +57,18 @@ export default async function POST(req: Request) {
         { status: 500 }
       );
     }
-    // if (
-    //   sourceCode === "" ||
-    //   sourceCode ===
-    //     "<!--paste your source code that you want to convert here -->"
-    // ) {
-    //   return NextResponse.json(
-    //     { error: "Please fill in source code section you want to convert." },
-    //     { status: 500 }
-    //   );
-    // }
 
-    //console.log(JSON.stringify(promtMessages));
+    //    console.log(JSON.stringify(promtMessages));
+    var coreMessages = convertToCoreMessages(messages);
 
+    coreMessages[0].content = promtMessages[0].content;
+    console.log(JSON.stringify(coreMessages[0].content));
     const result = await streamText({
       model: languageModel,
       maxTokens: max_tokens,
       temperature: temperature,
-      system:
-        "do not respond on markdown or lists, keep your responses brief, you can ask the user to upload images or documents if it could help you understand the problem better",
-      messages: convertToCoreMessages(messages),
+      system: promtMessages[1].content,
+      messages: coreMessages,
     });
 
     return result.toDataStreamResponse();

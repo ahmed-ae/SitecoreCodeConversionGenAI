@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
-import { generatePromptMessages, Message } from "@/lib/util";
-import {  createAnthropic } from '@ai-sdk/anthropic';
+import { generateCodeConversionPrompt } from "@/lib/util";
+import { createAnthropic } from "@ai-sdk/anthropic";
 
-import {  createOpenAI } from '@ai-sdk/openai';
-import { streamText, LanguageModel } from 'ai';
+import { createOpenAI } from "@ai-sdk/openai";
+import { streamText, LanguageModel } from "ai";
 
- const anthropicProvider = createAnthropic({
-   apiKey: process.env.ANTHROPIC_API_KEY ,
- });
+const anthropicProvider = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
 
- const openAiProvider =  createOpenAI({
-   apiKey: process.env.OpenAI_API_KEY,
- });
+const openAiProvider = createOpenAI({
+  apiKey: process.env.OpenAI_API_KEY,
+});
 export const runtime = "edge";
 const temperature = Number(process.env.MODEL_TEMPERATURE);
 const max_tokens = Number(process.env.MODEL_MAX_TOKENS);
@@ -19,7 +19,9 @@ const max_tokens = Number(process.env.MODEL_MAX_TOKENS);
 export default async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
-    let languageModel : LanguageModel = openAiProvider(process.env.GPT_4_O_MODEL_ID!);
+    let languageModel: LanguageModel = openAiProvider(
+      process.env.GPT_4_O_MODEL_ID!
+    );
     const { language, sourceCode, model, customInstructions } =
       JSON.parse(prompt);
     console.log(
@@ -46,8 +48,8 @@ export default async function POST(req: Request) {
     } else if (model === "gpt4o") {
       selectedModel = process.env.GPT_4_O_MODEL_ID!;
       languageModel = openAiProvider(process.env.GPT_4_O_MODEL_ID!);
-    } 
-    const promtMessages = generatePromptMessages(
+    }
+    const promtMessages = generateCodeConversionPrompt(
       language,
       sourceCode,
       customInstructions
@@ -70,22 +72,21 @@ export default async function POST(req: Request) {
         { status: 500 }
       );
     }
-    
-      console.log(JSON.stringify(promtMessages));
-     
-      const result = await streamText({
-        model: languageModel,
-        maxTokens: max_tokens,
-        temperature: temperature,
-        system: promtMessages[1].content,
-        messages: [ { role: 'user', content: promtMessages[0].content }]
-      });
-    
-      return result.toDataStreamResponse()
-    } catch (error) {
-      console.error(error);
-      
-        return { type: 'unknown-error', error };
-         
-    }
+
+    console.log(JSON.stringify(promtMessages));
+
+    const result = await streamText({
+      model: languageModel,
+      maxTokens: max_tokens,
+      temperature: temperature,
+      system: promtMessages[1].content,
+      messages: [{ role: "user", content: promtMessages[0].content }],
+    });
+
+    return result.toDataStreamResponse();
+  } catch (error) {
+    console.error(error);
+
+    return { type: "unknown-error", error };
+  }
 }
