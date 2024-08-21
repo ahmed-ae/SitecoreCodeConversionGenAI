@@ -186,55 +186,56 @@ const Stream = () => {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div
-              className="flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-lg p-6"
-              onPaste={handlePaste}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              tabIndex={0}
-            >
-              {imagePreview ? (
-                <div className="mb-4">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="max-w-full h-auto max-h-64 rounded-lg"
-                  />
-                </div>
-              ) : (
-                <Upload className="w-12 h-12 text-gray-400 mb-4" />
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-                id="image-upload"
-                ref={fileInputRef}
-              />
-              <label
-                htmlFor="image-upload"
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded cursor-pointer"
+            <div className="flex flex-col h-full">
+              <div
+                className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-lg p-6 mb-4"
+                onPaste={handlePaste}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                tabIndex={0}
               >
-                {file ? "Change Image" : "Upload Image"}
-              </label>
-              {file && (
-                <p className="mt-2 text-sm text-gray-400">{file.name}</p>
-              )}
-              <p className="mt-4 text-sm text-gray-400">
-                Or paste an image here to convert it into Sitecore JSS (Nextjs)
-                component.
-              </p>
-              {/* <input
+                {imagePreview ? (
+                  <div className="mb-4 flex-grow flex items-center justify-center">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="max-w-full h-auto max-h-[calc(100%-2rem)] rounded-lg"
+                    />
+                  </div>
+                ) : (
+                  <Upload className="w-24 h-24 text-gray-400 mb-8" />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="image-upload"
+                  ref={fileInputRef}
+                />
+                <label
+                  htmlFor="image-upload"
+                  className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
+                >
+                  {file ? "Change Image" : "Upload Image"}
+                </label>
+                {file && (
+                  <p className="mt-4 text-sm text-gray-400">{file.name}</p>
+                )}
+                <p className="mt-6 text-sm text-gray-400 text-center">
+                  Or paste an image here to convert it into Sitecore JSS
+                  (Nextjs) component.
+                </p>
+              </div>
+
+              <input
                 hidden
-                ref={inputRef}
-                className="bg-zinc-100 rounded-md px-2 py-1.5 w-full outline-none dark:bg-zinc-700 text-zinc-800 dark:text-zinc-300 md:max-w-[500px] max-w-[calc(100dvw-32px)]"
+                name="additionalInstructions"
+                className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Add your custom Instructions here..."
-                value={input}
-                defaultValue="Explain this picture"
-                onChange={handleInputChange}
-              /> */}
+              />
             </div>
+
             <CodeEditor
               language="typescript"
               value={parseCode(completion)}
