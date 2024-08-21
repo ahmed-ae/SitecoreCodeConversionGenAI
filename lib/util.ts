@@ -131,11 +131,18 @@ export function generateCodeConversionPrompt(
 }
 
 export function generateImage2CodePrompt(
-  customInstructions: string
+  customInstructions: string,
+  additionalInstructions: string
 ): Message[] {
   let systemMessage = "";
   let userPrompt = "";
-
+  let userCustomInstructions = "";
+  if (customInstructions && customInstructions != "") {
+    userCustomInstructions = customInstructions + " \n ";
+  }
+  if (additionalInstructions && additionalInstructions != "") {
+    userCustomInstructions += additionalInstructions + " \n ";
+  }
   userPrompt = `Convert the attached image into Sitecore JSS NextJs (TypeScript) Component, your output must only contain converted code, don't include any explanations in your responses`;
   userPrompt += "\n Follow these guidelines'";
   userPrompt +=
@@ -147,12 +154,11 @@ export function generateImage2CodePrompt(
 
   userPrompt +=
     "\n use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
-  userPrompt +=
-    "\n use tailwind library for styling, make sure to produce a responsive design";
-  if (customInstructions && customInstructions != "") {
+
+  if (userCustomInstructions && userCustomInstructions != "") {
     userPrompt +=
       "\n follow instructions delimited by triple backticks ```" +
-      customInstructions +
+      userCustomInstructions +
       " ```";
   }
   systemMessage =

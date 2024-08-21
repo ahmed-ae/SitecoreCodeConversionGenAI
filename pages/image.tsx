@@ -42,6 +42,8 @@ const Stream = () => {
     process.env.NEXT_PUBLIC_DISABLE_LOGIN_AND_MAX_TRIES === "true";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [additionalInstructions, setAdditionalInstructions] =
+    useState<string>("");
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
@@ -78,6 +80,7 @@ const Stream = () => {
       const message = {
         model: preferences.model,
         customInstructions: preferences.customInstructions,
+        additionalInstructions: additionalInstructions,
       };
 
       const base64Files = await convertToBase64(file);
@@ -106,7 +109,7 @@ const Stream = () => {
 
   const processFile = (file: File) => {
     setFile(file);
-
+    setAdditionalInstructions("");
     // Create image preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -145,7 +148,7 @@ const Stream = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setFile(file);
-
+      setAdditionalInstructions("");
       // Create image preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -231,12 +234,13 @@ const Stream = () => {
                 </p>
               </div>
 
-              <input
-                hidden
+              <textarea
+                value={additionalInstructions}
+                onChange={(e) => setAdditionalInstructions(e.target.value)}
                 name="additionalInstructions"
                 className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Add your custom Instructions here..."
-              />
+                placeholder="How would you like to customize the code?"
+              ></textarea>
             </div>
 
             <CodeEditor

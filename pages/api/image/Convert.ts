@@ -19,12 +19,17 @@ const max_tokens = Number(process.env.MODEL_MAX_TOKENS);
 export default async function POST(req: Request) {
   try {
     const { prompt, image } = await req.json();
-    const {  model, customInstructions } =
+    const { model, customInstructions, additionalInstructions } =
       JSON.parse(prompt);
     let languageModel: LanguageModel = openAiProvider(
       process.env.GPT_4_O_MODEL_ID!
     );
-    const promtMessages = generateImage2CodePrompt(customInstructions);
+    const promtMessages = generateImage2CodePrompt(
+      customInstructions,
+      additionalInstructions
+    );
+    console.log("customInstructions  : ", customInstructions);
+    console.log("additionalInstructions  : ", additionalInstructions);
     console.log(
       "Generating Code using " +
         model +
@@ -76,9 +81,9 @@ export default async function POST(req: Request) {
               text: promtMessages[0].content,
             },
             {
-              type: 'image',
+              type: "image",
               image: image,
-            }
+            },
           ],
         },
       ],

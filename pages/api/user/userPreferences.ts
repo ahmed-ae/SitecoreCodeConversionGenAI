@@ -33,7 +33,7 @@ export default async function handler(
   }
 
   if (req.method === "POST") {
-    console.log("Saving User pref : ", req.body);
+    //console.log("Saving User pref : ", req.body);
     const { userId, language, model, customInstructions } = req.body;
     const preferences = await prisma.userPreference.upsert({
       where: { userId },
