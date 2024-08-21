@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { useChat } from "ai/react";
+import { useChat, useCompletion } from "ai/react";
 import { parseCode } from "@/lib/util";
 import { Settings, X, Code, ChevronDown, Upload } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
@@ -29,23 +29,14 @@ const Stream = () => {
   const disableLoginAndMaxTries =
     process.env.NEXT_PUBLIC_DISABLE_LOGIN_AND_MAX_TRIES === "true";
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [files, setFiles] = useState<FileList | null>(null);
-  const {
-    messages,
-    stop,
-    handleSubmit,
-    isLoading,
-    setInput,
-    error,
-    handleInputChange,
-    input,
-  } = useChat({
+  const [file, setFile] = useState<File | null>(null);
+  const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
-  const inputRef = useRef<HTMLInputElement>(null);
+  //const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setInput("Explain this picture");
+    
     if (session?.user?.id) {
       // Fetch user preferences from API
       fetch(`/api/user/userPreferences?userId=${session.user.id}`)
@@ -121,7 +112,7 @@ const Stream = () => {
     //   setShowOutOfTriesModal(true);
     //   return;
     // }
-    if (!files) {
+    if (!file) {
       alert("Please upload an image first.");
       return;
     }
@@ -130,9 +121,11 @@ const Stream = () => {
         model,
         customInstructions,
       };
-      setInput("Explain this picture");
-      //setInput(JSON.stringify(message));
-      handleSubmit(e, { body: message, experimental_attachments: files });
+      
+      ;
+      const base64Files = await convertToBase64(file);
+      await complete(JSON.stringify(message),{ body: {image: base64Files} });
+      //handleSubmit(e, { body: message, experimental_attachments: files });
       //setFiles(null);
       await updateUsageCount();
       closeModal();
@@ -141,10 +134,17 @@ const Stream = () => {
       alert("Failed to convert image.");
     }
   };
-  const processFile = (file: File) => {
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(file);
-    setFiles(dataTransfer.files);
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+  
+  const processFile = (file: File) => {   
+    setFile(file);
 
     // Create image preview
     const reader = new FileReader();
@@ -183,9 +183,7 @@ const Stream = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      setFiles(dataTransfer.files);
+      setFile(file);
 
       // Create image preview
       const reader = new FileReader();
@@ -253,15 +251,15 @@ const Stream = () => {
                 htmlFor="image-upload"
                 className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded cursor-pointer"
               >
-                {files ? "Change Image" : "Upload Image"}
+                {file ? "Change Image" : "Upload Image"}
               </label>
-              {files && (
-                <p className="mt-2 text-sm text-gray-400">{files[0].name}</p>
+              {file && (
+                <p className="mt-2 text-sm text-gray-400">{file.name}</p>
               )}
               <p className="mt-4 text-sm text-gray-400">
                 Or paste an image here
               </p>
-              <input
+              {/* <input
                 hidden
                 ref={inputRef}
                 className="bg-zinc-100 rounded-md px-2 py-1.5 w-full outline-none dark:bg-zinc-700 text-zinc-800 dark:text-zinc-300 md:max-w-[500px] max-w-[calc(100dvw-32px)]"
@@ -269,23 +267,13 @@ const Stream = () => {
                 value={input}
                 defaultValue="Explain this picture"
                 onChange={handleInputChange}
-              />
+              /> */}
             </div>
             <CodeEditor
               language="typescript"
-              value={
-                messages.length > 0
-                  ? parseCode(messages[messages.length - 1].content)
-                  : ""
-              }
+              value={parseCode(completion)}
               readOnly={true}
-              onCopy={() =>
-                copyToClipboard(
-                  messages.length > 0
-                    ? parseCode(messages[messages.length - 1].content)
-                    : ""
-                )
-              }
+              onCopy={() => copyToClipboard(parseCode(completion))}
             />
           </div>
         </div>

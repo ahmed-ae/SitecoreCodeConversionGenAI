@@ -18,7 +18,9 @@ const max_tokens = Number(process.env.MODEL_MAX_TOKENS);
 
 export default async function POST(req: Request) {
   try {
-    const { messages, model, customInstructions } = await req.json();
+    const { prompt, image } = await req.json();
+    const {  model, customInstructions } =
+      JSON.parse(prompt);
     let languageModel: LanguageModel = openAiProvider(
       process.env.GPT_4_O_MODEL_ID!
     );
@@ -58,17 +60,28 @@ export default async function POST(req: Request) {
       );
     }
 
-    //    console.log(JSON.stringify(promtMessages));
-    var coreMessages = convertToCoreMessages(messages);
-
-    coreMessages[0].content = promtMessages[0].content;
-    console.log(JSON.stringify(coreMessages[0].content));
+    console.log("system message", promtMessages[1].content);
+    console.log("user message", promtMessages[0].content);
     const result = await streamText({
       model: languageModel,
       maxTokens: max_tokens,
       temperature: temperature,
       system: promtMessages[1].content,
-      messages: coreMessages,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: promtMessages[0].content,
+            },
+            {
+              type: 'image',
+              image: image,
+            }
+          ],
+        },
+      ],
     });
 
     return result.toDataStreamResponse();
