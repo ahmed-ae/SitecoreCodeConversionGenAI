@@ -12,18 +12,25 @@ import CodeEditor from "@/Components/CodeEditor";
 import ControlPanel from "@/Components/ControlPanel";
 import LoginPrompt from "@/Components/LoginPrompt";
 import OutOfTriesModal from "@/Components/OutOfTriesModal";
+import {
+  savePreferences,
+  updateUsageCount,
+  getPreferences,
+  UserPreferences,
+} from "../services/userPreferences.ts";
 
 const Stream = () => {
-  const [language, setLanguage] = useState<string>("scriban");
-  const [model, setModel] = useState<string>("claude3sonnet");
-  const [sourceCode, setSourceCode] = useState<string>(
-    "<!--paste your source code that you want to convert here -->"
-  );
+  const [preferences, setPreferences] = useState<UserPreferences>({
+    language: "scriban",
+    model: "claude3sonnet",
+    customInstructions: "",
+    lastCodeUsed:
+      "<!--paste your source code that you want to convert here -->",
+    CountUsage: 0,
+    maxTries: 0,
+  });
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [customInstructions, setCustomInstructions] = useState<string>("");
   const { data: session } = useSession() as { data: Session | null };
-  const [CountUsage, setCountUsage] = useState<number>(0);
-  const [maxTries, setMaxTries] = useState<number>(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState<boolean>(false);
   const [showOutOfTriesModal, setShowOutOfTriesModal] =
     useState<boolean>(false);
@@ -34,98 +41,17 @@ const Stream = () => {
   });
 
   useEffect(() => {
-    if (session?.user?.id) {
-      // Fetch user preferences from API
-      fetch(`/api/user/userPreferences?userId=${session.user.id}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setLanguage(data.language);
-          setModel(data.model);
-          setCustomInstructions(data.customInstructions);
-          if (data.lastCodeUsed !== undefined && data.lastCodeUsed !== "") {
-            setSourceCode(data.lastCodeUsed);
-          }
-          setCountUsage(data.CountUsage);
-          setMaxTries(data.maxTries);
-        });
-    } else {
-      // Load preferences from local storage if user is not logged in
-      const storedPreferences = localStorage.getItem("userPreferences");
-      if (storedPreferences) {
-        const preferences = JSON.parse(storedPreferences);
-        if (preferences.language) {
-          setLanguage(preferences.language);
-        }
-        if (preferences.model) {
-          setModel(preferences.model);
-        }
-        if (preferences.customInstructions) {
-          setCustomInstructions(preferences.customInstructions);
-        }
-        if (preferences.lastCodeUsed) {
-          setSourceCode(preferences.lastCodeUsed);
-        }
-      }
-    }
+    const loadPreferences = async () => {
+      const loadedPreferences = await getPreferences(session);
+      setPreferences((prevPreferences: UserPreferences) => ({
+        ...prevPreferences,
+        ...loadedPreferences,
+      }));
+    };
+
+    loadPreferences();
   }, [session]);
 
-  const savePreferences = async () => {
-    if (session?.user?.id) {
-      // Save preferences to API if user is logged in
-      await fetch("/api/user/userPreferences", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: session.user.id,
-          language: language,
-          model: model,
-          customInstructions: customInstructions,
-        }),
-      });
-    } else {
-      // Save preferences to local storage if user is not logged in
-      const preferences = {
-        language,
-        model,
-        customInstructions,
-        lastCodeUsed: sourceCode,
-      };
-      localStorage.setItem("userPreferences", JSON.stringify(preferences));
-    }
-  };
-
-  const updateUsageCount = async () => {
-    var newCount = CountUsage + 1;
-    setCountUsage(newCount);
-    if (session?.user?.id) {
-      await fetch("/api/user/usageCount", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: session.user.id,
-          lastCodeUsed: sourceCode,
-          CountUsage: newCount,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setCountUsage(data.CountUsage);
-        });
-    } else {
-      // Save preferences to local storage if user is not logged in
-      const preferences = {
-        language,
-        model,
-        customInstructions,
-        lastCodeUsed: sourceCode,
-      };
-      localStorage.setItem("userPreferences", JSON.stringify(preferences));
-    }
-  };
   const closeModal = () => setShowModal(false);
 
   const convertCode = async () => {
@@ -133,19 +59,30 @@ const Stream = () => {
       setShowLoginPrompt(true);
       return;
     }
-    if (!disableLoginAndMaxTries && maxTries - CountUsage <= 0) {
+    if (
+      !disableLoginAndMaxTries &&
+      preferences.maxTries - preferences.CountUsage <= 0
+    ) {
       setShowOutOfTriesModal(true);
       return;
     }
     try {
       const message = {
-        language,
-        sourceCode,
-        model,
-        customInstructions,
+        language: preferences.language,
+        sourceCode: preferences.lastCodeUsed,
+        model: preferences.model,
+        customInstructions: preferences.customInstructions,
       };
       await complete(JSON.stringify(message));
-      await updateUsageCount();
+      const newCount = await updateUsageCount(
+        session,
+        preferences.lastCodeUsed,
+        preferences.CountUsage
+      );
+      setPreferences((prev: UserPreferences) => ({
+        ...prev,
+        CountUsage: newCount,
+      }));
       closeModal();
     } catch (error) {
       console.error("Error converting code:", error);
@@ -159,20 +96,29 @@ const Stream = () => {
       .then(() => alert("Code copied to clipboard!"))
       .catch((err) => console.error("Error copying text to clipboard", err));
   };
+  const handleSavePreferences = async () => {
+    await savePreferences(session, preferences);
+    closeModal();
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
       <Header
-        CountUsage={CountUsage}
-        maxTries={maxTries}
+        CountUsage={preferences.CountUsage}
+        maxTries={preferences.maxTries}
         session={session}
         disableLoginAndMaxTries={disableLoginAndMaxTries}
       />
       <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
         <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">
           <ControlPanel
-            language={language}
-            onLanguageChange={setLanguage}
+            language={preferences.language}
+            onLanguageChange={(lang) =>
+              setPreferences((prev: UserPreferences) => ({
+                ...prev,
+                language: lang,
+              }))
+            }
             onSettingsClick={() => setShowModal(true)}
             onStopClick={stop}
             onConvertClick={convertCode}
@@ -181,9 +127,15 @@ const Stream = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <CodeEditor
-              language={language}
-              value={sourceCode}
-              onChange={(value) => value !== undefined && setSourceCode(value)}
+              language={preferences.language}
+              value={preferences.lastCodeUsed}
+              onChange={(value) =>
+                value !== undefined &&
+                setPreferences((prev: UserPreferences) => ({
+                  ...prev,
+                  lastCodeUsed: value,
+                }))
+              }
             />
             <CodeEditor
               language="typescript"
@@ -221,18 +173,22 @@ const Stream = () => {
         isOpen={showModal}
         onClose={closeModal}
         onSaveAndConvert={() => {
-          savePreferences();
+          handleSavePreferences();
           convertCode();
           closeModal();
         }}
         onSave={() => {
-          savePreferences();
+          handleSavePreferences();
           closeModal();
         }}
-        onModelChange={(value) => setModel(value)}
-        onSetCustomInstructions={(value) => setCustomInstructions(value)}
-        customInstructions={customInstructions}
-        model={model}
+        onModelChange={(value) =>
+          setPreferences((prev) => ({ ...prev, model: value }))
+        }
+        onSetCustomInstructions={(value) =>
+          setPreferences((prev) => ({ ...prev, customInstructions: value }))
+        }
+        customInstructions={preferences.customInstructions}
+        model={preferences.model}
       ></SettingModal>
     </div>
   );

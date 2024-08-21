@@ -12,10 +12,22 @@ import CodeEditor from "@/Components/CodeEditor";
 import ControlPanel from "@/Components/ControlPanel";
 import LoginPrompt from "@/Components/LoginPrompt";
 import OutOfTriesModal from "@/Components/OutOfTriesModal";
+import {
+  savePreferences,
+  updateUsageCount,
+  getPreferences,
+  UserPreferences,
+} from "../services/userPreferences.ts";
 
 const Stream = () => {
-  const [language, setLanguage] = useState<string>("typescript");
-  const [model, setModel] = useState<string>("claude3sonnet");
+  const [preferences, setPreferences] = useState<UserPreferences>({
+    language: "typescript",
+    model: "claude3sonnet",
+    customInstructions: "",
+    lastCodeUsed: "",
+    CountUsage: 0,
+    maxTries: 0,
+  });
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [customInstructions, setCustomInstructions] = useState<string>("");
@@ -33,72 +45,18 @@ const Stream = () => {
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
-  //const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    
-    if (session?.user?.id) {
-      // Fetch user preferences from API
-      fetch(`/api/user/userPreferences?userId=${session.user.id}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setLanguage(data.language);
-          setModel(data.model);
-          setCustomInstructions(data.customInstructions);
-          setCountUsage(data.CountUsage);
-          setMaxTries(data.maxTries);
-        });
-    } else {
-      // Load preferences from local storage if user is not logged in
-      const storedPreferences = localStorage.getItem("userPreferences");
-      if (storedPreferences) {
-        const preferences = JSON.parse(storedPreferences);
-        if (preferences.language) setLanguage(preferences.language);
-        if (preferences.model) setModel(preferences.model);
-        if (preferences.customInstructions)
-          setCustomInstructions(preferences.customInstructions);
-      }
-    }
+    const loadPreferences = async () => {
+      const loadedPreferences = await getPreferences(session);
+      setPreferences((prevPreferences) => ({
+        ...prevPreferences,
+        ...loadedPreferences,
+      }));
+    };
+
+    loadPreferences();
   }, [session]);
-
-  const savePreferences = async () => {
-    if (session?.user?.id) {
-      // Save preferences to API if user is logged in
-      await fetch("/api/user/userPreferences", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: session.user.id,
-          language,
-          model,
-          customInstructions,
-        }),
-      });
-    } else {
-      // Save preferences to local storage if user is not logged in
-      const preferences = { language, model, customInstructions };
-      localStorage.setItem("userPreferences", JSON.stringify(preferences));
-    }
-  };
-
-  const updateUsageCount = async () => {
-    const newCount = CountUsage + 1;
-    setCountUsage(newCount);
-    if (session?.user?.id) {
-      await fetch("/api/user/usageCount", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: session.user.id,
-          CountUsage: newCount,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setCountUsage(data.CountUsage);
-        });
-    }
-  };
 
   const closeModal = () => setShowModal(false);
 
@@ -108,26 +66,29 @@ const Stream = () => {
       setShowLoginPrompt(true);
       return;
     }
-    // if (!disableLoginAndMaxTries && maxTries - CountUsage <= 0) {
-    //   setShowOutOfTriesModal(true);
-    //   return;
-    // }
+    if (!disableLoginAndMaxTries && maxTries - CountUsage <= 0) {
+      setShowOutOfTriesModal(true);
+      return;
+    }
     if (!file) {
       alert("Please upload an image first.");
       return;
     }
     try {
       const message = {
-        model,
-        customInstructions,
+        model: preferences.model,
+        customInstructions: preferences.customInstructions,
       };
-      
-      ;
+
       const base64Files = await convertToBase64(file);
-      await complete(JSON.stringify(message),{ body: {image: base64Files} });
-      //handleSubmit(e, { body: message, experimental_attachments: files });
-      //setFiles(null);
-      await updateUsageCount();
+      await complete(JSON.stringify(message), { body: { image: base64Files } });
+
+      const newCount = await updateUsageCount(
+        session,
+        preferences.lastCodeUsed,
+        preferences.CountUsage
+      );
+      setPreferences((prev) => ({ ...prev, CountUsage: newCount }));
       closeModal();
     } catch (error) {
       console.error("Error converting image:", error);
@@ -142,8 +103,8 @@ const Stream = () => {
       reader.onerror = (error) => reject(error);
     });
   };
-  
-  const processFile = (file: File) => {   
+
+  const processFile = (file: File) => {
     setFile(file);
 
     // Create image preview
@@ -200,20 +161,24 @@ const Stream = () => {
       .then(() => alert("Code copied to clipboard!"))
       .catch((err) => console.error("Error copying text to clipboard", err));
   };
-
+  const handleSavePreferences = async () => {
+    await savePreferences(session, preferences);
+    closeModal();
+  };
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
       <Header
-        CountUsage={CountUsage}
-        maxTries={maxTries}
+        CountUsage={preferences.CountUsage}
+        maxTries={preferences.maxTries}
         session={session}
         disableLoginAndMaxTries={disableLoginAndMaxTries}
       />
       <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
         <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">
           <ControlPanel
-            language={language}
-            onLanguageChange={setLanguage}
+            onLanguageChange={(lang) =>
+              setPreferences((prev) => ({ ...prev, language: lang }))
+            }
             onSettingsClick={() => setShowModal(true)}
             onConvertClick={convertImage}
             onStopClick={stop}
@@ -305,18 +270,22 @@ const Stream = () => {
         isOpen={showModal}
         onClose={closeModal}
         onSaveAndConvert={(e: React.FormEvent<Element>) => {
-          savePreferences();
+          handleSavePreferences();
           convertImage(e);
           closeModal();
         }}
         onSave={() => {
-          savePreferences();
+          handleSavePreferences();
           closeModal();
         }}
-        onModelChange={(value) => setModel(value)}
-        onSetCustomInstructions={(value) => setCustomInstructions(value)}
-        customInstructions={customInstructions}
-        model={model}
+        onModelChange={(value) =>
+          setPreferences((prev) => ({ ...prev, model: value }))
+        }
+        onSetCustomInstructions={(value) =>
+          setPreferences((prev) => ({ ...prev, customInstructions: value }))
+        }
+        customInstructions={preferences.customInstructions}
+        model={preferences.model}
       ></SettingModal>
     </div>
   );

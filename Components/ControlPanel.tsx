@@ -3,7 +3,7 @@ import { Settings } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 
 interface ControlPanelProps {
-  language: string;
+  language?: string;
   onLanguageChange: (value: string) => void;
   onSettingsClick: () => void;
   onStopClick: () => void;
@@ -22,7 +22,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   return (
     <div className="flex flex-col sm:flex-row items-center mb-6 space-y-4 sm:space-y-0">
       <div className="w-full sm:w-1/3 pr-0 sm:pr-2 mb-4 sm:mb-0">
-        <LanguageSelector language={language} onChange={onLanguageChange} />
+        {language && (
+          <LanguageSelector
+            language={language || ""}
+            onChange={onLanguageChange}
+          />
+        )}
       </div>
       <div className="w-full sm:w-2/3 pl-0 sm:pl-2 flex flex-col sm:flex-row justify-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-3">
         <button
