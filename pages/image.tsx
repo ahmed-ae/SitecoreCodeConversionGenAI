@@ -194,6 +194,10 @@ const Stream = () => {
                 onDragOver={handleDragOver}
                 tabIndex={0}
               >
+                <p className="mt-6 text-sm text-gray-400 text-center">
+                  Upload an image/wireframe/screenshot for your component design
+                  to convert it into Sitecore JSS (Nextjs) component.
+                </p>
                 {imagePreview ? (
                   <div className="mb-4 flex-grow flex items-center justify-center">
                     <img
@@ -223,8 +227,7 @@ const Stream = () => {
                   <p className="mt-4 text-sm text-gray-400">{file.name}</p>
                 )}
                 <p className="mt-6 text-sm text-gray-400 text-center">
-                  Or paste an image here to convert it into Sitecore JSS
-                  (Nextjs) component.
+                  Or <b>drag / paste</b> an image here.
                 </p>
               </div>
 
