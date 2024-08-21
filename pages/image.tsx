@@ -222,7 +222,8 @@ const Stream = () => {
                 <p className="mt-2 text-sm text-gray-400">{file.name}</p>
               )}
               <p className="mt-4 text-sm text-gray-400">
-                Or paste an image here
+                Or paste an image here to convert it into Sitecore JSS (Nextjs)
+                component.
               </p>
               {/* <input
                 hidden
