@@ -147,7 +147,8 @@ export function generateImage2CodePrompt(
 
   userPrompt +=
     "\n use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
-
+  userPrompt +=
+    "\n use tailwind library for styling, make sure to produce a responsive design";
   if (customInstructions && customInstructions != "") {
     userPrompt +=
       "\n follow instructions delimited by triple backticks ```" +
