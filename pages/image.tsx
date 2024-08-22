@@ -57,7 +57,10 @@ const Stream = () => {
   const [messageHistory, setMessageHistory] = useState<string[]>([]);
   //const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
-
+  const [suggestions] = useState<string[]>([
+    "Split into two components (parent/child)",
+    "Use styled components instead of tailwind",
+  ]);
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
@@ -199,6 +202,10 @@ const Stream = () => {
     await savePreferences(session, preferences);
     closeModal();
   };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setAdditionalInstructions(suggestion);
+  };
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
       <div>
@@ -267,8 +274,20 @@ const Stream = () => {
                   Or <b>drag / paste</b> an image here.
                 </p>
               </div>
-              {/* Input for additional instructions */}
 
+              {/* Suggestion bubbles */}
+              <div className="flex flex-wrap gap-2 mb-2">
+                {suggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-1 rounded-full text-sm transition duration-300"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+              {/* Input for additional instructions */}
               <div className="relative mb-4">
                 <input
                   type="text"
