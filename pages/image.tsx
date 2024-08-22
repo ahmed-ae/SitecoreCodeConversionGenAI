@@ -55,6 +55,8 @@ const Stream = () => {
     useState<string>("");
   const [messageHistory, setMessageHistory] = useState<string[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [showAdditionalInstructions, setShowAdditionalInstructions] =
+    useState(false);
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
@@ -114,6 +116,7 @@ const Stream = () => {
         setAdditionalInstructions("");
       }
       closeModal();
+      setShowAdditionalInstructions(true);
     } catch (error) {
       console.error("Error converting image:", error);
       alert("Failed to convert image.");
@@ -137,6 +140,8 @@ const Stream = () => {
   const processFile = (file: File) => {
     setFile(file);
     setAdditionalInstructions("");
+    setMessageHistory([]);
+    setShowAdditionalInstructions(false);
     // Create image preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -264,42 +269,46 @@ const Stream = () => {
                 </p>
               </div>
               {/* Input for additional instructions */}
-              <div className="relative mb-4">
-                <input
-                  type="text"
-                  value={additionalInstructions}
-                  onChange={(e) => setAdditionalInstructions(e.target.value)}
-                  onKeyPress={handleInputKeyPress}
-                  name="additionalInstructions"
-                  className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-10"
-                  placeholder="How would you like to customize the code?"
-                />
-                <button
-                  onClick={handleConvertImage}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                >
-                  <Send size={20} />
-                </button>
-              </div>
+              {showAdditionalInstructions && (
+                <div className="relative mb-4">
+                  <input
+                    type="text"
+                    value={additionalInstructions}
+                    onChange={(e) => setAdditionalInstructions(e.target.value)}
+                    onKeyPress={handleInputKeyPress}
+                    name="additionalInstructions"
+                    className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                    placeholder="How would you like to customize the code?"
+                  />
+                  <button
+                    onClick={handleConvertImage}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                  >
+                    <Send size={20} />
+                  </button>
+                </div>
+              )}
               {/* Collapsible Message History */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-                  className="w-full bg-gray-700 text-gray-100 px-4 py-2 rounded-md flex items-center justify-between"
-                >
-                  <span>Previous Instructions</span>
-                  {isHistoryOpen ? (
-                    <ChevronUp size={20} />
-                  ) : (
-                    <ChevronDown size={20} />
+              {messageHistory.length > 0 && (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+                    className="w-full bg-gray-700 text-gray-100 px-4 py-2 rounded-md flex items-center justify-between"
+                  >
+                    <span>Previous Instructions</span>
+                    {isHistoryOpen ? (
+                      <ChevronUp size={20} />
+                    ) : (
+                      <ChevronDown size={20} />
+                    )}
+                  </button>
+                  {isHistoryOpen && (
+                    <div className="mt-2 bg-gray-700 rounded-md p-4 max-h-60 overflow-y-auto">
+                      <CollapsibleMessageHistory messages={messageHistory} />
+                    </div>
                   )}
-                </button>
-                {isHistoryOpen && (
-                  <div className="mt-2 bg-gray-700 rounded-md p-4 max-h-60 overflow-y-auto">
-                    <CollapsibleMessageHistory messages={messageHistory} />
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             <CodeEditor
