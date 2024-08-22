@@ -58,7 +58,7 @@ const Stream = () => {
   //const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
   const [suggestions] = useState<string[]>([
-    "Split into two components (parent/child)",
+    "Split into two components, parent container and child card",
     "Use styled components instead of tailwind",
   ]);
   const { completion, isLoading, stop, complete, error } = useCompletion({
@@ -281,7 +281,7 @@ const Stream = () => {
                   <button
                     key={index}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-1 rounded-full text-sm transition duration-300"
+                    className="border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded-full text-sm transition duration-300 flex items-center justify-center min-h-[40px]"
                   >
                     {suggestion}
                   </button>
