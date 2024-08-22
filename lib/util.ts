@@ -143,26 +143,80 @@ export function generateImage2CodePrompt(
   if (additionalInstructions && additionalInstructions != "") {
     userCustomInstructions += additionalInstructions + " \n ";
   }
-  userPrompt = `Convert the attached image into Sitecore JSS NextJs (TypeScript) Component, your output must only contain converted code, don't include any explanations in your responses`;
-  userPrompt += "\n Follow these guidelines'";
-  userPrompt +=
-    "\n extract the component props from the attached image and assign the right type , follow this as an example -> type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };";
-  userPrompt +=
-    "\n include this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'";
-  userPrompt +=
-    "\n for every component, define  ComponentProps as type ComponentProps = { rendering: ComponentRendering; params: ComponentParams; }";
-
-  userPrompt +=
-    "\n use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>";
+  userPrompt = `Convert the attached image into Sitecore JSS NextJs (TypeScript) Component.
+      `;
 
   if (userCustomInstructions && userCustomInstructions != "") {
     userPrompt +=
-      "\n follow instructions delimited by triple backticks ```" +
+      "\n follow custom instructions delimited by triple backticks, which are directly provided by the user uploading the image ```" +
       userCustomInstructions +
       " ```";
   }
-  systemMessage =
-    "Act like an Image to Code converter, where you convert images into Sitecore JSS components written in nextjs/typescript \n";
+  systemMessage = `Act like an Image to Code converter, where you convert images into Sitecore JSS components written in nextjs/typescript 
+      
+    Follow these guidelines:
+      - extract the component props from the attached image and assign the right type , follow this as an example -> type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };
+      - include this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'
+      - for every component, define  ComponentProps as type ComponentProps = { rendering: ComponentRendering; params: ComponentParams; }
+      - use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>
+      - your output must only contain converted code, don't include any explanations in your responses
+      - In case the attached image includes multiple cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
+      - If user does not specifically ask for specific styling library to use then use Make sure to use tailwind library for styling, and make sure to produce a responsive design
+
+      Here is an example of a Hero Banner component that you can use as a reference:
+
+      import {
+        Field,
+        Image,
+        ImageField, 
+        LinkField,
+        RichText,
+        Text,
+        withDatasourceCheck,
+      } from '@sitecore-jss/sitecore-jss-nextjs';
+      import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs';
+      import { Link } from '@sitecore-jss/sitecore-jss-react';
+      type ComponentProps = { rendering: ComponentRendering; params: ComponentParams };
+
+      type HeroProps = ComponentProps & {
+        id: string;
+        fields: {
+          SlideTitle: Field<string>;
+          SlideImage: ImageField;
+          SlideLink: LinkField;
+          SlideCategory: Field<string>;
+          SlidePublishDate: Field<string>;
+          SlideContent: Field<string>;
+        };
+      };
+      const HeroComponent = (props: HeroProps): JSX.Element => (
+        <>
+          <div>
+            <div>
+              <div>
+                <Image field={props.fields.SlideImage} />
+              </div>
+              <div>
+                <div>
+                  <div>
+                    <Text field={props.fields.SlideCategory} />
+                  </div>
+                  <h2>
+                    <Text field={props.fields.SlideTitle} />
+                  </h2>
+
+                  <div>
+                    <RichText field={props.fields.SlideContent} />
+                  </div>
+                  <Link field={props.fields.SlideLink} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+      export default withDatasourceCheck()<HeroProps>(HeroComponent);
+    `;
 
   const messages: Message[] = [
     { role: "user", content: userPrompt },

@@ -2,7 +2,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useChat, useCompletion } from "ai/react";
 import { parseCode } from "@/lib/util";
-import { Settings, X, Code, ChevronDown, Upload } from "lucide-react";
+import {
+  Settings,
+  X,
+  Code,
+  ChevronUp,
+  ChevronDown,
+  Upload,
+  Send,
+} from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import type { Session } from "next-auth";
 import Header from "@/Components/Header";
@@ -12,6 +20,7 @@ import CodeEditor from "@/Components/CodeEditor";
 import ControlPanel from "@/Components/ControlPanel";
 import LoginPrompt from "@/Components/LoginPrompt";
 import OutOfTriesModal from "@/Components/OutOfTriesModal";
+import CollapsibleMessageHistory from "@/Components/CollapsibleMessageHistory";
 import {
   savePreferences,
   updateUsageCount,
@@ -44,6 +53,8 @@ const Stream = () => {
   const [file, setFile] = useState<File | null>(null);
   const [additionalInstructions, setAdditionalInstructions] =
     useState<string>("");
+  const [messageHistory, setMessageHistory] = useState<string[]>([]);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
@@ -62,7 +73,7 @@ const Stream = () => {
 
   const closeModal = () => setShowModal(false);
 
-  const convertImage = async (e: React.FormEvent<Element>) => {
+  const handleConvertImage = async (e: React.FormEvent<Element>) => {
     e.preventDefault();
     if (!session && !disableLoginAndMaxTries) {
       setShowLoginPrompt(true);
@@ -77,10 +88,14 @@ const Stream = () => {
       return;
     }
     try {
+      const allInstructions = [...messageHistory, additionalInstructions].join(
+        " "
+      );
+
       const message = {
         model: preferences.model,
         customInstructions: preferences.customInstructions,
-        additionalInstructions: additionalInstructions,
+        additionalInstructions: allInstructions,
       };
 
       const base64Files = await convertToBase64(file);
@@ -92,12 +107,24 @@ const Stream = () => {
         preferences.CountUsage
       );
       setPreferences((prev) => ({ ...prev, CountUsage: newCount }));
+
+      // Add the message to history and clear the input
+      if (additionalInstructions.trim() !== "") {
+        setMessageHistory((prev) => [...prev, additionalInstructions]);
+        setAdditionalInstructions("");
+      }
       closeModal();
     } catch (error) {
       console.error("Error converting image:", error);
       alert("Failed to convert image.");
     }
   };
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleConvertImage(e);
+    }
+  };
+
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -170,12 +197,14 @@ const Stream = () => {
   };
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
-      <Header
-        CountUsage={preferences.CountUsage}
-        maxTries={preferences.maxTries}
-        session={session}
-        disableLoginAndMaxTries={disableLoginAndMaxTries}
-      />
+      <div>
+        <Header
+          CountUsage={preferences.CountUsage}
+          maxTries={preferences.maxTries}
+          session={session}
+          disableLoginAndMaxTries={disableLoginAndMaxTries}
+        />
+      </div>
       <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
         <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">
           <ControlPanel
@@ -183,13 +212,14 @@ const Stream = () => {
               setPreferences((prev) => ({ ...prev, language: lang }))
             }
             onSettingsClick={() => setShowModal(true)}
-            onConvertClick={convertImage}
+            onConvertClick={handleConvertImage}
             onStopClick={stop}
             isLoading={isLoading}
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col h-full">
+              {/* Image upload area */}
               <div
                 className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-lg p-6 mb-4"
                 onPaste={handlePaste}
@@ -233,14 +263,43 @@ const Stream = () => {
                   Or <b>drag / paste</b> an image here.
                 </p>
               </div>
-
-              <textarea
-                value={additionalInstructions}
-                onChange={(e) => setAdditionalInstructions(e.target.value)}
-                name="additionalInstructions"
-                className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="How would you like to customize the code?"
-              ></textarea>
+              {/* Input for additional instructions */}
+              <div className="relative mb-4">
+                <input
+                  type="text"
+                  value={additionalInstructions}
+                  onChange={(e) => setAdditionalInstructions(e.target.value)}
+                  onKeyPress={handleInputKeyPress}
+                  name="additionalInstructions"
+                  className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                  placeholder="How would you like to customize the code?"
+                />
+                <button
+                  onClick={handleConvertImage}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                >
+                  <Send size={20} />
+                </button>
+              </div>
+              {/* Collapsible Message History */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+                  className="w-full bg-gray-700 text-gray-100 px-4 py-2 rounded-md flex items-center justify-between"
+                >
+                  <span>Previous Instructions</span>
+                  {isHistoryOpen ? (
+                    <ChevronUp size={20} />
+                  ) : (
+                    <ChevronDown size={20} />
+                  )}
+                </button>
+                {isHistoryOpen && (
+                  <div className="mt-2 bg-gray-700 rounded-md p-4 max-h-60 overflow-y-auto">
+                    <CollapsibleMessageHistory messages={messageHistory} />
+                  </div>
+                )}
+              </div>
             </div>
 
             <CodeEditor
@@ -280,7 +339,7 @@ const Stream = () => {
         onClose={closeModal}
         onSaveAndConvert={(e: React.FormEvent<Element>) => {
           handleSavePreferences();
-          convertImage(e);
+          handleConvertImage(e);
           closeModal();
         }}
         onSave={() => {
