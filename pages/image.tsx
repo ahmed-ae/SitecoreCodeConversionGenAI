@@ -8,6 +8,7 @@ import {
   Code,
   ChevronUp,
   ChevronDown,
+  MessageCircle,
   Upload,
   Send,
 } from "lucide-react";
@@ -54,9 +55,9 @@ const Stream = () => {
   const [additionalInstructions, setAdditionalInstructions] =
     useState<string>("");
   const [messageHistory, setMessageHistory] = useState<string[]>([]);
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [showAdditionalInstructions, setShowAdditionalInstructions] =
-    useState(false);
+  //const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
+
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
@@ -91,9 +92,9 @@ const Stream = () => {
     }
     try {
       const allInstructions = [...messageHistory, additionalInstructions].join(
-        " "
+        " , "
       );
-
+      setAdditionalInstructions("");
       const message = {
         model: preferences.model,
         customInstructions: preferences.customInstructions,
@@ -110,13 +111,7 @@ const Stream = () => {
       );
       setPreferences((prev) => ({ ...prev, CountUsage: newCount }));
 
-      // Add the message to history and clear the input
-      if (additionalInstructions.trim() !== "") {
-        setMessageHistory((prev) => [...prev, additionalInstructions]);
-        setAdditionalInstructions("");
-      }
       closeModal();
-      setShowAdditionalInstructions(true);
     } catch (error) {
       console.error("Error converting image:", error);
       alert("Failed to convert image.");
@@ -124,6 +119,10 @@ const Stream = () => {
   };
   const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      // Add the message to history and clear the input
+      if (additionalInstructions.trim() !== "") {
+        setMessageHistory((prev) => [...prev, additionalInstructions]);
+      }
       handleConvertImage(e);
     }
   };
@@ -141,7 +140,7 @@ const Stream = () => {
     setFile(file);
     setAdditionalInstructions("");
     setMessageHistory([]);
-    setShowAdditionalInstructions(false);
+
     // Create image preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -269,44 +268,50 @@ const Stream = () => {
                 </p>
               </div>
               {/* Input for additional instructions */}
-              {showAdditionalInstructions && (
-                <div className="relative mb-4">
-                  <input
-                    type="text"
-                    value={additionalInstructions}
-                    onChange={(e) => setAdditionalInstructions(e.target.value)}
-                    onKeyPress={handleInputKeyPress}
-                    name="additionalInstructions"
-                    className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-10"
-                    placeholder="How would you like to customize the code?"
-                  />
+
+              <div className="relative mb-4">
+                <input
+                  type="text"
+                  value={additionalInstructions}
+                  onChange={(e) => setAdditionalInstructions(e.target.value)}
+                  onKeyPress={handleInputKeyPress}
+                  name="additionalInstructions"
+                  className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-20"
+                  placeholder="How would you like to customize the code?"
+                />
+                <button
+                  onClick={handleConvertImage}
+                  className="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                >
+                  <Send size={20} />
+                </button>
+                {messageHistory.length > 0 && (
                   <button
-                    onClick={handleConvertImage}
+                    onClick={() => setIsMessageHistoryOpen(true)}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
                   >
-                    <Send size={20} />
+                    <MessageCircle size={20} />
                   </button>
-                </div>
-              )}
-              {/* Collapsible Message History */}
-              {messageHistory.length > 0 && (
-                <div className="relative">
-                  <button
-                    onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-                    className="w-full bg-gray-700 text-gray-100 px-4 py-2 rounded-md flex items-center justify-between"
-                  >
-                    <span>Previous Instructions</span>
-                    {isHistoryOpen ? (
-                      <ChevronUp size={20} />
-                    ) : (
-                      <ChevronDown size={20} />
-                    )}
-                  </button>
-                  {isHistoryOpen && (
-                    <div className="mt-2 bg-gray-700 rounded-md p-4 max-h-60 overflow-y-auto">
-                      <CollapsibleMessageHistory messages={messageHistory} />
+                )}
+              </div>
+
+              {/* Popup Message History Overlay */}
+              {isMessageHistoryOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-bold">
+                        Previous Instructions
+                      </h2>
+                      <button
+                        onClick={() => setIsMessageHistoryOpen(false)}
+                        className="text-gray-400 hover:text-gray-200"
+                      >
+                        <X size={24} />
+                      </button>
                     </div>
-                  )}
+                    <CollapsibleMessageHistory messages={messageHistory} />
+                  </div>
                 </div>
               )}
             </div>
