@@ -55,7 +55,7 @@ const Stream = () => {
   const [additionalInstructions, setAdditionalInstructions] =
     useState<string>("");
   const [messageHistory, setMessageHistory] = useState<string[]>([]);
-  //const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
   const [suggestions] = useState<string[]>([
     "Split into two components, parent container and child card",
@@ -94,6 +94,10 @@ const Stream = () => {
       return;
     }
     try {
+      // Add the message to history and clear the input
+      if (additionalInstructions.trim() !== "") {
+        setMessageHistory((prev) => [...prev, additionalInstructions]);
+      }
       const allInstructions = [...messageHistory, additionalInstructions].join(
         " , "
       );
@@ -120,15 +124,7 @@ const Stream = () => {
       alert("Failed to convert image.");
     }
   };
-  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      // Add the message to history and clear the input
-      if (additionalInstructions.trim() !== "") {
-        setMessageHistory((prev) => [...prev, additionalInstructions]);
-      }
-      handleConvertImage(e);
-    }
-  };
+  
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
@@ -143,7 +139,7 @@ const Stream = () => {
     setFile(file);
     setAdditionalInstructions("");
     setMessageHistory([]);
-
+    
     // Create image preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -205,6 +201,11 @@ const Stream = () => {
 
   const handleSuggestionClick = (suggestion: string) => {
     setAdditionalInstructions(suggestion);
+  };
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleConvertImage(e);
+    }
   };
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
