@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import { useChat, useCompletion } from "ai/react";
-import { parseCode } from "@/lib/util";
+import { parseCode, parseCodeForPreview } from "@/lib/util";
 import {
   Settings,
   X,
@@ -28,6 +28,7 @@ import {
   getPreferences,
   UserPreferences,
 } from "../services/userPreferences.ts";
+import Preview from "@/Components/preview";
 
 const Stream = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -64,6 +65,12 @@ const Stream = () => {
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
+
+  const [viewMode, setViewMode] = useState<"code" | "preview">("code");
+
+  const toggleViewMode = () => {
+    setViewMode((prevMode) => (prevMode === "code" ? "preview" : "code"));
+  };
 
   useEffect(() => {
     const loadPreferences = async () => {
@@ -229,6 +236,31 @@ const Stream = () => {
             isLoading={isLoading}
           />
 
+          <div className="flex justify-end mb-4">
+            <div className="bg-gray-700 rounded-full p-1 inline-flex">
+              <button
+                onClick={() => setViewMode("preview")}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+                  viewMode === "preview"
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Preview
+              </button>
+              <button
+                onClick={() => setViewMode("code")}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+                  viewMode === "code"
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Code
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col h-full">
               {/* Image upload area */}
@@ -336,12 +368,16 @@ const Stream = () => {
               )}
             </div>
 
-            <CodeEditor
-              language="typescript"
-              value={parseCode(completion)}
-              readOnly={true}
-              onCopy={() => copyToClipboard(parseCode(completion))}
-            />
+            {viewMode === "code" ? (
+              <CodeEditor
+                language="typescript"
+                value={parseCode(completion)}
+                readOnly={true}
+                onCopy={() => copyToClipboard(parseCode(completion))}
+              />
+            ) : (
+              <Preview code={parseCodeForPreview(completion)} />
+            )}
           </div>
         </div>
 
