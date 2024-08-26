@@ -1,25 +1,28 @@
-import React from 'react';
-import * as Babel from '@babel/standalone';
+import React, { useState } from "react";
+import * as Babel from "@babel/standalone";
+import { Smartphone, Tablet, Monitor } from "lucide-react";
 
 interface CodePreviewProps {
   code: string;
 }
 
 const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
+  const [screenSize, setScreenSize] = useState<"full" | "tablet" | "mobile">(
+    "full"
+  );
+
   const renderPreview = () => {
     try {
-      console.log('Original code:', code);
+      console.log("Original code:", code);
 
       // Remove import statements and exports
-      let modifiedCode = code.replace(/^(import|export)\s+.*$/gm, '');
+      let modifiedCode = code.replace(/^(import|export)\s+.*$/gm, "");
 
       // Transpile the code
       const transpiledCode = Babel.transform(modifiedCode, {
-        filename: 'preview.tsx',
-        presets: ['typescript', 'react'],
-        plugins: [
-          ['transform-modules-commonjs', { strict: false }]
-        ]
+        filename: "preview.tsx",
+        presets: ["typescript", "react"],
+        plugins: [["transform-modules-commonjs", { strict: false }]],
       }).code;
 
       //console.log('Transpiled code:', transpiledCode);
@@ -75,7 +78,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
       const Component = ComponentFactory(React);
 
       if (!Component) {
-        throw new Error('No valid React component found in the generated code');
+        throw new Error("No valid React component found in the generated code");
       }
 
       //console.log('Component found:', Component.name);
@@ -83,17 +86,68 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
       // Render the component
       return <Component />;
     } catch (error) {
-      console.error('Error in code evaluation:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      return <div className="text-red-500">Error rendering preview: {errorMessage}</div>;
+      console.error("Error in code evaluation:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      return (
+        <div className="text-red-500">
+          Error rendering preview: {errorMessage}
+        </div>
+      );
+    }
+  };
+
+  const getPreviewStyle = () => {
+    switch (screenSize) {
+      case "tablet":
+        return {
+          width: "768px",
+          height: "1024px",
+          margin: "0 auto",
+          border: "1px solid #ccc",
+        };
+      case "mobile":
+        return {
+          width: "375px",
+          height: "667px",
+          margin: "0 auto",
+          border: "1px solid #ccc",
+        };
+      default:
+        return { width: "100%", height: "100%" };
     }
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-8 p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Preview</h2>
-      <div className="border rounded-lg p-4 bg-gray-50">
-        {renderPreview()}
+    <div className="w-full h-full flex flex-col">
+      <div className="flex justify-center space-x-4 mb-4">
+        <button
+          onClick={() => setScreenSize("full")}
+          className={`p-2 rounded ${
+            screenSize === "full" ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          <Monitor size={24} />
+        </button>
+        <button
+          onClick={() => setScreenSize("tablet")}
+          className={`p-2 rounded ${
+            screenSize === "tablet" ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          <Tablet size={24} />
+        </button>
+        <button
+          onClick={() => setScreenSize("mobile")}
+          className={`p-2 rounded ${
+            screenSize === "mobile" ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          <Smartphone size={24} />
+        </button>
+      </div>
+      <div className="flex-grow overflow-auto bg-white">
+        <div style={getPreviewStyle()}>{renderPreview()}</div>
       </div>
     </div>
   );

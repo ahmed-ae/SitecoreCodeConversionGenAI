@@ -11,6 +11,7 @@ import {
   MessageCircle,
   Upload,
   Send,
+  Maximize2,
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import type { Session } from "next-auth";
@@ -28,7 +29,7 @@ import {
   getPreferences,
   UserPreferences,
 } from "../services/userPreferences.ts";
-import Preview from "@/Components/preview";
+import CodePreview from "@/Components/preview";
 import imageCompression from "browser-image-compression";
 
 const Stream = () => {
@@ -67,12 +68,8 @@ const Stream = () => {
     api: "/api/image/Convert",
   });
 
-  const [viewMode, setViewMode] = useState<"code" | "preview">("code");
-  const [isPreviewFullScreen, setIsPreviewFullScreen] = useState(false);
-
-  const toggleViewMode = () => {
-    setViewMode((prevMode) => (prevMode === "code" ? "preview" : "code"));
-  };
+  const [showPreview, setShowPreview] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     const loadPreferences = async () => {
@@ -163,7 +160,6 @@ const Stream = () => {
     setFile(compressedFile);
     setAdditionalInstructions("");
     setMessageHistory([]);
-
     // Create image preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -245,30 +241,16 @@ const Stream = () => {
             isLoading={isLoading}
           />
 
-          <div className="flex justify-end mb-4">
-            <div className="bg-gray-700 rounded-full p-1 inline-flex">
+          {!isLoading && completion && (
+            <div className="flex justify-end mb-4">
               <button
-                onClick={() => setViewMode("preview")}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
-                  viewMode === "preview"
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-400 hover:text-white"
-                }`}
+                onClick={() => setShowPreview(true)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
               >
-                Preview
-              </button>
-              <button
-                onClick={() => setViewMode("code")}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
-                  viewMode === "code"
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                Code
+                Preview (Beta)
               </button>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col h-full">
@@ -377,16 +359,12 @@ const Stream = () => {
               )}
             </div>
 
-            {viewMode === "code" ? (
-              <CodeEditor
-                language="typescript"
-                value={parseCode(completion)}
-                readOnly={true}
-                onCopy={() => copyToClipboard(parseCode(completion))}
-              />
-            ) : (
-              <Preview code={parseCodeForPreview(completion)} />
-            )}
+            <CodeEditor
+              language="typescript"
+              value={parseCode(completion)}
+              readOnly={true}
+              onCopy={() => copyToClipboard(parseCode(completion))}
+            />
           </div>
         </div>
 
@@ -412,6 +390,41 @@ const Stream = () => {
         )}
         <Footer></Footer>
       </div>
+
+      {showPreview && (
+        <div
+          className={`fixed inset-0 bg-gray-900 bg-opacity-90 flex items-center justify-center z-50 ${
+            isFullscreen ? "" : "p-4"
+          }`}
+        >
+          <div
+            className={`bg-gray-800 rounded-lg ${
+              isFullscreen ? "w-full h-full" : "w-11/12 h-5/6"
+            } overflow-hidden flex flex-col`}
+          >
+            <div className="flex justify-between items-center p-4 border-b border-gray-700">
+              <h2 className="text-xl font-bold">Preview (Beta)</h2>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setIsFullscreen(!isFullscreen)}
+                  className="text-gray-400 hover:text-gray-200"
+                >
+                  <Maximize2 size={24} />
+                </button>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="text-gray-400 hover:text-gray-200"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
+            <div className="flex-grow overflow-hidden">
+              <CodePreview code={parseCodeForPreview(completion)} />
+            </div>
+          </div>
+        </div>
+      )}
 
       <SettingModal
         isOpen={showModal}
