@@ -67,6 +67,7 @@ const Stream = () => {
   });
 
   const [viewMode, setViewMode] = useState<"code" | "preview">("code");
+  const [isPreviewFullScreen, setIsPreviewFullScreen] = useState(false);
 
   const toggleViewMode = () => {
     setViewMode((prevMode) => (prevMode === "code" ? "preview" : "code"));
