@@ -29,6 +29,7 @@ import {
   UserPreferences,
 } from "../services/userPreferences.ts";
 import Preview from "@/Components/preview";
+import imageCompression from "browser-image-compression";
 
 const Stream = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -56,7 +57,7 @@ const Stream = () => {
   const [additionalInstructions, setAdditionalInstructions] =
     useState<string>("");
   const [messageHistory, setMessageHistory] = useState<string[]>([]);
-  
+
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
   const [suggestions] = useState<string[]>([
     "Split into two components, parent container and child card",
@@ -132,7 +133,6 @@ const Stream = () => {
       alert("Failed to convert image.");
     }
   };
-  
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
@@ -143,37 +143,53 @@ const Stream = () => {
     });
   };
 
-  const processFile = (file: File) => {
-    setFile(file);
+  const compressImage = async (file: File): Promise<File> => {
+    const options = {
+      maxSizeMB: 3,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    try {
+      return await imageCompression(file, options);
+    } catch (error) {
+      console.error("Error compressing image:", error);
+      return file; // Return original file if compression fails
+    }
+  };
+
+  const processFile = async (file: File) => {
+    const compressedFile = await compressImage(file);
+    setFile(compressedFile);
     setAdditionalInstructions("");
     setMessageHistory([]);
-    
+
     // Create image preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressedFile);
   };
 
-  const handlePaste = (e: React.ClipboardEvent) => {
+  const handlePaste = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData.items;
     for (let i = 0; i < items.length; i++) {
       if (items[i].type.indexOf("image") !== -1) {
         const file = items[i].getAsFile();
         if (file) {
-          processFile(file);
+          await processFile(file);
         }
         break;
       }
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processFile(e.dataTransfer.files[0]);
+      await processFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -182,17 +198,9 @@ const Stream = () => {
     e.stopPropagation();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setFile(file);
-      setAdditionalInstructions("");
-      // Create image preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      await processFile(e.target.files[0]);
     }
   };
 
