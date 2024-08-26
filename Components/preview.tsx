@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as Babel from "@babel/standalone";
 import { Smartphone, Tablet, Monitor } from "lucide-react";
 
@@ -10,11 +10,23 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
   const [screenSize, setScreenSize] = useState<"full" | "tablet" | "mobile">(
     "full"
   );
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Add Tailwind CSS to the preview
+    const link = document.createElement("link");
+    link.href =
+      "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css";
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, []);
 
   const renderPreview = () => {
     try {
-      console.log("Original code:", code);
-
       // Remove import statements and exports
       let modifiedCode = code.replace(/^(import|export)\s+.*$/gm, "");
 
@@ -25,8 +37,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
         plugins: [["transform-modules-commonjs", { strict: false }]],
       }).code;
 
-      //console.log('Transpiled code:', transpiledCode);
-
       // Wrap the transpiled code in a function that captures all defined components
       const wrappedCode = `
         (function(React) {
@@ -34,7 +44,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
           let lastDefinedComponent = null;
           
           function captureComponent(name, value) {
-            console.log('Capturing component:', name);
             components[name] = value;
             lastDefinedComponent = value;
             return value;
@@ -43,33 +52,13 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
           ${transpiledCode}
 
           // Capture components after they're defined
-          if (typeof EventRegistrationComponent !== 'undefined') {
-            captureComponent('EventRegistrationComponent', EventRegistrationComponent);
-          }
           if (typeof PreviewComponent !== 'undefined') {
             captureComponent('PreviewComponent', PreviewComponent);
           }
 
-          console.log('Captured components:', Object.keys(components));
-          console.log('Last defined component:', lastDefinedComponent ? lastDefinedComponent.name : 'None');
-
-          if (components.PreviewComponent) {
-            console.log('Returning PreviewComponent');
-            return components.PreviewComponent;
-          } else if (components.EventRegistrationComponent) {
-            console.log('Returning EventRegistrationComponent');
-            return components.EventRegistrationComponent;
-          } else if (lastDefinedComponent) {
-            console.log('Returning last defined component');
-            return lastDefinedComponent;
-          } else {
-            console.log('No components found');
-            return null;
-          }
+          return components.PreviewComponent || lastDefinedComponent;
         })
       `;
-
-      //console.log('Wrapped code:', wrappedCode);
 
       // Evaluate the code to get the component factory
       const ComponentFactory = eval(wrappedCode);
@@ -81,19 +70,16 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
         throw new Error("No valid React component found in the generated code");
       }
 
-      //console.log('Component found:', Component.name);
-
       // Render the component
-      return <Component />;
-    } catch (error) {
-      console.error("Error in code evaluation:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
       return (
-        <div className="text-red-500">
-          Error rendering preview: {errorMessage}
+        <div className="preview-container w-full h-full overflow-auto bg-white text-gray-800 p-4">
+          <Component />
         </div>
       );
+    } catch (error) {
+      console.error("Error in code evaluation:", error);
+      setError(error instanceof Error ? error.message : "Unknown error");
+      return null;
     }
   };
 
@@ -105,6 +91,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
           height: "1024px",
           margin: "0 auto",
           border: "1px solid #ccc",
+          overflow: "auto",
         };
       case "mobile":
         return {
@@ -112,19 +99,20 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
           height: "667px",
           margin: "0 auto",
           border: "1px solid #ccc",
+          overflow: "auto",
         };
       default:
-        return { width: "100%", height: "100%" };
+        return { width: "100%", height: "100%", overflow: "auto" };
     }
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="flex justify-center space-x-4 mb-4">
+    <div className="w-full h-full flex flex-col bg-gray-100">
+      <div className="flex justify-center space-x-4 mb-4 p-4 bg-gray-200">
         <button
           onClick={() => setScreenSize("full")}
           className={`p-2 rounded ${
-            screenSize === "full" ? "bg-blue-500 text-white" : "bg-gray-200"
+            screenSize === "full" ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
         >
           <Monitor size={24} />
@@ -132,7 +120,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
         <button
           onClick={() => setScreenSize("tablet")}
           className={`p-2 rounded ${
-            screenSize === "tablet" ? "bg-blue-500 text-white" : "bg-gray-200"
+            screenSize === "tablet" ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
         >
           <Tablet size={24} />
@@ -140,14 +128,20 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
         <button
           onClick={() => setScreenSize("mobile")}
           className={`p-2 rounded ${
-            screenSize === "mobile" ? "bg-blue-500 text-white" : "bg-gray-200"
+            screenSize === "mobile" ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
         >
           <Smartphone size={24} />
         </button>
       </div>
-      <div className="flex-grow overflow-auto bg-white">
-        <div style={getPreviewStyle()}>{renderPreview()}</div>
+      <div className="flex-grow overflow-hidden bg-white">
+        <div style={getPreviewStyle()}>
+          {error ? (
+            <div className="text-red-500 p-4">{error}</div>
+          ) : (
+            renderPreview()
+          )}
+        </div>
       </div>
     </div>
   );
