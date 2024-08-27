@@ -1,7 +1,7 @@
 // pages/api/placeholder/[width]/[height].js
-import { createCanvas } from "canvas";
+import { Canvas, loadImage } from "skia-canvas";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { width, height, bgcolor } = req.query;
 
   // Convert width and height to numbers
@@ -9,7 +9,7 @@ export default function handler(req, res) {
   const h = parseInt(height, 10);
 
   // Create a canvas with the specified dimensions
-  const canvas = createCanvas(w, h);
+  const canvas = new Canvas(w, h);
   const ctx = canvas.getContext("2d");
 
   // Parse and validate the background color
@@ -35,7 +35,8 @@ export default function handler(req, res) {
   res.setHeader("Content-Type", "image/png");
 
   // Send the image as the response
-  res.send(canvas.toBuffer());
+  const buffer = await canvas.toBuffer("png");
+  res.send(buffer);
 }
 
 // Helper function to parse and validate color
