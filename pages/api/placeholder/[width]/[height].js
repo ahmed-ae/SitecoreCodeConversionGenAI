@@ -1,5 +1,5 @@
 // pages/api/placeholder/[width]/[height].js
-import { Canvas, loadImage } from "skia-canvas";
+import Jimp from "jimp";
 
 export default async function handler(req, res) {
   const { width, height, bgcolor } = req.query;
@@ -8,34 +8,27 @@ export default async function handler(req, res) {
   const w = parseInt(width, 10);
   const h = parseInt(height, 10);
 
-  // Create a canvas with the specified dimensions
-  const canvas = new Canvas(w, h);
-  const ctx = canvas.getContext("2d");
-
   // Parse and validate the background color
-  const bgColor = parseColor(bgcolor) || "#CCCCCC";
+  const bgColor = parseColor(bgcolor) || 0xccccccff; // Default to light gray
 
-  // Create gradient
-  const gradient = ctx.createLinearGradient(0, 0, w, h);
-  gradient.addColorStop(0, bgColor);
-  gradient.addColorStop(1, lightenColor(bgColor, 20));
-
-  // Fill the background with gradient
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, w, h);
+  // Create a new image
+  const image = new Jimp(w, h, bgColor);
 
   // Add text
-  ctx.fillStyle = "#333333";
-  ctx.font = "bold 16px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(`${w}x${h}`, w / 2, h / 2);
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_BLACK);
+  const text = `${w}x${h}`;
+  const textWidth = Jimp.measureText(font, text);
+  const textHeight = Jimp.measureTextHeight(font, text, textWidth);
+
+  image.print(font, (w - textWidth) / 2, (h - textHeight) / 2, text);
+
+  // Convert the image to a buffer
+  const buffer = await image.getBufferAsync(Jimp.MIME_PNG);
 
   // Set the content type to PNG
   res.setHeader("Content-Type", "image/png");
 
   // Send the image as the response
-  const buffer = await canvas.toBuffer("png");
   res.send(buffer);
 }
 
@@ -53,17 +46,8 @@ function parseColor(color) {
 
   // Handle 6-digit hex
   if (color.length === 6 && /^[0-9A-Fa-f]{6}$/.test(color)) {
-    return "#" + color;
+    return parseInt(color + "FF", 16); // Add alpha channel
   }
 
   return null;
-}
-
-// Helper function to lighten a color
-function lightenColor(color, amount) {
-  const num = parseInt(color.replace("#", ""), 16);
-  const r = Math.min(255, ((num >> 16) & 0xff) + amount);
-  const g = Math.min(255, ((num >> 8) & 0xff) + amount);
-  const b = Math.min(255, (num & 0xff) + amount);
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
 }
