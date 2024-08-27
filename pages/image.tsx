@@ -12,6 +12,7 @@ import {
   Upload,
   Send,
   Maximize2,
+  LayoutTemplate, // Add this line
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import type { Session } from "next-auth";
@@ -241,17 +242,6 @@ const Stream = () => {
             isLoading={isLoading}
           />
 
-          {!isLoading && completion && (
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => setShowPreview(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-              >
-                Preview (Beta)
-              </button>
-            </div>
-          )}
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col h-full">
               {/* Image upload area */}
@@ -359,12 +349,25 @@ const Stream = () => {
               )}
             </div>
 
-            <CodeEditor
-              language="typescript"
-              value={parseCode(completion)}
-              readOnly={true}
-              onCopy={() => copyToClipboard(parseCode(completion))}
-            />
+            <div className="relative">
+              {!isLoading && completion && (
+                <div className="absolute top-0 left-0 z-10 p-2">
+                  <button
+                    onClick={() => setShowPreview(true)}
+                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1"
+                  >
+                    <LayoutTemplate size={14} />
+                    <span>Preview (Beta)</span>
+                  </button>
+                </div>
+              )}
+              <CodeEditor
+                language="typescript"
+                value={parseCode(completion)}
+                readOnly={true}
+                onCopy={() => copyToClipboard(parseCode(completion))}
+              />
+            </div>
           </div>
         </div>
 

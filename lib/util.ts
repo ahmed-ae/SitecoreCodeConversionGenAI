@@ -172,8 +172,15 @@ export function generateImage2CodePrompt(
       - extract the component props from the attached image and assign the right property type for each prop
       - If user does not specifically ask for specific styling library to use then use Make sure to use tailwind library for styling
       - make sure to produce a responsive design, that can fit full screen, tablet and mobile sizes
+      - Analyze the image carefully, identifying all visual elements, layout structure, and design patterns.
+      - Generate semantic HTML5 markup that reflects the structure and content hierarchy of the design.
+      - Implement a mobile-first responsive design approach using CSS: Start with styles for mobile devices Ensure the design is fluid and adjusts smoothly between breakpoints
+      - Utilize flexbox and/or CSS grid for layout to ensure responsiveness and maintain design integrity across screen sizes.
+      - Use relative units (em, rem, %, vh, vw) instead of fixed pixel values where appropriate to support scalability.
+      - Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
+      - Optimize the code for performance, keeping it clean, well-commented, and following best practices for web accessibility (WCAG guidelines).
       - Make the component self-contained for easy preview
-      - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if the mock data contains images, replace the image url with the self hosted canvas image api /api/placeholder/[width]/height
+      - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if the mock data contains images, replace the image url with the self hosted canvas image api /api/placeholder/[width]/height, you can pass bgcolor query string to the canvas api to change the background color of the image
       - preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
 
     For the second component, follow these rules:
