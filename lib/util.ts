@@ -173,10 +173,10 @@ export function generateImage2CodePrompt(
       - If user does not specifically ask for specific styling library to use then use Make sure to use tailwind library for styling
       - make sure to produce a responsive design, that can fit full screen, tablet and mobile sizes
       - Analyze the image carefully, identifying all visual elements, layout structure, and design patterns.
+      - Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
       - Generate semantic HTML5 markup that reflects the structure and content hierarchy of the design.
       - Implement a mobile-first responsive design approach using CSS: Start with styles for mobile devices Ensure the design is fluid and adjusts smoothly between breakpoints
       - Utilize flexbox and/or CSS grid for layout to ensure responsiveness and maintain design integrity across screen sizes.
-      - Use relative units (em, rem, %, vh, vw) instead of fixed pixel values where appropriate to support scalability.
       - Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
       - Optimize the code for performance, keeping it clean, well-commented, and following best practices for web accessibility (WCAG guidelines).
       - Make the component self-contained for easy preview
