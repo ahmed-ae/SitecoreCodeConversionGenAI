@@ -15,12 +15,23 @@ export default async function handler(req, res) {
   const image = new Jimp(w, h, bgColor);
 
   // Add text
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_BLACK);
   const text = `${w}x${h}`;
-  const textWidth = Jimp.measureText(font, text);
-  const textHeight = Jimp.measureTextHeight(font, text, textWidth);
+  const textColor = 0x000000ff; // Black color
 
-  image.print(font, (w - textWidth) / 2, (h - textHeight) / 2, text);
+  // Calculate text position (center of the image)
+  const textWidth = text.length * 8; // Approximate width (8 pixels per character)
+  const textHeight = 16; // Approximate height
+  const textX = (w - textWidth) / 2;
+  const textY = (h - textHeight) / 2;
+
+  // Draw text pixel by pixel
+  for (let y = 0; y < textHeight; y++) {
+    for (let x = 0; x < textWidth; x++) {
+      if (shouldDrawPixel(x, y, text)) {
+        image.setPixelColor(textColor, textX + x, textY + y);
+      }
+    }
+  }
 
   // Convert the image to a buffer
   const buffer = await image.getBufferAsync(Jimp.MIME_PNG);
@@ -50,4 +61,31 @@ function parseColor(color) {
   }
 
   return null;
+}
+
+// Helper function to determine if a pixel should be drawn for the text
+function shouldDrawPixel(x, y, text) {
+  const charWidth = 8;
+  const charIndex = Math.floor(x / charWidth);
+  const char = text[charIndex];
+  const xInChar = x % charWidth;
+
+  // Simple pixel representation of characters
+  const charPatterns = {
+    0: [0x3c, 0x66, 0x66, 0x66, 0x66, 0x66, 0x3c],
+    1: [0x18, 0x38, 0x18, 0x18, 0x18, 0x18, 0x7e],
+    2: [0x3c, 0x66, 0x06, 0x0c, 0x18, 0x30, 0x7e],
+    3: [0x3c, 0x66, 0x06, 0x1c, 0x06, 0x66, 0x3c],
+    4: [0x0c, 0x1c, 0x2c, 0x4c, 0x7e, 0x0c, 0x0c],
+    5: [0x7e, 0x60, 0x7c, 0x06, 0x06, 0x66, 0x3c],
+    6: [0x3c, 0x66, 0x60, 0x7c, 0x66, 0x66, 0x3c],
+    7: [0x7e, 0x06, 0x0c, 0x18, 0x30, 0x30, 0x30],
+    8: [0x3c, 0x66, 0x66, 0x3c, 0x66, 0x66, 0x3c],
+    9: [0x3c, 0x66, 0x66, 0x3e, 0x06, 0x66, 0x3c],
+    x: [0x00, 0x66, 0x3c, 0x18, 0x3c, 0x66, 0x00],
+  };
+
+  if (!charPatterns[char]) return false;
+
+  return (charPatterns[char][y] & (1 << (7 - xInChar))) !== 0;
 }
