@@ -62,7 +62,6 @@ const Stream = () => {
 
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
   const [suggestions] = useState<string[]>([
-    "Split into two components, parent container and child card",
     "Use styled components instead of tailwind",
   ]);
   const { completion, isLoading, stop, complete, error } = useCompletion({
@@ -362,10 +361,10 @@ const Stream = () => {
 
             <div className="relative">
               {!isLoading && completion && (
-                <div className="absolute top-0 left-0 right-0 z-10 flex justify-center">
+                <div className="absolute top-0 left-0 z-10 p-2">
                   <button
                     onClick={() => setShowPreview(true)}
-                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-2"
+                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1"
                   >
                     <LayoutTemplate size={14} />
                     <span>Preview (Beta)</span>

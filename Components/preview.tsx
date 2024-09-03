@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as Babel from "@babel/standalone";
 import { Smartphone, Tablet, Monitor } from "lucide-react";
+import styled, { StyleSheetManager } from "styled-components";
 
 interface CodePreviewProps {
   code: string;
@@ -39,7 +40,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
 
       // Wrap the transpiled code in a function that captures all defined components
       const wrappedCode = `
-        (function(React) {
+        (function(React, styled) {
           const { useState, useEffect } = React;
           const components = {};
           let lastDefinedComponent = null;
@@ -65,7 +66,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
       const ComponentFactory = eval(wrappedCode);
 
       // Call the factory with React to get the component
-      const Component = ComponentFactory(React);
+      const Component = ComponentFactory(React, styled);
 
       if (!Component) {
         throw new Error("No valid React component found in the generated code");
@@ -73,9 +74,11 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
 
       // Render the component
       return (
-        <div className="preview-container w-full h-full overflow-auto bg-white text-gray-800 p-4">
-          <Component />
-        </div>
+        <StyleSheetManager>
+          <div className="preview-container w-full h-full overflow-auto bg-white text-gray-800 p-4">
+            <Component />
+          </div>
+        </StyleSheetManager>
       );
     } catch (error) {
       console.error("Error in code evaluation:", error);

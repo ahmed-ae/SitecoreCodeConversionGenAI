@@ -40,7 +40,8 @@
     "react-bootstrap": "^2.10.4",
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18",
-    "react-monaco-editor": "^0.55.0"
+    "react-monaco-editor": "^0.55.0",
+    "styled-components": "^6.1.13"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
