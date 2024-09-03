@@ -42,6 +42,12 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
       // Parse CSS Module
       const cssModuleObject = cssModule ? parseCSSModule(cssModule) : {};
 
+      // Create a style element for the CSS
+      const styleElement = document.createElement("style");
+      styleElement.textContent = Object.entries(cssModuleObject)
+        .map(([className, styles]) => `.${className} { ${styles} }`)
+        .join("\n");
+
       // Wrap the transpiled code in a function that captures all defined components
       const wrappedCode = `
         (function(React, styled, cssModule) {
@@ -55,8 +61,12 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
             return value;
           }
 
-    // Inject the CSS module as a styles object
-          const styles = ${JSON.stringify(cssModuleObject)};
+          // Create a proxy for the styles object
+          const styles = new Proxy({}, {
+            get: function(target, name) {
+              return name; // Return the class name as is
+            }
+          });
           ${transpiledCode}
 
           // Capture components after they're defined
@@ -81,9 +91,12 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
       // Render the component
       return (
         <StyleSheetManager>
-          <div className="preview-container w-full h-full overflow-auto bg-white text-gray-800 p-4">
-            <Component />
-          </div>
+          <>
+            <style>{styleElement.textContent}</style>
+            <div className="preview-container w-full h-full overflow-auto bg-white text-gray-800 p-4">
+              <Component />
+            </div>
+          </>
         </StyleSheetManager>
       );
     } catch (error) {

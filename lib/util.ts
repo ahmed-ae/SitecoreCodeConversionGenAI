@@ -174,6 +174,7 @@ export function generateImage2CodePrompt(
     For the first component, follow these rules for design,styling and structure:
       - If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling. If any styles can't be achieved with Tailwind, include custom CSS as needed, otherwise use the library that the user asked for
       - Implement a mobile-first responsive design approach using CSS: Start with styles for mobile devices Ensure the design is fluid and adjusts smoothly between breakpoints
+      - If user asks for styled components, include the code for styled components library in first component
       - Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
       - Ensure the code implementation matches the visual design as closely as possible.
       - Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
@@ -196,7 +197,7 @@ export function generateImage2CodePrompt(
 
       Most importantly,  your output must only contain converted code with optional CSS module if the user ask for it, don't include any explanations in your responses
       So your output MUST be 
-      (Optional CSS module) prefixed with a comment /*start css module*/ and ended with /*end css module*/
+      (Optional CSS module - only if user asked for CSS modules, NOT for styled components) prefixed with a comment /*start css module*/ and ended with /*end css module*/
       (First Component) prefixed with a comment /*start first component*/ and ended with /*end first component*/
       (Second Component) prefixed with a comment /*start second component*/ and ended with /*end second component*/
 

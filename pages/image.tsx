@@ -117,6 +117,7 @@ const Stream = () => {
       return;
     }
     try {
+      setActiveTab("Component.tsx");
       // Add the message to history and clear the input
       if (additionalInstructions.trim() !== "") {
         setMessageHistory((prev) => [...prev, additionalInstructions]);
