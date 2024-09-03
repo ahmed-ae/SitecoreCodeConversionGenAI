@@ -170,17 +170,16 @@ export function generateImage2CodePrompt(
       - it should be agnostic of @sitecore-jss/sitecore-jss-nextjs' library, and should assume any prop in field property can any JSX element, this component should render the entire html
       - In case the attached image includes multiple cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
       - extract the component props from the attached image and assign the right property type for each prop
-      - If user does not specifically ask for specific styling library to use then use Make sure to use tailwind library for styling with custom CSS if needed, otherwise use the library that the user asked for
+      - If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling. If any styles can't be achieved with Tailwind, include custom CSS as needed, otherwise use the library that the user asked for
       - make sure to produce a responsive design, that can fit full screen, tablet and mobile sizes
-      - Analyze the image carefully, identifying all visual elements, layout structure, and design patterns.
+      - Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
+      - Ensure the code implementation matches the visual design as closely as possible.
       - Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
       - Generate semantic HTML5 markup that reflects the structure and content hierarchy of the design.
       - Implement a mobile-first responsive design approach using CSS: Start with styles for mobile devices Ensure the design is fluid and adjusts smoothly between breakpoints
-      - Utilize flexbox and/or CSS grid for layout to ensure responsiveness and maintain design integrity across screen sizes.
       - Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
       - Optimize the code for performance, keeping it clean, well-commented, and following best practices for web accessibility (WCAG guidelines).
       - Make sure fonts and background colors are matching the design in the attached image
-      - make sure fonts and background colors don't use same color
       - Make the component self-contained for easy preview
       - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then create SVG elements, otherwise replace the image url with the self hosted canvas image api /api/placeholder/[width]/height, you can pass bgcolor query string to the canvas api to change the background color of the image, use only pastel colors for background color
       - If  the attached image is a carosuel, add few slides with lorem Epsom mock data and make sure to match the style and design of the carousel arrows and rotate dots
