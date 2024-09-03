@@ -49,12 +49,16 @@ const Header: React.FC<HeaderProps> = ({
         <h1 className="font-mono text-base px-4 sm:text-lg font-bold mr-2 sm:mr-3 relative">
           <span className="text-green-500">&gt;_</span>
           <span className="relative">
-            <span className="relative z-10">Sitecore JSS v0</span>
+            <span className="relative z-10">Sitecore JSS V0</span>
             <span className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-              <span className="text-red-500 opacity-75 transform translate-x-px -translate-y-px">Sitecore_JSS_v0.1</span>
+              <span className="text-red-500 opacity-75 transform translate-x-px -translate-y-px">
+                Sitecore JSS V0
+              </span>
             </span>
             <span className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-              <span className="text-blue-500 opacity-75 transform -translate-x-px translate-y-px">Sitecore_JSS_v0.1</span>
+              <span className="text-blue-500 opacity-75 transform -translate-x-px translate-y-px">
+                Sitecore JSS V0
+              </span>
             </span>
           </span>
           <span className="animate-pulse">|</span>

@@ -180,7 +180,7 @@ export function generateImage2CodePrompt(
       - Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
       - Optimize the code for performance, keeping it clean, well-commented, and following best practices for web accessibility (WCAG guidelines).
       - Make the component self-contained for easy preview
-      - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if the mock data contains images, replace the image url with the self hosted canvas image api /api/placeholder/[width]/height, you can pass bgcolor query string to the canvas api to change the background color of the image
+      - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if the mock data contains images, replace the image url with the self hosted canvas image api /api/placeholder/[width]/height, you can pass bgcolor query string to the canvas api to change the background color of the image, use only pastel colors for background color
       - preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
 
     For the second component, follow these rules:

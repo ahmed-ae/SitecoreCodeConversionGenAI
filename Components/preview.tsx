@@ -40,6 +40,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
       // Wrap the transpiled code in a function that captures all defined components
       const wrappedCode = `
         (function(React) {
+          const { useState, useEffect } = React;
           const components = {};
           let lastDefinedComponent = null;
           

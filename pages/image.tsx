@@ -220,6 +220,14 @@ const Stream = () => {
       handleConvertImage(e);
     }
   };
+
+  // Add this new function to handle message deletion
+  const handleDeleteMessage = (index: number) => {
+    setMessageHistory((prevHistory) =>
+      prevHistory.filter((_, i) => i !== index)
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
       <div>
@@ -343,7 +351,10 @@ const Stream = () => {
                         <X size={24} />
                       </button>
                     </div>
-                    <CollapsibleMessageHistory messages={messageHistory} />
+                    <CollapsibleMessageHistory
+                      messages={messageHistory}
+                      onDeleteMessage={handleDeleteMessage}
+                    />
                   </div>
                 </div>
               )}
@@ -351,10 +362,10 @@ const Stream = () => {
 
             <div className="relative">
               {!isLoading && completion && (
-                <div className="absolute top-0 left-0 z-10 p-2">
+                <div className="absolute top-0 left-0 right-0 z-10 flex justify-center">
                   <button
                     onClick={() => setShowPreview(true)}
-                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1"
+                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-2"
                   >
                     <LayoutTemplate size={14} />
                     <span>Preview (Beta)</span>
@@ -413,7 +424,7 @@ const Stream = () => {
                   className="text-gray-400 hover:text-gray-200"
                 >
                   <Maximize2 size={24} />
-                </button>
+                </button>{" "}
                 <button
                   onClick={() => setShowPreview(false)}
                   className="text-gray-400 hover:text-gray-200"
