@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import { useChat, useCompletion } from "ai/react";
-import { parseCode, parseCodeForPreview } from "@/lib/util";
+import { parseCode, parseCodeForPreview, extractCodeSection } from "@/lib/util";
 import {
   Settings,
   X,
@@ -12,7 +12,7 @@ import {
   Upload,
   Send,
   Maximize2,
-  LayoutTemplate, // Add this line
+  LayoutTemplate,
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import type { Session } from "next-auth";
@@ -71,6 +71,11 @@ const Stream = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const [cssModule, setCssModule] = useState("");
+  const [firstComponent, setFirstComponent] = useState("");
+  const [secondComponent, setSecondComponent] = useState("");
+  const [activeTab, setActiveTab] = useState<string>("Component.tsx");
+
   useEffect(() => {
     const loadPreferences = async () => {
       const loadedPreferences = await getPreferences(session);
@@ -82,6 +87,18 @@ const Stream = () => {
 
     loadPreferences();
   }, [session]);
+
+  useEffect(() => {
+    if (completion) {
+      setCssModule(extractCodeSection(completion, "css module").content);
+      setFirstComponent(
+        extractCodeSection(completion, "first component").content
+      );
+      setSecondComponent(
+        extractCodeSection(completion, "second component").content
+      );
+    }
+  }, [completion]);
 
   const closeModal = () => setShowModal(false);
 
@@ -361,22 +378,80 @@ const Stream = () => {
 
             <div className="relative">
               {!isLoading && completion && (
-                <div className="absolute top-0 left-0 z-10 p-2">
+                <div className="absolute top-0 right-0 z-10 p-2">
                   <button
                     onClick={() => setShowPreview(true)}
                     className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1"
                   >
                     <LayoutTemplate size={14} />
-                    <span>Preview (Beta)</span>
+                    <span>Preview</span>
                   </button>
                 </div>
               )}
-              <CodeEditor
-                language="typescript"
-                value={parseCode(completion)}
-                readOnly={true}
-                onCopy={() => copyToClipboard(parseCode(completion))}
-              />
+              <div className="mb-4">
+                <div className="flex border-b border-gray-700">
+                  {cssModule && (
+                    <button
+                      className={`px-4 py-2 font-medium text-sm ${
+                        activeTab === "component.module.css"
+                          ? "bg-gray-700 text-white"
+                          : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+                      }`}
+                      onClick={() => setActiveTab("component.module.css")}
+                    >
+                      component.module.css
+                    </button>
+                  )}
+                  {
+                    <button
+                      className={`px-4 py-2 font-medium text-sm ${
+                        activeTab === "Component.tsx"
+                          ? "bg-gray-700 text-white"
+                          : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+                      }`}
+                      onClick={() => setActiveTab("Component.tsx")}
+                    >
+                      Component.tsx
+                    </button>
+                  }
+                  {secondComponent && (
+                    <button
+                      className={`px-4 py-2 font-medium text-sm ${
+                        activeTab === "SitecoreComponent.tsx"
+                          ? "bg-gray-700 text-white"
+                          : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+                      }`}
+                      onClick={() => setActiveTab("SitecoreComponent.tsx")}
+                    >
+                      SitecoreComponent.tsx
+                    </button>
+                  )}
+                </div>
+              </div>
+              {activeTab === "component.module.css" && cssModule && (
+                <CodeEditor
+                  language="css"
+                  value={cssModule}
+                  readOnly={true}
+                  onCopy={() => copyToClipboard(cssModule)}
+                />
+              )}
+              {activeTab === "Component.tsx" && (
+                <CodeEditor
+                  language="typescript"
+                  value={firstComponent}
+                  readOnly={true}
+                  onCopy={() => copyToClipboard(firstComponent)}
+                />
+              )}
+              {activeTab === "SitecoreComponent.tsx" && secondComponent && (
+                <CodeEditor
+                  language="typescript"
+                  value={secondComponent}
+                  readOnly={true}
+                  onCopy={() => copyToClipboard(secondComponent)}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -433,7 +508,7 @@ const Stream = () => {
               </div>
             </div>
             <div className="flex-grow overflow-hidden">
-              <CodePreview code={parseCodeForPreview(completion)} />
+              <CodePreview code={firstComponent} cssModule={cssModule} />
             </div>
           </div>
         </div>

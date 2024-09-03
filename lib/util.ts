@@ -170,22 +170,23 @@ export function generateImage2CodePrompt(
       - it should be agnostic of @sitecore-jss/sitecore-jss-nextjs' library, and should assume any prop in field property can any JSX element, this component should render the entire html
       - In case the attached image includes multiple cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
       - extract the component props from the attached image and assign the right property type for each prop
+
+    For the first component, follow these rules for design,styling and structure:
       - If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling. If any styles can't be achieved with Tailwind, include custom CSS as needed, otherwise use the library that the user asked for
-      - make sure to produce a responsive design, that can fit full screen, tablet and mobile sizes
+      - Implement a mobile-first responsive design approach using CSS: Start with styles for mobile devices Ensure the design is fluid and adjusts smoothly between breakpoints
       - Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
       - Ensure the code implementation matches the visual design as closely as possible.
       - Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
       - Generate semantic HTML5 markup that reflects the structure and content hierarchy of the design.
-      - Implement a mobile-first responsive design approach using CSS: Start with styles for mobile devices Ensure the design is fluid and adjusts smoothly between breakpoints
       - Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
       - Optimize the code for performance, keeping it clean, well-commented, and following best practices for web accessibility (WCAG guidelines).
-      - Make sure fonts and background colors are matching the design in the attached image
+      - Make sure fonts and background colors are exactly matching what is in the attached image
       - Make the component self-contained for easy preview
       - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then create SVG elements, otherwise replace the image url with the self hosted canvas image api /api/placeholder/[width]/height, you can pass bgcolor query string to the canvas api to change the background color of the image, use only pastel colors for background color
       - If  the attached image is a carosuel, add few slides with lorem Epsom mock data and make sure to match the style and design of the carousel arrows and rotate dots
       - preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
 
-    For the second component, follow these rules:
+    Now For the second component, follow these rules:
       - Second component which is a wapper around the first component, this component is @sitecore-jss/sitecore-jss-nextjs' aware, and receive all needed preps for @sitecore-jss/sitecore-jss-nextjs'.
       - follow this as an example -> type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };
       - include this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'
@@ -193,7 +194,11 @@ export function generateImage2CodePrompt(
       - use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>
      
 
-      Most importantly,  your output must only contain converted code, don't include any explanations in your responses, separate the first component and the second component with exactly this separator ///END///
+      Most importantly,  your output must only contain converted code with optional CSS module if the user ask for it, don't include any explanations in your responses
+      So your output MUST be 
+      (Optional CSS module) prefixed with a comment /*start css module*/ and ended with /*end css module*/
+      (First Component) prefixed with a comment /*start first component*/ and ended with /*end first component*/
+      (Second Component) prefixed with a comment /*start second component*/ and ended with /*end second component*/
 
       Here is an example of a Hero Banner component that you can use as a reference:
       //First component : FED Component (Sitecore Agnostic)
@@ -287,4 +292,27 @@ export function generateImage2CodePrompt(
   ];
 
   return messages;
+}
+
+export function extractCodeSection(
+  completion: string,
+  section: string
+): { content: string; complete: boolean } {
+  const startMarker = `/*start ${section}*/`;
+  const endMarker = `/*end ${section}*/`;
+  let content = completion;
+  const startIndex = content.indexOf(startMarker);
+
+  if (startIndex === -1) {
+    return { content: "", complete: false };
+  }
+
+  content = content.slice(startIndex + startMarker.length);
+  const endIndex = content.indexOf(endMarker);
+
+  if (endIndex === -1) {
+    return { content: content.trim(), complete: false };
+  }
+
+  return { content: content.slice(0, endIndex).trim(), complete: true };
 }

@@ -5,9 +5,10 @@ import styled, { StyleSheetManager } from "styled-components";
 
 interface CodePreviewProps {
   code: string;
+  cssModule?: string;
 }
 
-const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
+const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
   const [screenSize, setScreenSize] = useState<"full" | "tablet" | "mobile">(
     "full"
   );
@@ -38,9 +39,12 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
         plugins: [["transform-modules-commonjs", { strict: false }]],
       }).code;
 
+      // Parse CSS Module
+      const cssModuleObject = cssModule ? parseCSSModule(cssModule) : {};
+
       // Wrap the transpiled code in a function that captures all defined components
       const wrappedCode = `
-        (function(React, styled) {
+        (function(React, styled, cssModule) {
           const { useState, useEffect } = React;
           const components = {};
           let lastDefinedComponent = null;
@@ -51,6 +55,8 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
             return value;
           }
 
+    // Inject the CSS module as a styles object
+          const styles = ${JSON.stringify(cssModuleObject)};
           ${transpiledCode}
 
           // Capture components after they're defined
@@ -65,8 +71,8 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
       // Evaluate the code to get the component factory
       const ComponentFactory = eval(wrappedCode);
 
-      // Call the factory with React to get the component
-      const Component = ComponentFactory(React, styled);
+      // Call the factory with React, styled, and cssModule to get the component
+      const Component = ComponentFactory(React, styled, cssModuleObject);
 
       if (!Component) {
         throw new Error("No valid React component found in the generated code");
@@ -85,6 +91,20 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code }) => {
       setError(error instanceof Error ? error.message : "Unknown error");
       return null;
     }
+  };
+
+  const parseCSSModule = (cssContent: string): Record<string, string> => {
+    const cssModuleObject: Record<string, string> = {};
+    const regex = /\.([^\s{]+)\s*{([^}]*)}/g;
+    let match;
+
+    while ((match = regex.exec(cssContent)) !== null) {
+      const className = match[1];
+      const styles = match[2].trim();
+      cssModuleObject[className] = styles;
+    }
+
+    return cssModuleObject;
   };
 
   const getPreviewStyle = () => {
