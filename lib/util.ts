@@ -174,8 +174,11 @@ export function generateImage2CodePrompt(
     For the first component, follow these rules for design,styling and structure:
       - If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling. If any styles can't be achieved with Tailwind, include custom CSS as needed, otherwise use the library that the user asked for
       - regardless of what design/styling library the user ask for, make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes
+      - if user asks for CSS modules, Please create a responsive CSS module that uses a grid layout for larger screens and stacks cards vertically on smaller screens. Include media queries for different screen sizes.
       - If user asks for styled components, include the code for styled components library in first component
       - Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
+      - Implement a clear hierarchy for text elements, with distinct styles for the main title, card titles, and links
+      - Use a cohesive color scheme that matches the branding of the attached image, including specific colors for backgrounds, text, and interactive elements like links and tags.
       - Ensure the code implementation matches the visual design as closely as possible.
       - Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
       - Generate semantic HTML5 markup that reflects the structure and content hierarchy of the design.
@@ -185,6 +188,7 @@ export function generateImage2CodePrompt(
       - Make the component self-contained for easy preview
       - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then create SVG elements, otherwise replace the image url with the self hosted canvas image api /api/placeholder/[width]/height, you can pass bgcolor query string to the canvas api to change the background color of the image, use only pastel colors for background color
       - If  the attached image is a carosuel, add few slides with lorem Epsom mock data and make sure to match the style and design of the carousel arrows and rotate dots
+      - if the attached image contains Card images, Ensure that card images are responsive and maintain their aspect ratio while fitting within the cards, Design the cards to have consistent sizing and spacing, with the content (tag, title, link) properly aligned within each card..
       - preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
 
     Now For the second component, follow these rules:
