@@ -63,6 +63,7 @@ const Stream = () => {
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
   const [suggestions] = useState<string[]>([
     "Use styled components instead of tailwind",
+    "Use CSS modules instead of tailwind",
   ]);
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
