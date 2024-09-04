@@ -126,7 +126,10 @@ const Stream = () => {
       setShowLoginPrompt(true);
       return;
     }
-    if (!disableLoginAndMaxTries && maxTries - CountUsage <= 0) {
+    if (
+      !disableLoginAndMaxTries &&
+      preferences.maxTries - preferences.CountUsage <= 0
+    ) {
       setShowOutOfTriesModal(true);
       return;
     }
