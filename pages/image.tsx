@@ -72,8 +72,16 @@ const Stream = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const [cssModule, setCssModule] = useState("");
+  const [cssModuleFilename, setCssModuleFilename] = useState(
+    "component.module.css"
+  );
   const [firstComponent, setFirstComponent] = useState("");
+  const [firstComponentFilename, setFirstComponentFilename] =
+    useState("Component.tsx");
   const [secondComponent, setSecondComponent] = useState("");
+  const [secondComponentFilename, setSecondComponentFilename] = useState(
+    "SitecoreComponent.tsx"
+  );
   const [activeTab, setActiveTab] = useState<string>("Component.tsx");
 
   useEffect(() => {
@@ -90,13 +98,22 @@ const Stream = () => {
 
   useEffect(() => {
     if (completion) {
-      setCssModule(extractCodeSection(completion, "css module").content);
-      setFirstComponent(
-        extractCodeSection(completion, "first component").content
+      const cssModuleSection = extractCodeSection(completion, "css module");
+      const firstComponentSection = extractCodeSection(
+        completion,
+        "first component"
       );
-      setSecondComponent(
-        extractCodeSection(completion, "second component").content
+      const secondComponentSection = extractCodeSection(
+        completion,
+        "second component"
       );
+
+      setCssModule(cssModuleSection.content);
+      setCssModuleFilename(cssModuleSection.filename);
+      setFirstComponent(firstComponentSection.content);
+      setFirstComponentFilename(firstComponentSection.filename);
+      setSecondComponent(secondComponentSection.content);
+      setSecondComponentFilename(secondComponentSection.filename);
     }
   }, [completion]);
 
@@ -390,7 +407,7 @@ const Stream = () => {
                         }`}
                         onClick={() => setActiveTab("component.module.css")}
                       >
-                        component.module.css
+                        {cssModuleFilename}
                       </button>
                     )}
                     <button
@@ -401,7 +418,7 @@ const Stream = () => {
                       }`}
                       onClick={() => setActiveTab("Component.tsx")}
                     >
-                      Component.tsx
+                      {firstComponentFilename}
                     </button>
                     {secondComponent && (
                       <button
@@ -412,7 +429,7 @@ const Stream = () => {
                         }`}
                         onClick={() => setActiveTab("SitecoreComponent.tsx")}
                       >
-                        SitecoreComponent.tsx
+                        {secondComponentFilename}
                       </button>
                     )}
                   </div>

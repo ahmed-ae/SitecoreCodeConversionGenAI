@@ -197,9 +197,9 @@ export function generateImage2CodePrompt(
 
       Most importantly,  your output must only contain converted code with optional CSS module if the user ask for it, don't include any explanations in your responses
       So your output MUST be 
-      (Optional CSS module - only if user asked for CSS modules, NOT for styled components) prefixed with a comment /*start css module*/ and ended with /*end css module*/
-      (First Component) prefixed with a comment /*start first component*/ and ended with /*end first component*/
-      (Second Component) prefixed with a comment /*start second component*/ and ended with /*end second component*/
+      (Optional CSS module - only if user asked for CSS modules, NOT for styled components) prefixed with a comment /*start css module*/ and ended with /*end css module*/ also add a comment after the prefix with the name of the file, for example /*filename - component.module.css*/
+      (First Component) prefixed with a comment /*start first component*/ and ended with /*end first component*/ also add a comment after the prefix with the name of the file, for example /*filename - componentName.tsx*/
+      (Second Component) prefixed with a comment /*start second component*/ and ended with /*end second component*/ also add a comment after the prefix with the name of the file, for example /*filename - SitecoreWrapperComponent.tsx*/
 
       Here is an example of a Hero Banner component that you can use as a reference:
       //First component : FED Component (Sitecore Agnostic)
@@ -298,22 +298,34 @@ export function generateImage2CodePrompt(
 export function extractCodeSection(
   completion: string,
   section: string
-): { content: string; complete: boolean } {
+): { content: string; complete: boolean; filename: string } {
   const startMarker = `/*start ${section}*/`;
   const endMarker = `/*end ${section}*/`;
   let content = completion;
   const startIndex = content.indexOf(startMarker);
 
   if (startIndex === -1) {
-    return { content: "", complete: false };
+    return { content: "", complete: false, filename: "" };
   }
 
   content = content.slice(startIndex + startMarker.length);
+
+  // Extract filename
+  const filenameMatch = content.match(/\/\*filename - (.*?)\*\//);
+  const filename = filenameMatch ? filenameMatch[1].trim() : "";
+
+  // Remove filename comment from content
+  content = content.replace(/\/\*filename - .*?\*\//, "").trim();
+
   const endIndex = content.indexOf(endMarker);
 
   if (endIndex === -1) {
-    return { content: content.trim(), complete: false };
+    return { content: content.trim(), complete: false, filename };
   }
 
-  return { content: content.slice(0, endIndex).trim(), complete: true };
+  return {
+    content: content.slice(0, endIndex).trim(),
+    complete: true,
+    filename,
+  };
 }
