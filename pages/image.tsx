@@ -378,34 +378,23 @@ const Stream = () => {
             </div>
 
             <div className="relative">
-              {!isLoading && completion && (
-                <div className="absolute top-0 right-0 z-10 p-2">
-                  <button
-                    onClick={() => setShowPreview(true)}
-                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1"
-                  >
-                    <LayoutTemplate size={14} />
-                    <span>Preview</span>
-                  </button>
-                </div>
-              )}
               <div className="mb-4">
-                <div className="flex border-b border-gray-700">
-                  {cssModule && (
+                <div className="flex justify-between items-center border-b border-gray-700">
+                  <div className="flex gap-1">
+                    {cssModule && (
+                      <button
+                        className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 ${
+                          activeTab === "component.module.css"
+                            ? "bg-gray-700 text-white"
+                            : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+                        }`}
+                        onClick={() => setActiveTab("component.module.css")}
+                      >
+                        component.module.css
+                      </button>
+                    )}
                     <button
-                      className={`px-4 py-2 font-medium text-sm ${
-                        activeTab === "component.module.css"
-                          ? "bg-gray-700 text-white"
-                          : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
-                      }`}
-                      onClick={() => setActiveTab("component.module.css")}
-                    >
-                      component.module.css
-                    </button>
-                  )}
-                  {
-                    <button
-                      className={`px-4 py-2 font-medium text-sm ${
+                      className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 ${
                         activeTab === "Component.tsx"
                           ? "bg-gray-700 text-white"
                           : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
@@ -414,17 +403,26 @@ const Stream = () => {
                     >
                       Component.tsx
                     </button>
-                  }
-                  {secondComponent && (
+                    {secondComponent && (
+                      <button
+                        className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 ${
+                          activeTab === "SitecoreComponent.tsx"
+                            ? "bg-gray-700 text-white"
+                            : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+                        }`}
+                        onClick={() => setActiveTab("SitecoreComponent.tsx")}
+                      >
+                        SitecoreComponent.tsx
+                      </button>
+                    )}
+                  </div>
+                  {!isLoading && completion && (
                     <button
-                      className={`px-4 py-2 font-medium text-sm ${
-                        activeTab === "SitecoreComponent.tsx"
-                          ? "bg-gray-700 text-white"
-                          : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
-                      }`}
-                      onClick={() => setActiveTab("SitecoreComponent.tsx")}
+                      onClick={() => setShowPreview(true)}
+                      className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1.5 rounded-t-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1"
                     >
-                      SitecoreComponent.tsx
+                      <LayoutTemplate size={14} />
+                      <span>Preview</span>
                     </button>
                   )}
                 </div>
