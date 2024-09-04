@@ -450,6 +450,8 @@ const Stream = () => {
                   value={cssModule}
                   readOnly={true}
                   onCopy={() => copyToClipboard(cssModule)}
+                  enableDownload={true}
+                  filename={cssModuleFilename}
                 />
               )}
               {activeTab === "Component.tsx" && (
@@ -458,6 +460,8 @@ const Stream = () => {
                   value={firstComponent}
                   readOnly={true}
                   onCopy={() => copyToClipboard(firstComponent)}
+                  enableDownload={true}
+                  filename={firstComponentFilename}
                 />
               )}
               {activeTab === "SitecoreComponent.tsx" && secondComponent && (
@@ -466,6 +470,8 @@ const Stream = () => {
                   value={secondComponent}
                   readOnly={true}
                   onCopy={() => copyToClipboard(secondComponent)}
+                  enableDownload={true}
+                  filename={secondComponentFilename}
                 />
               )}
             </div>

@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import dynamic from "next/dynamic";
+import { Download, Copy } from "lucide-react";
 
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
@@ -10,6 +11,8 @@ interface CodeEditorProps {
   onChange?: (value: string | undefined) => void;
   readOnly?: boolean;
   onCopy?: () => void;
+  filename?: string;
+  enableDownload?: boolean;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -18,7 +21,25 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   onChange,
   readOnly = false,
   onCopy,
+  filename,
+  enableDownload = false,
 }) => {
+  const handleDownload = () => {
+    if (!filename || !value.trim()) return;
+
+    const blob = new Blob([value], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const hasContent = value.trim().length > 0;
+
   return (
     <div className="relative">
       <MonacoEditor
@@ -29,13 +50,27 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         options={{ minimap: { enabled: false }, readOnly }}
         className="h-[300px] sm:h-[600px] rounded-md border border-gray-700 overflow-hidden"
       />
-      {readOnly && onCopy && (
-        <button
-          className="absolute top-2 right-2 bg-gray-700 text-gray-100 px-3 py-1 rounded-md text-xs hover:bg-gray-600 transition duration-300"
-          onClick={onCopy}
-        >
-          Copy Code
-        </button>
+      {hasContent && (
+        <div className="absolute top-2 right-4 flex space-x-2">
+          {readOnly && onCopy && (
+            <button
+              className="bg-gray-700 text-gray-100 p-1 rounded-md hover:bg-gray-600 transition duration-300"
+              onClick={onCopy}
+              title="Copy Code"
+            >
+              <Copy size={16} />
+            </button>
+          )}
+          {enableDownload && filename && (
+            <button
+              className="bg-gray-700 text-gray-100 p-1 rounded-md hover:bg-gray-600 transition duration-300"
+              onClick={handleDownload}
+              title="Download Code"
+            >
+              <Download size={16} />
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
