@@ -296,7 +296,7 @@ const Stream = () => {
               >
                 <p className="mt-6 text-sm text-gray-400 text-center">
                   Upload an image/wireframe/screenshot for your component design
-                  to convert it into Sitecore JSS (Nextjs) component.
+                  to convert it into Sitecore JSS (react) component.
                 </p>
                 {imagePreview ? (
                   <div className="mb-4 flex-grow flex items-center justify-center">
