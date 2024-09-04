@@ -449,7 +449,7 @@ const Stream = () => {
                 <CodeEditor
                   language="css"
                   value={cssModule}
-                  readOnly={false}
+                  readOnly={true}
                   onCopy={() => copyToClipboard(cssModule)}
                   enableDownload={true}
                   filename={cssModuleFilename}
@@ -459,7 +459,7 @@ const Stream = () => {
                 <CodeEditor
                   language="typescript"
                   value={firstComponent}
-                  readOnly={false}
+                  readOnly={true}
                   onCopy={() => copyToClipboard(firstComponent)}
                   enableDownload={true}
                   filename={firstComponentFilename}
@@ -469,7 +469,7 @@ const Stream = () => {
                 <CodeEditor
                   language="typescript"
                   value={secondComponent}
-                  readOnly={false}
+                  readOnly={true}
                   onCopy={() => copyToClipboard(secondComponent)}
                   enableDownload={true}
                   filename={secondComponentFilename}
