@@ -100,11 +100,11 @@ const Navigation: React.FC<NavigationProps> = ({ session }) => {
               </button>
             ) : (
               <button
-                onClick={() => signIn()}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-full"
-              >
-                Sign In
-              </button>
+              onClick={() => signIn("google")}
+              className="bg-red-400 text-gray-800 px-2 py-1 rounded-md hover:bg-red-300 transition duration-300 text-xs sm:text-sm"
+            >
+              Sign in with Google
+            </button>
             )}
           </div>
         </div>
