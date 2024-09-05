@@ -28,9 +28,9 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="bg-gray-800 w-full py-2 px-3 sm:px-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap">
         {/* Logo and title */}
-        <div className="flex items-center">
+        <div className="flex items-center flex-shrink-0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 200 200"
@@ -78,52 +78,53 @@ const Header: React.FC<HeaderProps> = ({
           </h1>
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-white hover:text-red-400 transition duration-300"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop Navigation and Login/Logout */}
+        <div className="hidden sm:flex items-center justify-between flex-grow ml-4">
+          <nav className="flex items-center space-x-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-white hover:text-red-400 transition duration-300"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
-        {/* Login/Logout and Max Tries (Desktop) */}
-        {!disableLoginAndMaxTries && (
-          <div className="hidden md:flex items-center">
-            {session ? (
-              <>
-                <span className="text-xs sm:text-sm mr-2">
-                  Hi, {session.user?.name}
-                </span>
-                <span className="text-xs sm:text-sm mr-2">
-                  ({maxTries - CountUsage} tries left)
-                </span>
+          {!disableLoginAndMaxTries && (
+            <div className="flex items-center">
+              {session ? (
+                <>
+                  <span className="text-xs sm:text-sm text-white mr-2">
+                    Hi, {session.user?.name}
+                  </span>
+                  <span className="text-xs sm:text-sm text-white mr-2">
+                    ({maxTries - CountUsage} tries left)
+                  </span>
+                  <button
+                    onClick={() => signOut()}
+                    className="bg-red-400 text-gray-800 px-2 py-1 rounded-md hover:bg-red-300 transition duration-300 text-xs sm:text-sm"
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
                 <button
-                  onClick={() => signOut()}
+                  onClick={() => signIn("google")}
                   className="bg-red-400 text-gray-800 px-2 py-1 rounded-md hover:bg-red-300 transition duration-300 text-xs sm:text-sm"
                 >
-                  Sign out
+                  Sign in with Google
                 </button>
-              </>
-            ) : (
-              <button
-                onClick={() => signIn("google")}
-                className="bg-red-400 text-gray-800 px-2 py-1 rounded-md hover:bg-red-300 transition duration-300 text-xs sm:text-sm"
-              >
-                Sign in with Google
-              </button>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Hamburger Menu (Mobile) */}
         <button
           onClick={toggleMenu}
-          className="md:hidden text-white focus:outline-none"
+          className="sm:hidden text-white focus:outline-none"
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -131,7 +132,7 @@ const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden mt-2">
+        <div className="sm:hidden mt-2">
           <nav className="flex flex-col space-y-2">
             {navLinks.map((link) => (
               <Link
