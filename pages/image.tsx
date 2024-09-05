@@ -399,9 +399,13 @@ const Stream = () => {
             </div>
 
             <div className="relative">
-              <div className="mb-4">
+              <div className="mb-0">
+                {" "}
+                {/* Changed from mb-4 to mb-0 */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-700">
-                  <div className="flex flex-wrap gap-1 mb-2 sm:mb-0">
+                  <div className="flex flex-wrap gap-1 mb-0 sm:mb-0">
+                    {" "}
+                    {/* Changed mb-2 to mb-0 */}
                     {cssModule && (
                       <button
                         className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r border-dotted ${
@@ -437,15 +441,18 @@ const Stream = () => {
                       </button>
                     )}
                   </div>
-                  {!isLoading && completion && (
-                    <button
-                      onClick={() => setShowPreview(true)}
-                      className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1.5 rounded-md sm:rounded-t-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-2 sm:mt-0"
-                    >
-                      <LayoutTemplate size={14} />
-                      <span>Preview</span>
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setShowPreview(true)}
+                    className={`px-3 py-1.5 rounded-md sm:rounded-t-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-0 sm:-mt-1.5 ${
+                      isLoading || !completion
+                        ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                        : "bg-gray-700 hover:bg-gray-600 text-gray-200"
+                    }`}
+                    disabled={isLoading || !completion}
+                  >
+                    <LayoutTemplate size={14} />
+                    <span>Preview</span>
+                  </button>
                 </div>
               </div>
               {activeTab === "component.module.css" && cssModule && (
