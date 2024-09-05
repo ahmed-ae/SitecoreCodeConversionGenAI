@@ -253,8 +253,9 @@ const Stream = () => {
   const handleSuggestionClick = (suggestion: string) => {
     setAdditionalInstructions(suggestion);
   };
-  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       handleConvertImage(e);
     }
   };
@@ -288,9 +289,9 @@ const Stream = () => {
             isLoading={isLoading}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Left side - Image upload (33%) */}
             <div className="flex flex-col h-full">
-              {/* Image upload area */}
               <div
                 className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-lg p-6 mb-4"
                 onPaste={handlePaste}
@@ -334,78 +335,13 @@ const Stream = () => {
                   Or <b>drag / paste</b> an image here.
                 </p>
               </div>
-
-              {/* Suggestion bubbles */}
-              <div className="flex flex-wrap gap-2 mb-2">
-                {suggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className="border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded-full text-sm transition duration-300 flex items-center justify-center min-h-[40px]"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-              {/* Input for additional instructions */}
-              <div className="relative mb-4">
-                <input
-                  type="text"
-                  value={additionalInstructions}
-                  onChange={(e) => setAdditionalInstructions(e.target.value)}
-                  onKeyPress={handleInputKeyPress}
-                  name="additionalInstructions"
-                  className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-20"
-                  placeholder="How would you like to customize the code?"
-                />
-                <button
-                  onClick={handleConvertImage}
-                  className="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                >
-                  <Send size={20} />
-                </button>
-                {messageHistory.length > 0 && (
-                  <button
-                    onClick={() => setIsMessageHistoryOpen(true)}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                  >
-                    <MessageCircle size={20} />
-                  </button>
-                )}
-              </div>
-
-              {/* Popup Message History Overlay */}
-              {isMessageHistoryOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-bold">
-                        Previous Instructions
-                      </h2>
-                      <button
-                        onClick={() => setIsMessageHistoryOpen(false)}
-                        className="text-gray-400 hover:text-gray-200"
-                      >
-                        <X size={24} />
-                      </button>
-                    </div>
-                    <CollapsibleMessageHistory
-                      messages={messageHistory}
-                      onDeleteMessage={handleDeleteMessage}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
-            <div className="relative">
+            {/* Right side - Code editors, suggestions, and input (67%) */}
+            <div className="sm:col-span-2">
               <div className="mb-0">
-                {" "}
-                {/* Changed from mb-4 to mb-0 */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-700">
                   <div className="flex flex-wrap gap-1 mb-0 sm:mb-0">
-                    {" "}
-                    {/* Changed mb-2 to mb-0 */}
                     {cssModule && (
                       <button
                         className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r border-dotted ${
@@ -455,36 +391,79 @@ const Stream = () => {
                   </button>
                 </div>
               </div>
-              {activeTab === "component.module.css" && cssModule && (
-                <CodeEditor
-                  language="css"
-                  value={cssModule}
-                  readOnly={true}
-                  onCopy={() => copyToClipboard(cssModule)}
-                  enableDownload={true}
-                  filename={cssModuleFilename}
+              {/* Code editors */}
+              <div className="mb-4">
+                {activeTab === "component.module.css" && cssModule && (
+                  <CodeEditor
+                    language="css"
+                    value={cssModule}
+                    readOnly={true}
+                    onCopy={() => copyToClipboard(cssModule)}
+                    enableDownload={true}
+                    filename={cssModuleFilename}
+                  />
+                )}
+                {activeTab === "Component.tsx" && (
+                  <CodeEditor
+                    language="typescript"
+                    value={firstComponent}
+                    readOnly={true}
+                    onCopy={() => copyToClipboard(firstComponent)}
+                    enableDownload={true}
+                    filename={firstComponentFilename}
+                  />
+                )}
+                {activeTab === "SitecoreComponent.tsx" && secondComponent && (
+                  <CodeEditor
+                    language="typescript"
+                    value={secondComponent}
+                    readOnly={true}
+                    onCopy={() => copyToClipboard(secondComponent)}
+                    enableDownload={true}
+                    filename={secondComponentFilename}
+                  />
+                )}
+              </div>
+
+              {/* Suggestion bubbles */}
+              <div className="flex flex-wrap gap-2 mb-2">
+                {suggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded-full text-sm transition duration-300 flex items-center justify-center min-h-[40px]"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+
+              {/* Input for additional instructions */}
+              <div className="relative">
+                <textarea
+                  value={additionalInstructions}
+                  onChange={(e) => setAdditionalInstructions(e.target.value)}
+                  onKeyPress={handleInputKeyPress}
+                  name="additionalInstructions"
+                  className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-20 resize-none"
+                  placeholder="How would you like to customize the code?"
+                  rows={2}
                 />
-              )}
-              {activeTab === "Component.tsx" && (
-                <CodeEditor
-                  language="typescript"
-                  value={firstComponent}
-                  readOnly={true}
-                  onCopy={() => copyToClipboard(firstComponent)}
-                  enableDownload={true}
-                  filename={firstComponentFilename}
-                />
-              )}
-              {activeTab === "SitecoreComponent.tsx" && secondComponent && (
-                <CodeEditor
-                  language="typescript"
-                  value={secondComponent}
-                  readOnly={true}
-                  onCopy={() => copyToClipboard(secondComponent)}
-                  enableDownload={true}
-                  filename={secondComponentFilename}
-                />
-              )}
+                <button
+                  onClick={handleConvertImage}
+                  className="absolute right-10 top-3 text-gray-400 hover:text-gray-200"
+                >
+                  <Send size={20} />
+                </button>
+                {messageHistory.length > 0 && (
+                  <button
+                    onClick={() => setIsMessageHistoryOpen(true)}
+                    className="absolute right-2 top-3 text-gray-400 hover:text-gray-200"
+                  >
+                    <MessageCircle size={20} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -543,6 +522,26 @@ const Stream = () => {
             <div className="flex-grow overflow-hidden">
               <CodePreview code={firstComponent} cssModule={cssModule} />
             </div>
+          </div>
+        </div>
+      )}
+
+      {isMessageHistoryOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Previous Instructions</h2>
+              <button
+                onClick={() => setIsMessageHistoryOpen(false)}
+                className="text-gray-400 hover:text-gray-200"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <CollapsibleMessageHistory
+              messages={messageHistory}
+              onDeleteMessage={handleDeleteMessage}
+            />
           </div>
         </div>
       )}
