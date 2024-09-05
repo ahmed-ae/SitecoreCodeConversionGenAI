@@ -155,16 +155,22 @@ export function generateImage2CodePrompt(
   if (additionalInstructions && additionalInstructions != "") {
     userCustomInstructions += additionalInstructions + " \n ";
   }
-  userPrompt = `Convert the attached image into Sitecore JSS NextJs (TypeScript) Component.
-      `;
+  userPrompt = `Convert the attached image into Sitecore JSS NextJs (TypeScript) Component and follow these rules:
+    - make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes    
+    - Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
+    - Use a cohesive color scheme that matches the branding of the attached image, including specific colors for backgrounds, text, and interactive elements like links and tags.
+    - Ensure the code implementation matches the visual design as closely as possible.
+    - Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
+
+  `;
 
   if (userCustomInstructions && userCustomInstructions != "") {
     userPrompt +=
-      "\n follow custom instructions delimited by triple backticks, which are directly provided by the user uploading the image ```" +
+      "\n Also follow custom instructions delimited by triple backticks, which are directly provided by the user uploading the image ```" +
       userCustomInstructions +
       " ```";
   }
-  systemMessage = `Act like an Image to Code converter, where you convert images into Sitecore JSS components written in nextjs/typescript 
+  systemMessage = `Act like a react code generator expert, where you convert images into Sitecore JSS components written in react/typescript 
       
     we want to generate 2 react components, For the First component you must follow these rules:
       - it should be agnostic of @sitecore-jss/sitecore-jss-nextjs' library, and should assume any prop in field property can any JSX element, this component should render the entire html
@@ -186,7 +192,7 @@ export function generateImage2CodePrompt(
       - Optimize the code for performance, keeping it clean, well-commented, and following best practices for web accessibility (WCAG guidelines).
       - Make sure fonts and background colors are exactly matching what is in the attached image
       - Make the component self-contained for easy preview
-      - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then create SVG elements, otherwise replace the image url with the self hosted canvas image api /api/placeholder/[width]/height, you can pass bgcolor query string to the canvas api to change the background color of the image, use only pastel colors for background color
+      - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then generate SVG elements yourself and don't use any library, otherwise replace the image url with url from picsum.photos or any available CDN for images
       - If  the attached image is a carosuel, add few slides with lorem Epsom mock data and make sure to match the style and design of the carousel arrows and rotate dots
       - if the attached image contains Card images, Ensure that card images are responsive and maintain their aspect ratio while fitting within the cards, Design the cards to have consistent sizing and spacing, with the content (tag, title, link) properly aligned within each card..
       - preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
