@@ -28,9 +28,9 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="bg-gray-800 w-full py-2 px-3 sm:px-4">
-      <div className="flex items-center justify-between flex-wrap">
+      <div className="flex items-center justify-between">
         {/* Logo and title */}
-        <div className="flex items-center flex-shrink-0">
+        <div className="flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 200 200"
@@ -79,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Desktop Navigation and Login/Logout */}
-        <div className="hidden sm:flex items-center justify-between flex-grow ml-4">
+        <div className="hidden sm:flex items-center space-x-4">
           <nav className="flex items-center space-x-4">
             {navLinks.map((link) => (
               <Link
@@ -93,7 +93,7 @@ const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {!disableLoginAndMaxTries && (
-            <div className="flex items-center">
+            <div className="flex items-center ml-4">
               {session ? (
                 <>
                   <span className="text-xs sm:text-sm text-white mr-2">
