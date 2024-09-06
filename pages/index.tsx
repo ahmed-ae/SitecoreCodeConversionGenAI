@@ -103,12 +103,12 @@ const Stream = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
-      <Header
-        CountUsage={preferences.CountUsage}
-        maxTries={preferences.maxTries}
-        session={session}
-        disableLoginAndMaxTries={disableLoginAndMaxTries}
-      />
+       {/*<Header
+          CountUsage={preferences.CountUsage}
+          maxTries={preferences.maxTries}
+          session={session}
+          disableLoginAndMaxTries={disableLoginAndMaxTries}
+        /> */}
       <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
         <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">
           <ControlPanel
