@@ -1,6 +1,6 @@
 # Sitecore JSS AI-Powered Code Generator
 
-![Sitecore JSS AI Code Generator](https://postimg.cc/Yv6NTvVr)
+[![Sitecore JSS AI Code Generator](https://i.postimg.cc/T3SkLmJD/Sitecore-JSS-V0.png)](https://postimg.cc/Yv6NTvVr)
 ## 🚀 About The Project
 
 This project is a revolutionary AI tool for Sitecore developers, leveraging the power of Generative AI to streamline the process of creating Sitecore JSS components. It offers two primary functionalities:
