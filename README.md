@@ -41,7 +41,7 @@ Follow these steps to get your development environment set up:
    ```
 
 5. Set up environment variables
-   - Create a `.env` file in the root directory
+   - Create a `.env.local` file in the root directory
    - Add your Anthropic API key:
      ```bash
      ANTHROPIC_API_KEY=your_api_key_here
