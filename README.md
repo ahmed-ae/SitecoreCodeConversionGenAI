@@ -1,5 +1,7 @@
 # Sitecore JSS AI-Powered Code Generator
 
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 [![Sitecore JSS AI Code Generator](https://i.postimg.cc/T3SkLmJD/Sitecore-JSS-V0.png)](https://postimg.cc/Yv6NTvVr)
 ## 🚀 About The Project
 
@@ -71,7 +73,11 @@ Contributions, issues, and feature requests are welcome! Feel free to check [iss
 
 ## 📝 License
 
-This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
+This project is licensed under the GNU Lesser General Public License v3.0 (LGPLv3). 
+
+For more details, see the [GNU Lesser General Public License v3.0](https://choosealicense.com/licenses/lgpl-3.0/).
+
+The GNU LGPLv3 is a free, copyleft license that allows the use of the software within proprietary software, provided that the proprietary software is dynamically linked against the licensed software. Any modifications to the LGPL-licensed code must be made available under the LGPL.
 
 
 
