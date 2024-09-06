@@ -15,15 +15,11 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Add Tailwind CSS to the preview
-    const link = document.createElement("link");
-    link.href =
-      "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css";
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-
+    const scriptTag = document.createElement("script");
+    scriptTag.src = "https://cdn.tailwindcss.com"
+    document.head.appendChild(scriptTag);
     return () => {
-      document.head.removeChild(link);
+      document.head.removeChild(scriptTag);
     };
   }, []);
 
