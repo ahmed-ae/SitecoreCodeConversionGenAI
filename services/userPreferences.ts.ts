@@ -77,6 +77,7 @@ export const getPreferences = async (
     const response = await fetch(
       `/api/user/userPreferences?userId=${session.user.id}`
     );
+    localStorage.setItem("userPreferences", '')
     return await response.json();
   } else {
     // Load preferences from local storage if user is not logged in

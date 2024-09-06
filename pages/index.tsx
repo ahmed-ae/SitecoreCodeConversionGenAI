@@ -50,7 +50,7 @@ const Stream = () => {
     };
 
     loadPreferences();
-  }, [session]);
+  }, [session?.user?.id]); // Only depend on the user ID
 
   const closeModal = () => setShowModal(false);
 

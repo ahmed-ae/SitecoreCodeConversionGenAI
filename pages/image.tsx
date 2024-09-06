@@ -95,7 +95,7 @@ const Stream = () => {
     };
 
     loadPreferences();
-  }, [session]);
+  }, [session?.user?.id]); // Only depend on the user ID
 
   useEffect(() => {
     if (completion) {
