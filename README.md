@@ -1,5 +1,7 @@
 # Sitecore JSS AI-Powered Code Generator
 
+[![Deploy to Vercel (prod)](https://github.com/ahmed-ae/SitecoreCodeConversionGenAI/actions/workflows/prod-deploy.yml/badge.svg?branch=main)](https://github.com/ahmed-ae/SitecoreCodeConversionGenAI/actions/workflows/prod-deploy.yml)
+
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
 [![Sitecore JSS AI Code Generator](https://i.postimg.cc/T3SkLmJD/Sitecore-JSS-V0.png)](https://postimg.cc/Yv6NTvVr)
