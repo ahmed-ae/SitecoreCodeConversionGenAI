@@ -16,14 +16,14 @@ jobs:
         run: npm install --global vercel@latest
 
       - name: Link to Vercel Project
-        run: npx vercel link --yes --scope=${{ secrets.VERCEL_ORG }} --token=${{ secrets.VERCEL_TOKEN }} --project=${{ secrets.VERCEL_PROJECT }}
+        run: npx vercel link --yes --scope=${{ secrets.VERCEL_TEAM_ID }} --token=${{ secrets.VERCEL_TOKEN }} --project=${{ secrets.VERCEL_PROJECT_ID }}
         env:
-          VERCEL_ORG: ${{ secrets.VERCEL_ORG }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT: ${{ secrets.VERCEL_PROJECT }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Vercel
-        run: npx vercel --prod --yes --scope=${{ secrets.VERCEL_ORG }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel --prod --yes --scope=${{ secrets.VERCEL_TEAM_ID }} --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_ORG: ${{ secrets.VERCEL_ORG }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
