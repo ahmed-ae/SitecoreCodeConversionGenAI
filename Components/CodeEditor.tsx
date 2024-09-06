@@ -1,9 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Download, Copy } from "lucide-react";
 
-const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
+const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
+  ssr: false,
+  loading: () => <p>Loading editor...</p>
+});
 
 interface CodeEditorProps {
   language: string;

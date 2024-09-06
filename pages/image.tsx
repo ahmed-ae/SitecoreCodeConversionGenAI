@@ -271,12 +271,12 @@ const Stream = () => {
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
       <div>
         
-        {/*<Header
+        <Header
           CountUsage={preferences.CountUsage}
           maxTries={preferences.maxTries}
           session={session}
           disableLoginAndMaxTries={disableLoginAndMaxTries}
-        /> */}
+        />
         
       </div>
       <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
