@@ -32,6 +32,7 @@ import {
 } from "../services/userPreferences.ts";
 import CodePreview from "@/Components/preview";
 import imageCompression from "browser-image-compression";
+import posthog from "posthog-js";
 
 const Stream = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -155,7 +156,7 @@ const Stream = () => {
 
       const base64Files = await convertToBase64(file);
       await complete(JSON.stringify(message), { body: { image: base64Files } });
-
+      posthog.capture('Converting Image', { userId: session?.user?.email })
       const newCount = await updateUsageCount(
         session,
         preferences.lastCodeUsed,

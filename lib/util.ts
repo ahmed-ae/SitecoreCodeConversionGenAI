@@ -193,6 +193,7 @@ export function generateImage2CodePrompt(
       - Make sure fonts and background colors are exactly matching what is in the attached image
       - Make the component self-contained for easy preview
       - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then generate SVG elements yourself and don't use any library, otherwise replace the image url with url from picsum.photos or any available CDN for images
+      - in mockdata make sure NOT to use single quotes anywhere
       - If  the attached image is a carosuel, add few slides with lorem Epsom mock data and make sure to match the style and design of the carousel arrows and rotate dots
       - if the attached image contains Card images, Ensure that card images are responsive and maintain their aspect ratio while fitting within the cards, Design the cards to have consistent sizing and spacing, with the content (tag, title, link) properly aligned within each card..
       - preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
