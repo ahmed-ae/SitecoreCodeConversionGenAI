@@ -36,6 +36,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
       const modifiedCode = `
         function createPreviewComponent(React, styledComponents) {
           const styled = styledComponents.default || styledComponents;
+          const { useState, useEffect, useRef, useContext, useReducer, useCallback, useMemo, useLayoutEffect } = React;
           const cssModules = ${JSON.stringify(cssModuleObject)};
           const styles = new Proxy(cssModules, {
             get: (target, prop) => {
@@ -78,8 +79,8 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
-            <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+            <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+            <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
             <script src="https://unpkg.com/styled-components@6.1.13/dist/styled-components.min.js"></script>
             <script src="https://cdn.tailwindcss.com"></script>
             <style>${cssModuleStyles}</style>
@@ -92,7 +93,8 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
               function checkLibraries() {
                 if (window.React && window.styled && window.ReactDOM) {
                   const PreviewComponent = createPreviewComponent(window.React, window.styled);
-                  ReactDOM.render(React.createElement(PreviewComponent), document.getElementById('root'));
+                  const root = ReactDOM.createRoot(document.getElementById('root'));
+                  root.render(React.createElement(PreviewComponent));
                 } else {
                   setTimeout(checkLibraries, 50);
                 }
