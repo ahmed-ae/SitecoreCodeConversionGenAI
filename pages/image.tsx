@@ -30,7 +30,7 @@ import {
   getPreferences,
   UserPreferences,
 } from "../services/userPreferences.ts";
-import CodePreview from "@/Components/preview";
+import CodePreview from "@/Components/previewV2";
 import imageCompression from "browser-image-compression";
 import posthog from "posthog-js";
 

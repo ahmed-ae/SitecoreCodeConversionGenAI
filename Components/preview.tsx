@@ -15,10 +15,20 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Add viewport meta tag
+    const metaTag = document.createElement("meta");
+    metaTag.name = "viewport";
+    metaTag.content = "width=device-width, initial-scale=1.0";
+    document.head.appendChild(metaTag);
+
+    // Add Tailwind script
     const scriptTag = document.createElement("script");
-    scriptTag.src = "https://cdn.tailwindcss.com"
+    scriptTag.src = "https://cdn.tailwindcss.com";
     document.head.appendChild(scriptTag);
+
     return () => {
+      // Clean up
+      document.head.removeChild(metaTag);
       document.head.removeChild(scriptTag);
     };
   }, []);
@@ -119,23 +129,11 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
   const getPreviewStyle = () => {
     switch (screenSize) {
       case "tablet":
-        return {
-          width: "768px",
-          height: "1024px",
-          margin: "0 auto",
-          border: "1px solid #ccc",
-          overflow: "auto",
-        };
+        return { width: "768px", height: "1024px" };
       case "mobile":
-        return {
-          width: "375px",
-          height: "667px",
-          margin: "0 auto",
-          border: "1px solid #ccc",
-          overflow: "auto",
-        };
+        return { width: "375px", height: "667px" };
       default:
-        return { width: "100%", height: "100%", overflow: "auto" };
+        return { width: "100%", height: "100%" };
     }
   };
 
@@ -150,14 +148,14 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
         >
           <Monitor size={24} />
         </button>
-        <button
+        {/* <button
           onClick={() => setScreenSize("tablet")}
           className={`p-2 rounded ${
             screenSize === "tablet" ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
         >
           <Tablet size={24} />
-        </button>
+        </button> */}
         <button
           onClick={() => setScreenSize("mobile")}
           className={`p-2 rounded ${
@@ -167,8 +165,8 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
           <Smartphone size={24} />
         </button>
       </div>
-      <div className="flex-grow overflow-hidden bg-white">
-        <div style={getPreviewStyle()}>
+      <div className="flex-grow overflow-hidden bg-white flex justify-center items-start">
+        <div style={{ ...getPreviewStyle(), overflow: "hidden" }}>
           {error ? (
             <div className="text-red-500 p-4">{error}</div>
           ) : (
