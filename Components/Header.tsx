@@ -79,10 +79,10 @@ const Header: React.FC<HeaderProps> = ({
             Home
           </Link>
           <Link
-            href="/image"
+            href="/CodeConvert"
             className="text-red-400 hover:text-red-300 transition duration-300 text-sm sm:text-base font-semibold"
           >
-            Design to Code
+            Code Convert
           </Link>
         </nav>
 
@@ -150,10 +150,10 @@ const Header: React.FC<HeaderProps> = ({
               Home
             </Link>
             <Link
-              href="/image"
+              href="/CodeConvert"
               className="text-red-400 hover:text-red-300 transition duration-300 text-sm font-semibold"
             >
-              Design to Code
+              Convert Code
             </Link>
           </nav>
           {!disableLoginAndMaxTries && (
