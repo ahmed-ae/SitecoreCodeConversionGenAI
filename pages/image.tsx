@@ -71,7 +71,7 @@ const Stream = () => {
   });
 
   const [showPreview, setShowPreview] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(true);
 
   const [cssModule, setCssModule] = useState("");
   const [cssModuleFilename, setCssModuleFilename] = useState(
@@ -85,7 +85,8 @@ const Stream = () => {
     "SitecoreComponent.tsx"
   );
   const [activeTab, setActiveTab] = useState<string>("Component.tsx");
-
+  const [previouslyGeneratedCode, setPreviouslyGeneratedCode] =
+    useState<string>("");
   useEffect(() => {
     const loadPreferences = async () => {
       const loadedPreferences = await getPreferences(session);
@@ -119,6 +120,12 @@ const Stream = () => {
     }
   }, [completion]);
 
+  useEffect(() => {
+    if (!isLoading) {
+      setPreviouslyGeneratedCode(completion);
+    }
+  }, [isLoading]);
+
   const closeModal = () => setShowModal(false);
 
   const handleConvertImage = async (e: React.FormEvent<Element>) => {
@@ -151,12 +158,14 @@ const Stream = () => {
       const message = {
         model: preferences.model,
         customInstructions: preferences.customInstructions,
-        additionalInstructions: allInstructions,
+        additionalInstructions: additionalInstructions,
+        messageHistory: messageHistory,
+        previouslyGeneratedCode: previouslyGeneratedCode,
       };
 
       const base64Files = await convertToBase64(file);
       await complete(JSON.stringify(message), { body: { image: base64Files } });
-      posthog.capture('Converting Image', { userId: session?.user?.email })
+      posthog.capture("Converting Image", { userId: session?.user?.email });
       const newCount = await updateUsageCount(
         session,
         preferences.lastCodeUsed,
@@ -200,6 +209,7 @@ const Stream = () => {
     setFile(compressedFile);
     setAdditionalInstructions("");
     setMessageHistory([]);
+    setPreviouslyGeneratedCode("");
     // Create image preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -271,14 +281,12 @@ const Stream = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
       <div>
-        
         <Header
           CountUsage={preferences.CountUsage}
           maxTries={preferences.maxTries}
           session={session}
           disableLoginAndMaxTries={disableLoginAndMaxTries}
         />
-        
       </div>
       <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
         <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">

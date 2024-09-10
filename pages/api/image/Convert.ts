@@ -19,25 +19,33 @@ const max_tokens = Number(process.env.MODEL_MAX_TOKENS);
 export default async function POST(req: Request) {
   try {
     const { prompt, image } = await req.json();
-    const { model, customInstructions, additionalInstructions } =
-      JSON.parse(prompt);
+    const {
+      model,
+      customInstructions,
+      additionalInstructions,
+      messageHistory,
+      previouslyGeneratedCode,
+    } = JSON.parse(prompt);
     let languageModel: LanguageModel = openAiProvider(
-      process.env.GPT_4_O_MODEL_ID!
+      process.env.CLAUDE_3_SONNET_MODEL_ID!
     );
     const promtMessages = generateImage2CodePrompt(
       customInstructions,
-      additionalInstructions
+      additionalInstructions,
+      messageHistory,
+      previouslyGeneratedCode
     );
-    console.log("customInstructions  : ", customInstructions);
-    console.log("additionalInstructions  : ", additionalInstructions);
-    console.log(
-      "Generating Code using " +
-        model +
-        " using temp/max-tokens: " +
-        temperature +
-        "/" +
-        max_tokens
-    );
+
+    //console.log("customInstructions  : ", customInstructions);
+    //console.log("additionalInstructions  : ", additionalInstructions);
+    //console.log(
+    //  "Generating Code using " +
+    //    model +
+    //    " using temp/max-tokens: " +
+    //    temperature +
+    //    "/" +
+    //    max_tokens
+    //);
     let selectedModel: String = "";
     if (model === "claude3opus") {
       selectedModel = process.env.CLAUDE_3_OPUS_MODEL_ID!;
@@ -65,31 +73,71 @@ export default async function POST(req: Request) {
       );
     }
 
-    console.log("system message", promtMessages[1].content);
-    console.log("user message", promtMessages[0].content);
-    const result = await streamText({
-      model: languageModel,
-      maxTokens: max_tokens,
-      temperature: temperature,
-      system: promtMessages[1].content,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: promtMessages[0].content,
-            },
-            {
-              type: "image",
-              image: image,
-            },
-          ],
-        },
-      ],
-    });
+    console.log("system message ----------------", promtMessages[0].content);
+    console.log("user message ----------------", promtMessages[1].content);
 
-    return result.toDataStreamResponse();
+    if (promtMessages.length === 2) {
+      const result = await streamText({
+        model: languageModel,
+        maxTokens: max_tokens,
+        temperature: temperature,
+        system: promtMessages[0].content,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: promtMessages[1].content,
+              },
+              {
+                type: "image",
+                image: image,
+              },
+            ],
+          },
+        ],
+      });
+
+      return result.toDataStreamResponse();
+    } else {
+      console.log(
+        "assistant message ----------------",
+        promtMessages[2].content
+      );
+      console.log("user message 2 ----------------", promtMessages[3].content);
+      const result = await streamText({
+        model: languageModel,
+        maxTokens: max_tokens,
+        temperature: temperature,
+        system: promtMessages[0].content,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: promtMessages[1].content,
+              },
+              {
+                type: "image",
+                image: image,
+              },
+            ],
+          },
+          {
+            role: "assistant",
+            content: promtMessages[2].content,
+          },
+          {
+            role: "user",
+            content: promtMessages[3].content,
+          },
+        ],
+      });
+
+      return result.toDataStreamResponse();
+    }
   } catch (error) {
     console.error(error);
 
