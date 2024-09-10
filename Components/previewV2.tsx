@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as Babel from "@babel/standalone";
-import { Smartphone, Tablet, Monitor } from "lucide-react";
+import { Smartphone, Monitor } from "lucide-react";
 
 interface CodePreviewProps {
   code: string;
@@ -128,8 +128,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
 
   const getPreviewStyle = () => {
     switch (screenSize) {
-      case "tablet":
-        return { width: "768px", height: "1024px" };
       case "mobile":
         return { width: "375px", height: "667px" };
       default:
@@ -148,14 +146,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
         >
           <Monitor size={24} />
         </button>
-        {/* <button
-          onClick={() => setScreenSize("tablet")}
-          className={`p-2 rounded ${
-            screenSize === "tablet" ? "bg-blue-500 text-white" : "bg-gray-300"
-          }`}
-        >
-          <Tablet size={24} />
-        </button> */}
         <button
           onClick={() => setScreenSize("mobile")}
           className={`p-2 rounded ${
@@ -165,17 +155,32 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
           <Smartphone size={24} />
         </button>
       </div>
-      <div className="flex-grow overflow-hidden bg-white flex justify-center items-start">
-        <div style={{ ...getPreviewStyle(), overflow: "hidden" }}>
-          {error ? (
-            <div className="text-red-500 p-4">{error}</div>
-          ) : (
-            <iframe
-              srcDoc={iframeContent}
-              style={{ width: "100%", height: "100%", border: "none" }}
-              title="Preview"
-            />
-          )}
+      <div className="flex-grow relative">
+        <div className="absolute inset-0 checkered-background overflow-auto p-4">
+          <div
+            className={`bg-white ${
+              screenSize === "mobile" ? "mx-auto" : "w-full h-full"
+            }`}
+            style={{
+              ...getPreviewStyle(),
+              boxShadow:
+                screenSize === "mobile" ? "0 0 10px rgba(0,0,0,0.1)" : "none",
+            }}
+          >
+            {error ? (
+              <div className="text-red-500 p-4">{error}</div>
+            ) : (
+              <iframe
+                srcDoc={iframeContent}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                }}
+                title="Preview"
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
