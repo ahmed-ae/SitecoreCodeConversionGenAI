@@ -17,7 +17,7 @@ import {
   updateUsageCount,
   getPreferences,
   UserPreferences,
-} from "../services/userPreferences.ts.js";
+} from "../services/userPreferences.ts";
 
 const Stream = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({

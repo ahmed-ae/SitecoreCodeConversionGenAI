@@ -79,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({
             Home
           </Link>
           <Link
-            href="/CodeConvert"
+            href="/codeconvert"
             className="text-red-400 hover:text-red-300 transition duration-300 text-sm sm:text-base font-semibold"
           >
             Code Convert
@@ -150,7 +150,7 @@ const Header: React.FC<HeaderProps> = ({
               Home
             </Link>
             <Link
-              href="/CodeConvert"
+              href="/codeconvert"
               className="text-red-400 hover:text-red-300 transition duration-300 text-sm font-semibold"
             >
               Convert Code
