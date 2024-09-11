@@ -87,6 +87,8 @@ const Stream = () => {
   const [activeTab, setActiveTab] = useState<string>("Component.tsx");
   const [previouslyGeneratedCode, setPreviouslyGeneratedCode] =
     useState<string>("");
+  const [isPreviewReady, setIsPreviewReady] = useState(false);
+
   useEffect(() => {
     const loadPreferences = async () => {
       const loadedPreferences = await getPreferences(session);
@@ -125,6 +127,14 @@ const Stream = () => {
       setPreviouslyGeneratedCode(completion);
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    if (completion && !isLoading) {
+      setIsPreviewReady(true);
+      const timer = setTimeout(() => setIsPreviewReady(false), 5000); // Stop flashing after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [completion, isLoading]);
 
   const closeModal = () => setShowModal(false);
 
@@ -351,7 +361,7 @@ const Stream = () => {
             {/* Right side - Code editors, suggestions, and input (67%) */}
             <div className="sm:col-span-2">
               <div className="mb-0">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-700">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-700 mb-2">
                   <div className="flex flex-wrap gap-1 mb-0 sm:mb-0">
                     {cssModule && (
                       <button
@@ -390,10 +400,12 @@ const Stream = () => {
                   </div>
                   <button
                     onClick={() => setShowPreview(true)}
-                    className={`px-3 py-1.5 rounded-md sm:rounded-t-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-0 sm:-mt-1.5 ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-2 sm:mt-0 sm:-mb-2 ${
                       isLoading || !completion
                         ? "bg-gray-600 text-gray-400 cursor-not-allowed"
                         : "bg-gray-700 hover:bg-gray-600 text-gray-200"
+                    } ${isLoading ? "animate-pulse" : ""} ${
+                      isPreviewReady ? "animate-flash" : ""
                     }`}
                     disabled={isLoading || !completion}
                   >

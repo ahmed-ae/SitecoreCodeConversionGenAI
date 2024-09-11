@@ -37,3 +37,12 @@ body {
   background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
   background-color: #fafafa;
 }
+
+@keyframes flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-flash {
+  animation: flash 1s ease-in-out infinite;
+}
