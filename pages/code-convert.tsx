@@ -12,6 +12,8 @@ import CodeEditor from "@/Components/CodeEditor";
 import ControlPanel from "@/Components/ControlPanel";
 import LoginPrompt from "@/Components/LoginPrompt";
 import OutOfTriesModal from "@/Components/OutOfTriesModal";
+import Head from "next/head";
+
 import {
   savePreferences,
   updateUsageCount,
@@ -102,95 +104,100 @@ const Stream = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
-      <Header
-        CountUsage={preferences.CountUsage}
-        maxTries={preferences.maxTries}
-        session={session}
-        disableLoginAndMaxTries={disableLoginAndMaxTries}
-      />
-      <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
-        <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">
-          <ControlPanel
-            language={preferences.language}
-            onLanguageChange={(lang) =>
-              setPreferences((prev: UserPreferences) => ({
-                ...prev,
-                language: lang,
-              }))
-            }
-            onSettingsClick={() => setShowModal(true)}
-            onStopClick={stop}
-            onConvertClick={convertCode}
-            isLoading={isLoading}
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <CodeEditor
+    <>
+      <Head>
+        <title>Sitecore JSS V0 | Code generation and conversion tool</title>
+      </Head>
+      <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
+        <Header
+          CountUsage={preferences.CountUsage}
+          maxTries={preferences.maxTries}
+          session={session}
+          disableLoginAndMaxTries={disableLoginAndMaxTries}
+        />
+        <div className="container mx-auto py-6 sm:py-12 px-4 max-w-full w-full sm:w-[95%]">
+          <div className="bg-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl border border-gray-700">
+            <ControlPanel
               language={preferences.language}
-              value={preferences.lastCodeUsed}
-              onChange={(value) =>
-                value !== undefined &&
+              onLanguageChange={(lang) =>
                 setPreferences((prev: UserPreferences) => ({
                   ...prev,
-                  lastCodeUsed: value,
+                  language: lang,
                 }))
               }
+              onSettingsClick={() => setShowModal(true)}
+              onStopClick={stop}
+              onConvertClick={convertCode}
+              isLoading={isLoading}
             />
-            <CodeEditor
-              language="typescript"
-              value={parseCode(completion)}
-              readOnly={true}
-              onCopy={() => copyToClipboard(parseCode(completion))}
-            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <CodeEditor
+                language={preferences.language}
+                value={preferences.lastCodeUsed}
+                onChange={(value) =>
+                  value !== undefined &&
+                  setPreferences((prev: UserPreferences) => ({
+                    ...prev,
+                    lastCodeUsed: value,
+                  }))
+                }
+              />
+              <CodeEditor
+                language="typescript"
+                value={parseCode(completion)}
+                readOnly={true}
+                onCopy={() => copyToClipboard(parseCode(completion))}
+              />
+            </div>
           </div>
+
+          {error && (
+            <div
+              id="errorBox"
+              className="fixed bottom-0 left-0 w-full p-4 bg-red-400 text-white text-center errorBox"
+            >
+              {error.message}
+              <button className="absolute top-1 right-2 text-white"></button>
+            </div>
+          )}
+          {showLoginPrompt && (
+            <LoginPrompt
+              onClose={() => setShowLoginPrompt(false)}
+              onSignIn={() => signIn("google")}
+            />
+          )}
+          {showOutOfTriesModal && (
+            <OutOfTriesModal
+              onClose={() => setShowOutOfTriesModal(false)}
+            ></OutOfTriesModal>
+          )}
+          <Footer></Footer>
         </div>
 
-        {error && (
-          <div
-            id="errorBox"
-            className="fixed bottom-0 left-0 w-full p-4 bg-red-400 text-white text-center errorBox"
-          >
-            {error.message}
-            <button className="absolute top-1 right-2 text-white"></button>
-          </div>
-        )}
-        {showLoginPrompt && (
-          <LoginPrompt
-            onClose={() => setShowLoginPrompt(false)}
-            onSignIn={() => signIn("google")}
-          />
-        )}
-        {showOutOfTriesModal && (
-          <OutOfTriesModal
-            onClose={() => setShowOutOfTriesModal(false)}
-          ></OutOfTriesModal>
-        )}
-        <Footer></Footer>
+        <SettingModal
+          isOpen={showModal}
+          onClose={closeModal}
+          onSaveAndConvert={() => {
+            handleSavePreferences();
+            convertCode();
+            closeModal();
+          }}
+          onSave={() => {
+            handleSavePreferences();
+            closeModal();
+          }}
+          onModelChange={(value) =>
+            setPreferences((prev) => ({ ...prev, model: value }))
+          }
+          onSetCustomInstructions={(value) =>
+            setPreferences((prev) => ({ ...prev, customInstructions: value }))
+          }
+          customInstructions={preferences.customInstructions}
+          model={preferences.model}
+        ></SettingModal>
       </div>
-
-      <SettingModal
-        isOpen={showModal}
-        onClose={closeModal}
-        onSaveAndConvert={() => {
-          handleSavePreferences();
-          convertCode();
-          closeModal();
-        }}
-        onSave={() => {
-          handleSavePreferences();
-          closeModal();
-        }}
-        onModelChange={(value) =>
-          setPreferences((prev) => ({ ...prev, model: value }))
-        }
-        onSetCustomInstructions={(value) =>
-          setPreferences((prev) => ({ ...prev, customInstructions: value }))
-        }
-        customInstructions={preferences.customInstructions}
-        model={preferences.model}
-      ></SettingModal>
-    </div>
+    </>
   );
 };
 
