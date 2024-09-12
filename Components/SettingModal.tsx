@@ -53,7 +53,9 @@ const SettingModal: React.FC<SettingModalProps> = ({
                   Claude 3 Opus
                 </option>
               )} */}
-              <option value="claude3sonnet">Claude 3.5 Sonnet</option>
+              <option value="claude3sonnet">
+                Claude 3.5 Sonnet (Recommended)
+              </option>
               {/* <option value="gpt4" disabled>
                 GPT-4 turbo
               </option> */}
