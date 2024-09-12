@@ -48,16 +48,16 @@ const SettingModal: React.FC<SettingModalProps> = ({
               value={model}
               onChange={(e) => onModelChange(e.target.value)}
             >
-              <option value="claude3opus" disabled>
-                Claude 3 Opus
-              </option>
+              {/* {isClaude3OpusEnabled && (
+                <option value="claude3opus" disabled>
+                  Claude 3 Opus
+                </option>
+              )} */}
               <option value="claude3sonnet">Claude 3.5 Sonnet</option>
-              <option value="gpt4" disabled>
+              {/* <option value="gpt4" disabled>
                 GPT-4 turbo
-              </option>
-              <option value="gpt4o" disabled>
-                GPT-4 Omni
-              </option>
+              </option> */}
+              <option value="gpt4o">GPT-4o</option>
             </select>
             <ChevronDown
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
