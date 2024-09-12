@@ -132,7 +132,7 @@ const Stream = () => {
   useEffect(() => {
     if (completion && !isLoading) {
       setIsPreviewReady(true);
-      const timer = setTimeout(() => setIsPreviewReady(false), 5000); // Stop flashing after 5 seconds
+      const timer = setTimeout(() => setIsPreviewReady(false), 1000); // Stop flashing after 5 seconds
       return () => clearTimeout(timer);
     }
   }, [completion, isLoading]);
