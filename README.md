@@ -1,4 +1,4 @@
-# Sitecore JSS AI-Powered Code Generator
+# Sitecore JSS V0 : AI-Powered Code Generator
 
 [![Deploy to Vercel (prod)](https://github.com/ahmed-ae/SitecoreCodeConversionGenAI/actions/workflows/prod-deploy.yml/badge.svg?branch=main)](https://github.com/ahmed-ae/SitecoreCodeConversionGenAI/actions/workflows/prod-deploy.yml)
 
@@ -13,6 +13,10 @@ This project is an AI-powered tool for Sitecore developers, leveraging the power
 1. **Design-to-Code Conversion**: Transform any design, screenshot, or wireframe into a fully functional Sitecore JSS component (React/TypeScript) in seconds.
 
 2. **Legacy Code Conversion**: Convert traditional Sitecore MVC or SXA Scriban components into modern Sitecore JSS components (React).
+
+## 🌐 Live Demo
+
+Check out the live demo of the Sitecore JSS V0 [here](https://jss-v0.vercel.app/).
 
 ### Key Features
 
