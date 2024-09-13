@@ -1,15 +1,10 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { useChat, useCompletion } from "ai/react";
-import { parseCode, parseCodeForPreview, extractCodeSection } from "@/lib/util";
-import {
-  Settings,
-  X,
-  Code,
-  ChevronUp,
-  ChevronDown,
+import {  useCompletion } from "ai/react";
+import {  extractCodeSection } from "@/lib/util";
+import {  
+  X, 
   MessageCircle,
-  Upload,
   Send,
   Maximize2,
   LayoutTemplate,
@@ -31,7 +26,6 @@ import {
   UserPreferences,
 } from "../services/userPreferences.ts";
 import CodePreview from "@/Components/previewV2";
-import imageCompression from "browser-image-compression";
 import posthog from "posthog-js";
 import ImageUpload from '@/Components/ImageUpload';
 import Head from "next/head";
@@ -47,17 +41,12 @@ const Stream = () => {
   });
 
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [customInstructions, setCustomInstructions] = useState<string>("");
   const { data: session } = useSession() as { data: Session | null };
-  const [CountUsage, setCountUsage] = useState<number>(0);
-  const [maxTries, setMaxTries] = useState<number>(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState<boolean>(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showOutOfTriesModal, setShowOutOfTriesModal] =
     useState<boolean>(false);
   const disableLoginAndMaxTries =
     process.env.NEXT_PUBLIC_DISABLE_LOGIN_AND_MAX_TRIES === "true";
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [additionalInstructions, setAdditionalInstructions] =
     useState<string>("");
