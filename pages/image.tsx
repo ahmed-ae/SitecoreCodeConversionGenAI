@@ -1,13 +1,9 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { useChat, useCompletion } from "ai/react";
-import { parseCode, parseCodeForPreview, extractCodeSection } from "@/lib/util";
-import {
-  Settings,
+import {  useCompletion } from "ai/react";
+import { extractCodeSection } from "@/lib/util";
+import {  
   X,
-  Code,
-  ChevronUp,
-  ChevronDown,
   MessageCircle,
   Upload,
   Send,
@@ -31,8 +27,9 @@ import {
   UserPreferences,
 } from "../services/userPreferences.ts";
 import CodePreview from "@/Components/preview";
-import imageCompression from "browser-image-compression";
+
 import posthog from "posthog-js";
+import ImageUpload from '@/Components/ImageUpload';
 
 const Stream = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -45,17 +42,12 @@ const Stream = () => {
   });
 
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [customInstructions, setCustomInstructions] = useState<string>("");
   const { data: session } = useSession() as { data: Session | null };
-  const [CountUsage, setCountUsage] = useState<number>(0);
-  const [maxTries, setMaxTries] = useState<number>(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState<boolean>(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showOutOfTriesModal, setShowOutOfTriesModal] =
     useState<boolean>(false);
   const disableLoginAndMaxTries =
     process.env.NEXT_PUBLIC_DISABLE_LOGIN_AND_MAX_TRIES === "true";
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [additionalInstructions, setAdditionalInstructions] =
     useState<string>("");
@@ -189,65 +181,11 @@ const Stream = () => {
     });
   };
 
-  const compressImage = async (file: File): Promise<File> => {
-    const options = {
-      maxSizeMB: 3,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-    };
-
-    try {
-      return await imageCompression(file, options);
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      return file; // Return original file if compression fails
-    }
-  };
-
-  const processFile = async (file: File) => {
-    const compressedFile = await compressImage(file);
-    setFile(compressedFile);
+  const handleFileChange = async (file: File) => {
+    setFile(file);
     setAdditionalInstructions("");
     setMessageHistory([]);
     setPreviouslyGeneratedCode("");
-    // Create image preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(compressedFile);
-  };
-
-  const handlePaste = async (e: React.ClipboardEvent) => {
-    const items = e.clipboardData.items;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf("image") !== -1) {
-        const file = items[i].getAsFile();
-        if (file) {
-          await processFile(file);
-        }
-        break;
-      }
-    }
-  };
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      await processFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      await processFile(e.target.files[0]);
-    }
   };
 
   const copyToClipboard = (code: string) => {
@@ -303,49 +241,7 @@ const Stream = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Left side - Image upload (33%) */}
             <div className="flex flex-col h-full">
-              <div
-                className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-lg p-6 mb-4"
-                onPaste={handlePaste}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                tabIndex={0}
-              >
-                <p className="mt-6 text-sm text-gray-400 text-center">
-                  Upload an image/wireframe/screenshot for your component design
-                  to convert it into Sitecore JSS (react) component.
-                </p>
-                {imagePreview ? (
-                  <div className="mb-4 flex-grow flex items-center justify-center">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="max-w-full h-auto max-h-[calc(100%-2rem)] rounded-lg"
-                    />
-                  </div>
-                ) : (
-                  <Upload className="w-24 h-24 text-gray-400 mb-8" />
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="image-upload"
-                  ref={fileInputRef}
-                />
-                <label
-                  htmlFor="image-upload"
-                  className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
-                >
-                  {file ? "Change Image" : "Upload Image"}
-                </label>
-                {file && (
-                  <p className="mt-4 text-sm text-gray-400">{file.name}</p>
-                )}
-                <p className="mt-6 text-sm text-gray-400 text-center">
-                  Or <b>drag / paste</b> an image here.
-                </p>
-              </div>
+              <ImageUpload onFileChange={handleFileChange} />
             </div>
 
             {/* Right side - Code editors, suggestions, and input (67%) */}
