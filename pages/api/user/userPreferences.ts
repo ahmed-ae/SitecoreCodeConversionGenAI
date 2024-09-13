@@ -20,6 +20,20 @@ export default async function handler(
     const preferences = await prisma.userPreference.findUnique({
       where: { userId },
     });
+    if (!preferences) {
+      const defaultPreferences = await prisma.userPreference.create({
+        data: {
+          userId,
+          language: "scriban",
+          model: "claude3sonnet",
+          customInstructions: "",
+          lastCodeUsed: "",
+          CountUsage: 0,
+          maxTries: 25,
+        },
+      });
+      return res.json(defaultPreferences);
+    }
     return res.json(
       preferences || {
         language: "scriban",

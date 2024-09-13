@@ -10,7 +10,6 @@ export default function Document() {
         <meta name="theme-color" content="#000000" />
 
         {/* Default SEO metadata */}
-        <title>Sitecore JSS V0 | Code generation and conversion tool</title>
         <meta
           name="description"
           content="Sitecore JSS V0 is a code generation and conversion tool for Sitecore JSS, Convert any design into working Sitecore Jss component. It allows you to convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI."

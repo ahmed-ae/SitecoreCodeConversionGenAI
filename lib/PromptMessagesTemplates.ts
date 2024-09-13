@@ -19,6 +19,7 @@ export const promptMessages: PromptMessageTemplates = {
       - it should be agnostic of @sitecore-jss/sitecore-jss-nextjs' library, and should assume any prop in field property can any JSX element, this component should render the entire html
       - In case the attached image includes multiple cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
       - extract the component props from the attached image and assign the right property type for each prop
+      - Important:Component names must use PascalCase.
 
     For the first component, follow these rules for design,styling and structure:
       - If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling. If any styles can't be achieved with Tailwind, include custom CSS as needed, otherwise use the library that the user asked for
@@ -36,17 +37,30 @@ export const promptMessages: PromptMessageTemplates = {
       - Make sure fonts and background colors are exactly matching what is in the attached image
       - Make the component self-contained for easy preview
       - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then generate SVG elements yourself and don't use any library, otherwise replace the image url with url from picsum.photos or any available CDN for images
+      - Mock data propertied types for Text or RichText fields should only be string value, NOT HTML elements
       - in mockdata make sure NOT to use single quotes anywhere
       - If  the attached image is a carosuel, add few slides with lorem Epsom mock data and make sure to match the style and design of the carousel arrows and rotate dots
       - if the attached image contains Card images, Ensure that card images are responsive and maintain their aspect ratio while fitting within the cards, Design the cards to have consistent sizing and spacing, with the content (tag, title, link) properly aligned within each card..
       - preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
 
     Now For the second component, follow these rules:
-      - Second component which is a wapper around the first component, this component is @sitecore-jss/sitecore-jss-nextjs' aware, and receive all needed preps for @sitecore-jss/sitecore-jss-nextjs'.
+      - Second component which is a wapper around the first component, this component is @sitecore-jss/sitecore-jss-nextjs' aware, and receive all needed props for @sitecore-jss/sitecore-jss-nextjs'.
       - follow this as an example -> type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };
       - include this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'
       - for every component, define  ComponentProps as type ComponentProps = { rendering: ComponentRendering; params: ComponentParams; }
       - use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>
+      - This component will be wrapper for the first component, when passing the props to the first component, make sure to pass the props as the following example:
+        CORRECT EXAMPLE-
+         <FirstComponent
+          fields={{
+            SlideImage: <Image field={props.fields.ImageFieldName} />,
+            SlideCategory: <Text field={props.fields.TextFieldName} />,
+            SlideContent: <RichText field={props.fields.RichTextFieldName} />,
+            SlideLink: <Link field={props.fields.SlideLinkFieldName} />,
+          }}
+        />
+       Important: Make sure NOT to pass className or tag as part of the field, you can only pass the right field, assume the following is a wrong example as you can't pass className or tag as part of the field -> <Text field={props.fields.title} tag="h1" className="text-4xl md:text-6xl font-bold mb-2" />,
+        
      
 
       Most importantly,  your output must only contain converted code with optional CSS module if the user ask for it, don't include any explanations in your responses
