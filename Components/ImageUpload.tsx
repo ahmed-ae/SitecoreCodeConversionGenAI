@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Upload } from 'lucide-react';
+import React, { useRef, useState } from "react";
+import { Upload } from "lucide-react";
 import imageCompression from "browser-image-compression";
 
 interface ImageUploadProps {
@@ -14,17 +14,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      await processFile(selectedFile)
+      await processFile(selectedFile);
     }
   };
 
   const handlePaste = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData.items;
     for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf('image') !== -1) {
+      if (items[i].type.indexOf("image") !== -1) {
         const pastedFile = items[i].getAsFile();
         if (pastedFile) {
-         await processFile(pastedFile)
+          await processFile(pastedFile);
         }
         break;
       }
@@ -36,7 +36,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
     e.stopPropagation();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
-      await processFile(droppedFile)
+      await processFile(droppedFile);
     }
   };
 
@@ -59,7 +59,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
     };
     reader.readAsDataURL(compressedFile);
   };
-  
+
   const compressImage = async (file: File): Promise<File> => {
     const options = {
       maxSizeMB: 3,
@@ -83,8 +83,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
       tabIndex={0}
     >
       <p className="mt-6 text-sm text-gray-400 text-center">
-        Upload an image/wireframe/screenshot for your component design
-        to convert it into Sitecore JSS (react) component.
+        Upload an image/wireframe/screenshot for your component design to
+        convert it into Sitecore JSS (Nextjs) component.
       </p>
       {imagePreview ? (
         <div className="mb-4 flex-grow flex items-center justify-center">
@@ -111,9 +111,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
       >
         {file ? "Change Image" : "Upload Image"}
       </label>
-      {file && (
-        <p className="mt-4 text-sm text-gray-400">{file.name}</p>
-      )}
+      {file && <p className="mt-4 text-sm text-gray-400">{file.name}</p>}
       <p className="mt-6 text-sm text-gray-400 text-center">
         Or <b>drag / paste</b> an image here.
       </p>

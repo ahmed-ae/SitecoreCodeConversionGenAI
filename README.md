@@ -10,9 +10,9 @@
 
 This project is an AI-powered tool for Sitecore developers, leveraging the power of Generative AI to streamline the process of creating Sitecore JSS components. It offers two primary functionalities:
 
-1. **Design-to-Code Conversion**: Transform any design, screenshot, or wireframe into a fully functional Sitecore JSS component (React/TypeScript) in seconds.
+1. **Design-to-Code Conversion**: Transform any design, screenshot, or wireframe into a fully functional Sitecore JSS component (Nextjs/TypeScript) in seconds.
 
-2. **Legacy Code Conversion**: Convert traditional Sitecore MVC or SXA Scriban components into modern Sitecore JSS components (React).
+2. **Legacy Code Conversion**: Convert traditional Sitecore MVC or SXA Scriban components into modern Sitecore JSS components (Nextjs).
 
 ## 🌐 Live Demo
 
@@ -87,7 +87,7 @@ Follow these steps to get your development environment set up:
 
 2. **Legacy Code Conversion**:
    - Paste your Sitecore MVC or SXA Scriban code
-   - Get the converted Sitecore JSS (React) component instantly
+   - Get the converted Sitecore JSS (Nextjs) component instantly
 
 ## 🤝 Contributing
 
