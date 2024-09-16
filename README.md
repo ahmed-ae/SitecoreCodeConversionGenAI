@@ -4,7 +4,8 @@
 
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
-[![Sitecore JSS AI Code Generator](https://i.postimg.cc/T3SkLmJD/Sitecore-JSS-V0.png)](https://postimg.cc/Yv6NTvVr)
+[![Sitecore JSS AI Code Generator](https://i.postimg.cc/85zF8pCD/image.png)](https://postimg.cc/f31WmhXg)
+
 
 ## About The Project
 
