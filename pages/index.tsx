@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import {  useCompletion } from "ai/react";
-import {  extractCodeSection } from "@/lib/util";
-import {  
-  X, 
+import { useCompletion } from "ai/react";
+import { extractCodeSection } from "@/lib/util";
+import {
+  X,
   MessageCircle,
   Send,
   Maximize2,
@@ -27,7 +27,7 @@ import {
 } from "../services/userPreferences.ts";
 import CodePreview from "@/Components/previewV2";
 import posthog from "posthog-js";
-import ImageUpload from '@/Components/ImageUpload';
+import ImageUpload from "@/Components/ImageUpload";
 import Head from "next/head";
 
 const Stream = () => {
@@ -228,7 +228,9 @@ const Stream = () => {
   return (
     <>
       <Head>
-        <title>Sitecore JSS V0 | Code generation and conversion tool</title>
+        <title>
+          Sitecore JSS Copilot | Code generation and conversion tool
+        </title>
       </Head>
       <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
         <div>

@@ -1,4 +1,4 @@
-# Sitecore JSS V0 : AI-Powered Code Generator
+# Sitecore JSS Copilot : AI-Powered Code Generator
 
 [![Deploy to Vercel (prod)](https://github.com/ahmed-ae/SitecoreCodeConversionGenAI/actions/workflows/prod-deploy.yml/badge.svg?branch=main)](https://github.com/ahmed-ae/SitecoreCodeConversionGenAI/actions/workflows/prod-deploy.yml)
 
@@ -6,7 +6,7 @@
 
 [![Sitecore JSS AI Code Generator](https://i.postimg.cc/T3SkLmJD/Sitecore-JSS-V0.png)](https://postimg.cc/Yv6NTvVr)
 
-## 🚀 About The Project
+## About The Project
 
 This project is an AI-powered tool for Sitecore developers, leveraging the power of Generative AI to streamline the process of creating Sitecore JSS components. It offers two primary functionalities:
 
@@ -16,16 +16,16 @@ This project is an AI-powered tool for Sitecore developers, leveraging the power
 
 ## 🌐 Live Demo
 
-Check out the live demo of the Sitecore JSS V0 [here](https://jss-v0.vercel.app/).
+Check out the live demo of the Sitecore JSS Copilot [here](https://jss-copilot.vercel.app/).
 
 ### Key Features
 
-- 🎨 Convert designs to working Sitecore JSS components instantly
-- 🔄 Real-time preview of generated components
-- 💬 AI-powered chat for component customization
-- 🔧 Legacy Sitecore code conversion
+- Convert designs to working Sitecore JSS components instantly
+- Real-time preview of generated components
+- AI-powered chat for component customization
+- Legacy Sitecore code conversion
 
-## 🛠️ Installation
+## Installation
 
 Follow these steps to get your development environment set up:
 
@@ -77,7 +77,7 @@ Follow these steps to get your development environment set up:
 
 7. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application in action!
 
-## 🖥️ Usage
+## Usage
 
 1. **Design-to-Code Conversion**:
 

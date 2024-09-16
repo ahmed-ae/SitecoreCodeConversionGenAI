@@ -12,11 +12,11 @@ export default function Document() {
         {/* Default SEO metadata */}
         <meta
           name="description"
-          content="Sitecore JSS V0 is a code generation and conversion tool for Sitecore JSS, Convert any design into working Sitecore Jss component. It allows you to convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI."
+          content="Sitecore JSS Copilot is a code generation and conversion tool for Sitecore JSS, Convert any design into working Sitecore Jss component. It allows you to convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI."
         />
         <meta
           name="keywords"
-          content="Sitecore, SXA, Scriban, Razor, JSS, Next.js, code conversion, AI, GPT-4, Claude, Gemini, Sitecore JSS V0"
+          content="Sitecore, SXA, Scriban, Razor, JSS, Next.js, code conversion, AI, GPT-4, Claude, Gemini, Sitecore JSS Copilot"
         />
 
         {/* Open Graph / Facebook */}
