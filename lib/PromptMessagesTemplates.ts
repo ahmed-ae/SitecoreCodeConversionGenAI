@@ -17,20 +17,18 @@ export const promptMessages: PromptMessageTemplates = {
       
     we want to generate 2 react components, For the First component you must follow these rules:
       - it should be agnostic of @sitecore-jss/sitecore-jss-nextjs' library, and should assume any prop in field property can any JSX element, this component should render the entire html
-      - In case the attached image includes multiple cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
+      - In case the attached image includes multiple components/cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
       - extract the component props from the attached image and assign the right property type for each prop
       - Important:Component names must use PascalCase.
 
-    For the first component, follow these rules for design,styling and structure:
-      - If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling. If any styles can't be achieved with Tailwind, include custom CSS as needed, otherwise use the library that the user asked for
-      - regardless of what design/styling library the user ask for, make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes
-      - if user asks for CSS modules, Please create a responsive CSS module that uses a grid layout for larger screens and stacks cards vertically on smaller screens. Include media queries for different screen sizes.
-      - If user asks for styled components, include the code for styled components library in first component
+    For the first component, follow these rules:
       - Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
+      - If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling, otherwise use the library that the user asked for
+      - Make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes
+      - If user asks for styled components, include the code for styled components library in first component      
       - Implement a clear hierarchy for text elements, with distinct styles for the main title, card titles, and links
       - Use a cohesive color scheme that matches the branding of the attached image, including specific colors for backgrounds, text, and interactive elements like links and tags.
       - Ensure the code implementation matches the visual design as closely as possible.
-      - Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
       - Generate semantic HTML5 markup that reflects the structure and content hierarchy of the design.
       - Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
       - Optimize the code for performance, keeping it clean, well-commented, and following best practices for web accessibility (WCAG guidelines).
@@ -43,7 +41,7 @@ export const promptMessages: PromptMessageTemplates = {
       - if the attached image contains Card images, Ensure that card images are responsive and maintain their aspect ratio while fitting within the cards, Design the cards to have consistent sizing and spacing, with the content (tag, title, link) properly aligned within each card..
       - preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
 
-    Now For the second component, follow these rules:
+    For the second component, follow these rules:
       - Second component which is a wapper around the first component, this component is @sitecore-jss/sitecore-jss-nextjs' aware, and receive all needed props for @sitecore-jss/sitecore-jss-nextjs'.
       - follow this as an example -> type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };
       - include this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'
@@ -59,10 +57,8 @@ export const promptMessages: PromptMessageTemplates = {
             SlideLink: <Link field={props.fields.SlideLinkFieldName} />,
           }}
         />
-       Important: Make sure NOT to pass className or tag as part of the field, you can only pass the right field, assume the following is a wrong example as you can't pass className or tag as part of the field -> <Text field={props.fields.title} tag="h1" className="text-4xl md:text-6xl font-bold mb-2" />,
+      Very Important: Make sure NOT to pass className or tag as part of the field, you can only pass the right field, assume the following is a wrong example as you can't pass className or tag as part of the field -> <Text field={props.fields.title} tag="h1" className="text-4xl md:text-6xl font-bold mb-2" />,
         
-     
-
       Most importantly,  your output must only contain converted code with optional CSS module if the user ask for it, don't include any explanations in your responses
       So your output MUST be 
       (Optional CSS module - only if user asked for CSS modules, NOT for styled components) prefixed with a comment /*start css module*/ and ended with /*end css module*/ also add a comment after the prefix with the name of the file, for example /*filename - component.module.css*/
