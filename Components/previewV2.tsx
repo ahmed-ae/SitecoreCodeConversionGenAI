@@ -83,7 +83,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
             <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
             <script src="https://unpkg.com/styled-components@6.1.13/dist/styled-components.min.js"></script>
             <script src="https://cdn.tailwindcss.com"></script>
-            <style>${cssModuleStyles}</style>
+            <style>${cssModule}</style>
           </head>
           <body>
             <div id="root"></div>
