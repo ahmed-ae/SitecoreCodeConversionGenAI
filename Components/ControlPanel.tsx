@@ -37,25 +37,29 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           <Settings className="mr-1" size={16} />
           Settings
         </button>
-        {!isLoading && <button
-          className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
-          onClick={onConvertClick}
-        >
-          Convert        
-        </button>}
-        {isLoading && <button
-          className="bg-red-500 hover:bg-red-400 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto flex items-center justify-center"
-          onClick={onStopClick}
-        >
-          {isLoading ? (
-            <>
-              <Pause className="mr-2 animate-pulse" size={16} />
-              Stop...
-            </>
-          ) : (
-            "Convert"
-          )}
-        </button>}
+        {!isLoading && (
+          <button
+            className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
+            onClick={onConvertClick}
+          >
+            Generate Code
+          </button>
+        )}
+        {isLoading && (
+          <button
+            className="bg-red-500 hover:bg-red-400 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto flex items-center justify-center"
+            onClick={onStopClick}
+          >
+            {isLoading ? (
+              <>
+                <Pause className="mr-2 animate-pulse" size={16} />
+                Stop...
+              </>
+            ) : (
+              "Convert"
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
