@@ -8,6 +8,8 @@ import {
   Send,
   Maximize2,
   LayoutTemplate,
+  ChevronDown,
+  HelpCircle,
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import type { Session } from "next-auth";
@@ -53,10 +55,10 @@ const Stream = () => {
   const [messageHistory, setMessageHistory] = useState<string[]>([]);
 
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
-  const [suggestions] = useState<string[]>([
-    "Use styled components instead of tailwind",
-    "Use CSS modules instead of tailwind",
-  ]);
+  const [framework, setFramework] = useState("jss/nextjs");
+  const [styling, setStyling] = useState("tailwind");
+  const [showTooltip1, setShowTooltip1] = useState(false);
+  const [showTooltip2, setShowTooltip2] = useState(false);
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
@@ -208,9 +210,6 @@ const Stream = () => {
     closeModal();
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setAdditionalInstructions(suggestion);
-  };
   const handleInputKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -348,20 +347,102 @@ const Stream = () => {
                     />
                   )}
                 </div>
-
-                {/* Suggestion bubbles */}
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {suggestions.map((suggestion, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      className="border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded-full text-sm transition duration-300 flex items-center justify-center min-h-[40px]"
+                {/* Code Settings */}
+                <div className="bg-gray-800 rounded-lg p-1 mb-2">
+                  {/*<h3 className="text-lg font-semibold mb-3 flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
                     >
-                      {suggestion}
-                    </button>
-                  ))}
+                      <path
+                        fillRule="evenodd"
+                        d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Code Settings
+                  </h3>*/}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="relative">
+                      <label
+                        htmlFor="framework"
+                        className="text-gray-300 font-medium w-1/4 block mb-1 flex items-center"
+                      >
+                        Framework
+                        <span
+                          className="ml-1 relative"
+                          onMouseEnter={() => setShowTooltip1(true)}
+                          onMouseLeave={() => setShowTooltip1(false)}
+                        >
+                          <HelpCircle
+                            size={16}
+                            className="text-gray-400 cursor-help"
+                          />
+                          {showTooltip1 && (
+                            <span
+                              style={{
+                                position: "absolute",
+                                left: "50%",
+                                bottom: "100%",
+                                transform: "translateX(-50%)",
+                                marginBottom: "5px",
+                                padding: "8px",
+                                backgroundColor: "#4a5568",
+                                color: "#e2e8f0",
+                                fontSize: "0.75rem",
+                                borderRadius: "4px",
+                                width: "200px",
+                                textAlign: "center",
+                                zIndex: 10,
+                              }}
+                            >
+                              Select which flavor of Sitecore JSS you want for
+                              your code. Currently supporting Next.js, other
+                              options coming soon.
+                            </span>
+                          )}
+                        </span>
+                      </label>
+                      <select
+                        id="framework"
+                        className="w-full bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-3 py-2 appearance-none focus:outline-none focus:ring-2 focus:ring-[#BE6420] pr-8"
+                        value={framework}
+                        onChange={(e) => setFramework(e.target.value)}
+                      >
+                        <option value="jss/nextjs">JSS/Next.js</option>
+                      </select>
+                      <ChevronDown
+                        className="absolute right-2 top-1/2 transform translate-y-1/2 text-gray-400 pointer-events-none"
+                        size={16}
+                      />
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="styling"
+                        className="text-gray-300 font-medium w-1/4 block mb-1"
+                      >
+                        Styling
+                      </label>
+                      <select
+                        id="styling"
+                        className="w-full bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-3 py-2 appearance-none focus:outline-none focus:ring-2 focus:ring-[#BE6420] pr-8"
+                        value={styling}
+                        onChange={(e) => setStyling(e.target.value)}
+                      >
+                        <option value="tailwind">Tailwind</option>
+                        <option value="css-modules">CSS Modules</option>
+                        <option value="styled-components">
+                          Styled Components
+                        </option>
+                      </select>
+                      <ChevronDown
+                        className="absolute right-2 top-1/2 transform translate-y-1/2 text-gray-400 pointer-events-none"
+                        size={16}
+                      />
+                    </div>
+                  </div>
                 </div>
-
                 {/* Input for additional instructions */}
                 <div className="relative">
                   <textarea
@@ -369,24 +450,31 @@ const Stream = () => {
                     onChange={(e) => setAdditionalInstructions(e.target.value)}
                     onKeyPress={handleInputKeyPress}
                     name="additionalInstructions"
-                    className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-20 resize-none"
+                    className="bg-gray-700 text-gray-100 rounded-md px-4 py-3 w-full outline-none focus:ring-2 focus:ring-blue-500 pr-20 resize-none h-20"
                     placeholder="How would you like to customize the code?"
-                    rows={2}
+                    style={{ verticalAlign: "top" }}
                   />
-                  <button
-                    onClick={handleConvertImage}
-                    className="absolute right-10 top-3 text-gray-400 hover:text-gray-200"
-                  >
-                    <Send size={20} />
-                  </button>
-                  {messageHistory.length > 0 && (
+                  <div className="absolute bottom-3 right-3 flex items-center">
+                    {messageHistory.length > 0 && (
+                      <>
+                        <button
+                          onClick={() => setIsMessageHistoryOpen(true)}
+                          className="text-gray-400 hover:text-gray-200 p-1 mr-1"
+                        >
+                          <MessageCircle size={20} />
+                        </button>
+                        <span className="text-gray-400 text-xl font-light mx-1">
+                          |
+                        </span>
+                      </>
+                    )}
                     <button
-                      onClick={() => setIsMessageHistoryOpen(true)}
-                      className="absolute right-2 top-3 text-gray-400 hover:text-gray-200"
+                      onClick={handleConvertImage}
+                      className="text-gray-400 hover:text-gray-200 p-1 ml-1"
                     >
-                      <MessageCircle size={20} />
+                      <Send size={20} />
                     </button>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
