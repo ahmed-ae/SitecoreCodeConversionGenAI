@@ -46,6 +46,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   preferences   UserPreference?
+  profile       UserProfile?
 }
 
 model VerificationToken {
@@ -66,4 +67,11 @@ model UserPreference {
   CountUsage Int @default(0)
   maxTries Int @default(25)
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  githubRepos Json
+  user        User     @relation(fields: [userId], references: [id])
 }
