@@ -406,7 +406,7 @@ const Stream = () => {
                       </label>
                       <select
                         id="framework"
-                        className="w-full bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
+                        className="w-full bg-gray-700  text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
                         value={framework}
                         onChange={(e) => setFramework(e.target.value)}
                       >
@@ -426,7 +426,7 @@ const Stream = () => {
                       </label>
                       <select
                         id="styling"
-                        className="w-full bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
+                        className="w-full bg-gray-700  text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
                         value={styling}
                         onChange={(e) => setStyling(e.target.value)}
                       >
