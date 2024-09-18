@@ -367,16 +367,16 @@ const Stream = () => {
                     <div className="relative">
                       <label
                         htmlFor="framework"
-                        className="text-gray-300 font-medium w-1/4 block mb-1 flex items-center"
+                        className="text-gray-300 text-xs font-medium block mb-0.5 flex items-center"
                       >
                         Framework
                         <span
-                          className="ml-1 relative"
+                          className="ml-0.5 relative"
                           onMouseEnter={() => setShowTooltip1(true)}
                           onMouseLeave={() => setShowTooltip1(false)}
                         >
                           <HelpCircle
-                            size={16}
+                            size={12}
                             className="text-gray-400 cursor-help"
                           />
                           {showTooltip1 && (
@@ -386,13 +386,13 @@ const Stream = () => {
                                 left: "50%",
                                 bottom: "100%",
                                 transform: "translateX(-50%)",
-                                marginBottom: "5px",
-                                padding: "8px",
+                                marginBottom: "3px",
+                                padding: "6px",
                                 backgroundColor: "#4a5568",
                                 color: "#e2e8f0",
-                                fontSize: "0.75rem",
-                                borderRadius: "4px",
-                                width: "200px",
+                                fontSize: "0.65rem",
+                                borderRadius: "3px",
+                                width: "180px",
                                 textAlign: "center",
                                 zIndex: 10,
                               }}
@@ -406,27 +406,27 @@ const Stream = () => {
                       </label>
                       <select
                         id="framework"
-                        className="w-full bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-3 py-2 appearance-none focus:outline-none focus:ring-2 focus:ring-[#BE6420] pr-8"
+                        className="w-full bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
                         value={framework}
                         onChange={(e) => setFramework(e.target.value)}
                       >
                         <option value="jss/nextjs">JSS/Next.js</option>
                       </select>
                       <ChevronDown
-                        className="absolute right-2 top-1/2 transform translate-y-1/2 text-gray-400 pointer-events-none"
-                        size={16}
+                        className="absolute right-1.5 top-1/2 transform translate-y-1/2 text-gray-400 pointer-events-none"
+                        size={12}
                       />
                     </div>
                     <div className="relative">
                       <label
                         htmlFor="styling"
-                        className="text-gray-300 font-medium w-1/4 block mb-1"
+                        className="text-gray-300 text-xs font-medium block mb-0.5"
                       >
                         Styling
                       </label>
                       <select
                         id="styling"
-                        className="w-full bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-3 py-2 appearance-none focus:outline-none focus:ring-2 focus:ring-[#BE6420] pr-8"
+                        className="w-full bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
                         value={styling}
                         onChange={(e) => setStyling(e.target.value)}
                       >
@@ -437,8 +437,8 @@ const Stream = () => {
                         </option>
                       </select>
                       <ChevronDown
-                        className="absolute right-2 top-1/2 transform translate-y-1/2 text-gray-400 pointer-events-none"
-                        size={16}
+                        className="absolute right-1.5 top-1/2 transform translate-y-1/2 text-gray-400 pointer-events-none"
+                        size={12}
                       />
                     </div>
                   </div>
