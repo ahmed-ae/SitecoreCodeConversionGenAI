@@ -48,28 +48,30 @@ export default async function handler(
 
   if (req.method === "POST") {
     //console.log("Saving User pref : ", req.body);
-    const { userId, language, model, customInstructions } = req.body;
+    const { userId, language, model, customInstructions, framework, styling } = req.body;
     const preferences = await prisma.userPreference.upsert({
       where: { userId },
-      update: { language, model, customInstructions },
+      update: { language, model, customInstructions, framework, styling },
       create: {
         userId,
         language,
         model,
-        customInstructions,
+        customInstructions, 
+        framework, 
+        styling
       },
     });
     return res.json(preferences);
   }
   if (req.method === "UPDATE") {
-    const { userId, CountUsage, lastCodeUsed } = req.body;
+    const { userId, CountUsage, lastCodeUsed, framework, styling } = req.body;
     const preferences = await prisma.userPreference.upsert({
       where: { userId },
-      update: { CountUsage, lastCodeUsed },
+      update: { CountUsage, lastCodeUsed, framework, styling },
       create: {
         userId,
         CountUsage,
-        lastCodeUsed,
+        lastCodeUsed, framework, styling
       },
     });
     return res.json(preferences);

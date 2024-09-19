@@ -30,6 +30,8 @@ const Stream = () => {
       "<!--paste your source code that you want to convert here -->",
     CountUsage: 0,
     maxTries: 0,
+    framework: "nextjs",
+    styling: "tailwind"
   });
   const [showModal, setShowModal] = useState<boolean>(false);
   const { data: session } = useSession() as { data: Session | null };
@@ -79,7 +81,9 @@ const Stream = () => {
       const newCount = await updateUsageCount(
         session,
         preferences.lastCodeUsed,
-        preferences.CountUsage
+        preferences.CountUsage,
+        preferences.framework,
+        preferences.styling
       );
       setPreferences((prev: UserPreferences) => ({
         ...prev,

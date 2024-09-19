@@ -24,7 +24,9 @@ export default async function POST(req: Request) {
       customInstructions,
       additionalInstructions,
       messageHistory,
-      previouslyGeneratedCode,
+      framework,
+      styling,
+      previouslyGeneratedCode
     } = JSON.parse(prompt);
     let languageModel: LanguageModel = openAiProvider(
       process.env.CLAUDE_3_SONNET_MODEL_ID!
@@ -33,6 +35,8 @@ export default async function POST(req: Request) {
       customInstructions,
       additionalInstructions,
       messageHistory,
+      framework,
+      styling,
       previouslyGeneratedCode
     );
 

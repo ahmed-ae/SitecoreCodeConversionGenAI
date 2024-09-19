@@ -66,6 +66,8 @@ model UserPreference {
   lastCodeUsed String?
   CountUsage Int @default(0)
   maxTries Int @default(25)
+  framework String @default("nextjs")  
+  styling   String @default("tailwind") 
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

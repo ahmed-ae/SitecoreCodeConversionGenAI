@@ -11,17 +11,20 @@ export const promptMessages: PromptMessageTemplates = {
 - Use a cohesive color scheme that matches the branding of the attached image, including specific colors for backgrounds, text, and interactive elements like links and tags.
 - Ensure the code implementation matches the visual design as closely as possible.
 - Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
+- make sure to re-render all of code (optional css module, first component, second component) if asked for modifications on any component
+
 
 `,
   systemMessageImagePrompt: `Act like a react code generator expert, where you convert images into Sitecore JSS components written in react/typescript 
       
     we want to generate 2 react components, For the First component you must follow these rules:
+      
+    For the first component, follow these rules:
       - it should be agnostic of @sitecore-jss/sitecore-jss-nextjs' library, and should assume any prop in field property can any JSX element, this component should render the entire html
       - In case the attached image includes multiple components/cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
       - extract the component props from the attached image and assign the right property type for each prop
-      - Important:Component names must use PascalCase.
-
-    For the first component, follow these rules:
+      - Important: Component names must use PascalCase.
+      - don't import any 3rd party libraries
       - Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
       - If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling, otherwise use the library that the user asked for
       - Make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes
@@ -43,10 +46,6 @@ export const promptMessages: PromptMessageTemplates = {
 
     For the second component, follow these rules:
       - Second component which is a wapper around the first component, this component is @sitecore-jss/sitecore-jss-nextjs' aware, and receive all needed props for @sitecore-jss/sitecore-jss-nextjs'.
-      - follow this as an example -> type ComponentNameProps = ComponentProps & {fields: {imagefield: ImageField;textfield: Field<string>;linkfield: LinkField;datefield: DateField} };
-      - include this import : import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs'
-      - for every component, define  ComponentProps as type ComponentProps = { rendering: ComponentRendering; params: ComponentParams; }
-      - use (props: ComponentNameProps): JSX.Element  instead of React.FC<props>
       - This component will be wrapper for the first component, when passing the props to the first component, make sure to pass the props as the following example:
         CORRECT EXAMPLE-
          <FirstComponent
@@ -65,6 +64,7 @@ export const promptMessages: PromptMessageTemplates = {
       (First Component) prefixed with a comment /*start first component*/ and ended with /*end first component*/ also add a comment after the prefix with the name of the file, for example /*filename - componentName.tsx*/
       (Second Component) prefixed with a comment /*start second component*/ and ended with /*end second component*/ also add a comment after the prefix with the name of the file, for example /*filename - SitecoreWrapperComponent.tsx*/
 
+      
       Here is an example of a Hero Banner component that you can use as a reference:
       //First component : FED Component (Sitecore Agnostic)
       import React from 'react';
@@ -116,8 +116,9 @@ export const promptMessages: PromptMessageTemplates = {
         RichText,
         Text,
         withDatasourceCheck,
+        ComponentParams,
+        ComponentRendering
       } from '@sitecore-jss/sitecore-jss-nextjs';
-      import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs';
       import { Link } from '@sitecore-jss/sitecore-jss-react';
       import HeroComponent from './HeroComponent';
 

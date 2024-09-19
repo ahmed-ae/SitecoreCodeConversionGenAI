@@ -40,6 +40,8 @@ const Stream = () => {
     lastCodeUsed: "",
     CountUsage: 0,
     maxTries: 0,
+    framework: "nextjs",
+    styling: "tailwind"
   });
 
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -55,10 +57,7 @@ const Stream = () => {
   const [messageHistory, setMessageHistory] = useState<string[]>([]);
 
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
-  const [framework, setFramework] = useState("jss/nextjs");
-  const [styling, setStyling] = useState("tailwind");
   const [showTooltip1, setShowTooltip1] = useState(false);
-  const [showTooltip2, setShowTooltip2] = useState(false);
   const { completion, isLoading, stop, complete, error } = useCompletion({
     api: "/api/image/Convert",
   });
@@ -154,16 +153,15 @@ const Stream = () => {
       if (additionalInstructions.trim() !== "") {
         setMessageHistory((prev) => [...prev, additionalInstructions]);
       }
-      const allInstructions = [...messageHistory, additionalInstructions].join(
-        " , "
-      );
       setAdditionalInstructions("");
       const message = {
         model: preferences.model,
         customInstructions: preferences.customInstructions,
         additionalInstructions: additionalInstructions,
         messageHistory: messageHistory,
-        previouslyGeneratedCode: previouslyGeneratedCode,
+        framework: preferences.framework,
+        styling: preferences.styling,
+        previouslyGeneratedCode: previouslyGeneratedCode
       };
 
       const base64Files = await convertToBase64(file);
@@ -172,7 +170,9 @@ const Stream = () => {
       const newCount = await updateUsageCount(
         session,
         preferences.lastCodeUsed,
-        preferences.CountUsage
+        preferences.CountUsage,
+        preferences.framework,
+        preferences.styling
       );
       setPreferences((prev) => ({ ...prev, CountUsage: newCount }));
 
@@ -349,20 +349,7 @@ const Stream = () => {
                 </div>
                 {/* Code Settings */}
                 <div className="bg-gray-800 rounded-lg p-1 mb-2">
-                  {/*<h3 className="text-lg font-semibold mb-3 flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Code Settings
-                  </h3>*/}
+                  
                   <div className="grid grid-cols-2 gap-2">
                     <div className="relative">
                       <label
@@ -407,10 +394,10 @@ const Stream = () => {
                       <select
                         id="framework"
                         className="w-full bg-gray-700  text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
-                        value={framework}
-                        onChange={(e) => setFramework(e.target.value)}
+                        value={preferences.framework}
+                        onChange={(e) => setPreferences((prev) => ({ ...prev, framework: e.target.value }))}
                       >
-                        <option value="jss/nextjs">JSS/Next.js</option>
+                        <option value="nextjs">JSS/Next.js</option>
                       </select>
                       <ChevronDown
                         className="absolute right-1.5 top-1/2 transform translate-y-1/2 text-gray-400 pointer-events-none"
@@ -427,8 +414,8 @@ const Stream = () => {
                       <select
                         id="styling"
                         className="w-full bg-gray-700  text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
-                        value={styling}
-                        onChange={(e) => setStyling(e.target.value)}
+                        value= {preferences.styling}
+                        onChange={(e) => setPreferences((prev) => ({ ...prev, styling: e.target.value }))}
                       >
                         <option value="tailwind">Tailwind</option>
                         <option value="css-modules">CSS Modules</option>
@@ -468,11 +455,16 @@ const Stream = () => {
                         </span>
                       </>
                     )}
-                    <button
+                     <button
                       onClick={handleConvertImage}
                       className="text-gray-400 hover:text-gray-200 p-1 ml-1"
+                      disabled={isLoading}
                     >
-                      <Send size={20} />
+                      {isLoading ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-400"></div>
+                      ) : (
+                        <Send size={20} />
+                      )}
                     </button>
                   </div>
                 </div>

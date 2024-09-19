@@ -7,6 +7,8 @@ export interface UserPreferences {
   lastCodeUsed: string;
   CountUsage: number;
   maxTries: number;
+  styling:string,
+  framework:string
 }
 
 export const savePreferences = async (
@@ -39,7 +41,9 @@ export const savePreferences = async (
 export const updateUsageCount = async (
   session: Session | null,
   sourceCode: string,
-  currentCount: number
+  currentCount: number,
+  framework:string,
+  styling:string
 ): Promise<number> => {
   const newCount = currentCount + 1;
   if (session?.user?.id) {
@@ -52,6 +56,8 @@ export const updateUsageCount = async (
         userId: session.user.id,
         lastCodeUsed: sourceCode,
         CountUsage: newCount,
+        framework: framework,
+        styling: styling
       }),
     });
     const data = await response.json();
@@ -64,6 +70,8 @@ export const updateUsageCount = async (
       : ({} as UserPreferences);
     preferences.lastCodeUsed = sourceCode;
     preferences.CountUsage = newCount;
+    preferences.framework = framework;
+    preferences.styling = styling;
     localStorage.setItem("userPreferences", JSON.stringify(preferences));
     return newCount;
   }

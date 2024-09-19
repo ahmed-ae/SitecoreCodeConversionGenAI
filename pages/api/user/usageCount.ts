@@ -15,14 +15,14 @@ export default async function handler(
   }
 
   if (req.method === "POST") {
-    const { userId, CountUsage, lastCodeUsed } = req.body;
+    const { userId, CountUsage, lastCodeUsed, framework, styling  } = req.body;
     const preferences = await prisma.userPreference.upsert({
       where: { userId },
-      update: { CountUsage, lastCodeUsed },
+      update: { CountUsage, lastCodeUsed, framework, styling  },
       create: {
         userId,
         CountUsage,
-        lastCodeUsed,
+        lastCodeUsed, framework, styling 
       },
     });
     return res.json(preferences);
