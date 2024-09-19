@@ -17,7 +17,8 @@ export default async function handler(
 
   if (req.method === "GET") {
     const userId = req.query.userId as string;
-    const profile = await prisma.UserProfile.findUnique({
+    //await prisma.userProfile.findUnique
+    const profile = await prisma.userProfile.findUnique({
       where: { userId },
     });
     return res.json(profile || { githubRepos: [] });
