@@ -148,8 +148,8 @@ export function generateImage2CodePrompt(
   customInstructions: string,
   additionalInstructions: string,
   messageHistory: string[],
-  framework:string,
-  styling:string,
+  framework: string,
+  styling: string,
   previouslyGeneratedCode: string
 ): Message[] {
   let systemMessage = "";
@@ -157,13 +157,10 @@ export function generateImage2CodePrompt(
   let userPrompt2 = "";
   let assistantMessage = "";
 
-  const stylingPrompt =  GetStylingPromtInstruction(styling)
-  if(!additionalInstructions && additionalInstructions!="")
-  {
+  const stylingPrompt = GetStylingPromtInstruction(styling);
+  if (additionalInstructions && additionalInstructions != "") {
     additionalInstructions += " \n " + stylingPrompt;
-  }
-  else
-  {
+  } else {
     additionalInstructions = " \n " + stylingPrompt;
   }
 
@@ -192,7 +189,7 @@ export function generateImage2CodePrompt(
         " ```";
     }
   }
-  
+
   systemMessage = promptMessages.systemMessageImagePrompt;
   if (
     previouslyGeneratedCode &&
@@ -223,8 +220,7 @@ export function generateImage2CodePrompt(
   }
 }
 
-function GetStylingPromtInstruction(styling: string): string{
-  
+function GetStylingPromtInstruction(styling: string): string {
   switch (styling) {
     case "tailwind":
       return "use tailwind for styling ";
