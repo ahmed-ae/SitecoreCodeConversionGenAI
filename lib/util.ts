@@ -113,6 +113,9 @@ export function generateCodeConversionPrompt(
         " ```";
     }
     userPrompt += "\n Source Code:" + sourceCode;
+
+    systemMessage =
+    "You help to convert C# code written for Sitecore JSS content resolvers into GraphQl Query for XM Cloud \n";
   } else if (language === "razor") {
     userPrompt = `Convert the following code into full Sitecore JSS NextJs with TypeScript, your output must only contain converted code, don't include any explanations in your responses`;
 
