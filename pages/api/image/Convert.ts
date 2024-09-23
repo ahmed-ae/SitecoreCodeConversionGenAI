@@ -56,7 +56,9 @@ export default async function POST(req: Request) {
       languageModel = anthropicProvider(process.env.CLAUDE_3_OPUS_MODEL_ID!);
     } else if (model === "claude3sonnet") {
       selectedModel = process.env.CLAUDE_3_SONNET_MODEL_ID!;
-      languageModel = anthropicProvider(process.env.CLAUDE_3_SONNET_MODEL_ID!);
+      languageModel = anthropicProvider(process.env.CLAUDE_3_SONNET_MODEL_ID!, {
+        cacheControl: true,
+      });
     } else if (model === "claude3haiku") {
       selectedModel = process.env.CLAUDE_3_HAIKU_MODEL_ID!;
       languageModel = anthropicProvider(process.env.CLAUDE_3_HAIKU_MODEL_ID!);
@@ -85,8 +87,14 @@ export default async function POST(req: Request) {
         model: languageModel,
         maxTokens: max_tokens,
         temperature: temperature,
-        system: promtMessages[0].content,
         messages: [
+          {
+            role: "system",
+            content : promtMessages[0].content,
+            experimental_providerMetadata: {
+              anthropic: { cacheControl: { type: 'ephemeral' } },
+            },
+          },
           {
             role: "user",
             content: [
@@ -114,8 +122,14 @@ export default async function POST(req: Request) {
         model: languageModel,
         maxTokens: max_tokens,
         temperature: temperature,
-        system: promtMessages[0].content,
         messages: [
+          {
+            role: "system",
+            content : promtMessages[0].content,
+            experimental_providerMetadata: {
+              anthropic: { cacheControl: { type: 'ephemeral' } },
+            },
+          },
           {
             role: "user",
             content: [
