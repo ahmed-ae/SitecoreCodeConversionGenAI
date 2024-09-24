@@ -41,7 +41,7 @@ const Stream = () => {
     CountUsage: 0,
     maxTries: 0,
     framework: "nextjs",
-    styling: "tailwind"
+    styling: "tailwind",
   });
 
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -161,7 +161,7 @@ const Stream = () => {
         messageHistory: messageHistory,
         framework: preferences.framework,
         styling: preferences.styling,
-        previouslyGeneratedCode: previouslyGeneratedCode
+        previouslyGeneratedCode: previouslyGeneratedCode,
       };
 
       const base64Files = await convertToBase64(file);
@@ -261,8 +261,8 @@ const Stream = () => {
               {/* Right side - Code editors, suggestions, and input (67%) */}
               <div className="sm:col-span-2">
                 <div className="mb-0">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-700 mb-2">
-                    <div className="flex flex-wrap gap-1 mb-0 sm:mb-0">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-700">
+                    <div className="flex flex-wrap gap-1 mb-0">
                       {cssModule && (
                         <button
                           className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r border-dotted ${
@@ -300,7 +300,7 @@ const Stream = () => {
                     </div>
                     <button
                       onClick={() => setShowPreview(true)}
-                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-2 sm:mt-0 sm:-mb-2 ${
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-1 sm:mt-0 ${
                         isLoading || !completion
                           ? "bg-gray-600 text-gray-400 cursor-not-allowed"
                           : "bg-gray-700 hover:bg-gray-600 text-gray-200"
@@ -315,7 +315,7 @@ const Stream = () => {
                   </div>
                 </div>
                 {/* Code editors */}
-                <div className="mb-4">
+                <div className="-mt-px">
                   {activeTab === "component.module.css" && cssModule && (
                     <CodeEditor
                       language="css"
@@ -348,8 +348,7 @@ const Stream = () => {
                   )}
                 </div>
                 {/* Code Settings */}
-                <div className="bg-gray-800 rounded-lg p-1 mb-2">
-                  
+                <div className="bg-gray-800 rounded-lg p-2 mb-1">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="relative">
                       <label
@@ -395,7 +394,12 @@ const Stream = () => {
                         id="framework"
                         className="w-full bg-gray-700  text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
                         value={preferences.framework}
-                        onChange={(e) => setPreferences((prev) => ({ ...prev, framework: e.target.value }))}
+                        onChange={(e) =>
+                          setPreferences((prev) => ({
+                            ...prev,
+                            framework: e.target.value,
+                          }))
+                        }
                       >
                         <option value="nextjs">JSS/Next.js</option>
                       </select>
@@ -414,8 +418,13 @@ const Stream = () => {
                       <select
                         id="styling"
                         className="w-full bg-gray-700  text-gray-100 rounded-md px-2 py-1 text-s appearance-none focus:outline-none focus:ring-1 focus:ring-[#BE6420] pr-6"
-                        value= {preferences.styling}
-                        onChange={(e) => setPreferences((prev) => ({ ...prev, styling: e.target.value }))}
+                        value={preferences.styling}
+                        onChange={(e) =>
+                          setPreferences((prev) => ({
+                            ...prev,
+                            styling: e.target.value,
+                          }))
+                        }
                       >
                         <option value="tailwind">Tailwind</option>
                         <option value="css-modules">CSS Modules</option>
@@ -455,7 +464,7 @@ const Stream = () => {
                         </span>
                       </>
                     )}
-                     <button
+                    <button
                       onClick={handleConvertImage}
                       className="text-gray-400 hover:text-gray-200 p-1 ml-1"
                       disabled={isLoading}
