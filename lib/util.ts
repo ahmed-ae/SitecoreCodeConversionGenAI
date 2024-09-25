@@ -147,6 +147,77 @@ export function generateCodeConversionPrompt(
   return messages;
 }
 
+export function generateFigmaConversionPrompt(
+  figmaJson: string,
+  customInstructions: string,
+  styling: string,
+): Message[] {
+  let systemMessage = "";
+  let userPrompt = promptMessages.userMessageFigmaPrompt + "The attached JSON from Figma is: " + JSON.stringify(figmaJson);
+
+  const stylingPrompt = GetStylingPromtInstruction(styling);
+
+
+  //If there is previouslyGeneratedCode, we need to create user prompt 1 with custom instructions and message history if available
+  // if (previouslyGeneratedCode && previouslyGeneratedCode != "") {
+  //   if (
+  //     (customInstructions && customInstructions != "") ||
+  //     (messageHistory && messageHistory.length > 0)
+  //   ) {
+  //     userPrompt1 +=
+  //       "\n Also follow custom instructions delimited by triple backticks, which are directly provided by the user uploading the image ```" +
+  //       customInstructions +
+  //       (messageHistory ? " \n " + messageHistory.join(" \n ") : "") +
+  //       " ```";
+  //   }
+  // } else {
+  //   //If there is no previouslyGeneratedCode, we need to create user prompt 1 with custom instructions and additional instructions if available
+  //   if (
+  //     (customInstructions && customInstructions != "") ||
+  //     (additionalInstructions && additionalInstructions != "")
+  //   ) {
+  //     userPrompt1 +=
+  //       "\n Also follow custom instructions delimited by triple backticks, which are directly provided by the user uploading the image ```" +
+  //       customInstructions +
+  //       (additionalInstructions ? " \n " + additionalInstructions : "") +
+  //       " ```";
+  //   }
+  // }
+
+  systemMessage = promptMessages.systemMessageFigmaPrompt;
+
+  const messages: Message[] = [
+    { role: "system", content: systemMessage },
+    { role: "user", content: userPrompt },
+  ];
+  // if (
+  //   previouslyGeneratedCode &&
+  //   previouslyGeneratedCode != "" &&
+  //   additionalInstructions &&
+  //   additionalInstructions != ""
+  // ) {
+  //   assistantMessage = previouslyGeneratedCode;
+  //   userPrompt2 = additionalInstructions;
+  // }
+
+  // if (userPrompt2 && assistantMessage) {
+  //   const messages: Message[] = [
+  //     { role: "system", content: systemMessage },
+  //     { role: "user", content: userPrompt1 },
+  //     { role: "assistant", content: assistantMessage },
+  //     { role: "user", content: userPrompt2 },
+  //   ];
+
+  //   return messages;
+  // } else {
+  //   const messages: Message[] = [
+  //     { role: "system", content: systemMessage },
+  //     { role: "user", content: userPrompt1 },
+  //   ];
+
+    return messages;
+}
+
 export function generateImage2CodePrompt(
   customInstructions: string,
   additionalInstructions: string,
