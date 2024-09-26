@@ -5,7 +5,7 @@ import { Download, Copy } from "lucide-react";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
-  loading: () => <p>Loading editor...</p>
+  loading: () => <p>Loading editor...</p>,
 });
 
 interface CodeEditorProps {
@@ -51,7 +51,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         onChange={onChange}
         theme="vs-dark"
         options={{ minimap: { enabled: false }, readOnly }}
-        className="h-[300px] sm:h-[600px] rounded-md border border-gray-700 overflow-hidden"
+        className="h-[300px] sm:h-[600px] overflow-hidden" // Removed rounded-md and border classes
       />
       {hasContent && (
         <div className="absolute top-2 right-4 flex space-x-2">

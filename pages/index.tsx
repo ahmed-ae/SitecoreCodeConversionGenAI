@@ -261,24 +261,24 @@ const Stream = () => {
               {/* Right side - Code editors, suggestions, and input (67%) */}
               <div className="sm:col-span-2">
                 <div className="mb-0">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-700">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                     <div className="flex flex-wrap gap-1 mb-0">
                       {cssModule && (
                         <button
-                          className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r border-dotted ${
+                          className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r ${
                             activeTab === "component.module.css"
-                              ? "bg-gray-700 text-white border-gray-500"
+                              ? "bg-gray-700 text-white border-gray-500 border-b-2 border-b-[#F87171]"
                               : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white border-gray-600"
                           }`}
                           onClick={() => setActiveTab("component.module.css")}
                         >
-                          {cssModuleFilename}
+                          {cssModuleFilename}W
                         </button>
                       )}
                       <button
-                        className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r border-dotted ${
+                        className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r ${
                           activeTab === "Component.tsx"
-                            ? "bg-gray-700 text-white border-gray-500"
+                            ? "bg-gray-700 text-white border-gray-500 border-b-2 border-b-[#F87171]"
                             : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white border-gray-600"
                         }`}
                         onClick={() => setActiveTab("Component.tsx")}
@@ -287,9 +287,9 @@ const Stream = () => {
                       </button>
                       {secondComponent && (
                         <button
-                          className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r border-dotted ${
+                          className={`px-3 py-1.5 font-medium text-xs rounded-t-md transition-colors duration-200 border-t border-l border-r ${
                             activeTab === "SitecoreComponent.tsx"
-                              ? "bg-gray-700 text-white border-gray-500"
+                              ? "bg-gray-700 text-white border-gray-500 border-b-2 border-b-[#F87171]"
                               : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white border-gray-600"
                           }`}
                           onClick={() => setActiveTab("SitecoreComponent.tsx")}
@@ -315,7 +315,7 @@ const Stream = () => {
                   </div>
                 </div>
                 {/* Code editors */}
-                <div className="-mt-px">
+                <div className="bg-gray-700 border border-gray-500 rounded-b-md">
                   {activeTab === "component.module.css" && cssModule && (
                     <CodeEditor
                       language="css"
