@@ -38,6 +38,8 @@ const Stream = () => {
     model: "claude3sonnet",
     customInstructions: "",
     lastCodeUsed: "",
+    lastFigmaJson:
+      "",
     CountUsage: 0,
     maxTries: 0,
     framework: "nextjs",

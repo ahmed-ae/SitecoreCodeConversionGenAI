@@ -28,7 +28,9 @@ const Stream = () => {
     model: "claude3sonnet",
     customInstructions: "",
     lastCodeUsed:
-      "<!--paste your source code that you want to convert here -->",
+      "",
+    lastFigmaJson:
+      "<!--paste your JSON from the Figma JSS CoPilot Extension here -->",
     CountUsage: 0,
     maxTries: 0,
     framework: "nextjs",
@@ -75,15 +77,15 @@ const Stream = () => {
       return;
     }
     try {
-        const response = await fetch(`/api/figma/figma?action=getNodeInfo&fileKey=${fileId}&nodeId=${nodeId}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setNodeData(data);
-        console.log(data);
+        // const response = await fetch(`/api/figma/figma?action=getNodeInfo&fileKey=${fileId}&nodeId=${nodeId}`);
+        // if (!response.ok) {
+        //   throw new Error('Network response was not ok');
+        // }
+        // const data = await response.json();
+        // setNodeData(data);
+        // console.log(data);
       const message = {
-        figmaJson: data,
+        figmaJson: preferences.lastFigmaJson,
         model: preferences.model,
         customInstructions: preferences.customInstructions,
       };
@@ -148,12 +150,23 @@ const Stream = () => {
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FigmaInput
+            <CodeEditor
+                language={preferences.language}
+                value={preferences.lastFigmaJson}
+                onChange={(value) =>
+                  value !== undefined &&
+                  setPreferences((prev: UserPreferences) => ({
+                    ...prev,
+                    lastFigmaJson: value,
+                  }))
+                }
+              />
+            {/* <FigmaInput
                 fileId={fileId}
                 setFileId={setFileId}
                 nodeId={nodeId}
                 setNodeId={setNodeId}
-                />  
+                />   */}
               {/* <CodeEditor
                 language={preferences.language}
                 value={preferences.lastCodeUsed}

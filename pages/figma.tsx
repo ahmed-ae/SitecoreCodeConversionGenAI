@@ -39,6 +39,8 @@ const Stream = () => {
     model: "claude3sonnet",
     customInstructions: "",
     lastCodeUsed: "",
+    lastFigmaJson:
+      "<!--paste your JSON from the Figma JSS CoPilot Extension here -->",
     CountUsage: 0,
     maxTries: 0,
     framework: "nextjs",
@@ -155,13 +157,13 @@ const Stream = () => {
         setMessageHistory((prev) => [...prev, additionalInstructions]);
       }
       setAdditionalInstructions("");
-      const response = await fetch(`/api/figma/figma?action=getNodeInfo&fileKey=${fileId}&nodeId=${nodeId}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
+      // const response = await fetch(`/api/figma/figma?action=getNodeInfo&fileKey=${fileId}&nodeId=${nodeId}`);
+      // if (!response.ok) {
+      //   throw new Error('Network response was not ok');
+      // }
+      // const data = await response.json();
       const message = {
-        figmaJson: data,
+        figmaJson: preferences.lastFigmaJson,
         model: preferences.model,
         customInstructions: preferences.customInstructions,
         additionalInstructions: additionalInstructions,
@@ -266,14 +268,25 @@ const Stream = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Left side - Image upload (33%) */}
               <div className="flex flex-col h-full">
-              <FigmaInput
+              {/* <FigmaInput
                 fileId={fileId}
                 setFileId={setFileId}
                 nodeId={nodeId}
                 setNodeId={setNodeId}
                 />
+              </div> */}
+            <CodeEditor
+                language={preferences.language}
+                value={preferences.lastFigmaJson}
+                onChange={(value) =>
+                  value !== undefined &&
+                  setPreferences((prev: UserPreferences) => ({
+                    ...prev,
+                    lastFigmaJson: value,
+                  }))
+                }
+              />
               </div>
-
               {/* Right side - Code editors, suggestions, and input (67%) */}
               <div className="sm:col-span-2">
                 <div className="mb-0">

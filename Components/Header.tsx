@@ -85,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({
             Code Conversion
           </Link>
           <Link
-            href="/figma-convert"
+            href="/figma"
             className="text-red-400 hover:text-red-300 transition duration-300 text-sm sm:text-base font-semibold"
           >
             Figma To Code

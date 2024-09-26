@@ -28,6 +28,8 @@ const Stream = () => {
     customInstructions: "",
     lastCodeUsed:
       "<!--paste your source code that you want to convert here -->",
+      lastFigmaJson:
+      "",
     CountUsage: 0,
     maxTries: 0,
     framework: "nextjs",

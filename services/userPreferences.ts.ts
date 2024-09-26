@@ -5,6 +5,7 @@ export interface UserPreferences {
   model: string;
   customInstructions: string;
   lastCodeUsed: string;
+  lastFigmaJson: string;
   CountUsage: number;
   maxTries: number;
   styling:string,
