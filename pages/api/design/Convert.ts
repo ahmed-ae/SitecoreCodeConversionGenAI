@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { getLanguageModel } from "@/lib/modelProviders";
-import { generatePromptMessages } from "@/lib/promptGenerator";
 import { convertImageToCode } from "@/lib/imageToCodeConverter";
 import { convertJson } from "@/lib/jsonConverter";
+import {
+  generateImage2CodePrompt,
+  generateDesign2CodePrompt,
+} from "@/lib/util";
 
 export const runtime = "edge";
 const temperature = Number(process.env.MODEL_TEMPERATURE);
@@ -27,7 +30,7 @@ export default async function POST(req: Request) {
     console.log("Generating Code using " + selectedModel);
 
     if (fileType === "image") {
-      const promptMessages = generatePromptMessages(
+      const promptMessages = generateImage2CodePrompt(
         customInstructions,
         additionalInstructions,
         messageHistory,
@@ -60,7 +63,36 @@ export default async function POST(req: Request) {
 
       return result.toDataStreamResponse();
     } else if (fileType === "json") {
-      const result = await convertJson(languageModel, max_tokens, temperature);
+      const promptMessages = generateDesign2CodePrompt(
+        customInstructions,
+        additionalInstructions,
+        messageHistory,
+        framework,
+        styling,
+        json,
+        previouslyGeneratedCode
+      );
+
+      console.log("system message ----------------", promptMessages[0].content);
+      console.log("user message ----------------", promptMessages[1].content);
+
+      if (promptMessages.length > 2) {
+        console.log(
+          "assistant message ----------------",
+          promptMessages[2].content
+        );
+        console.log(
+          "user message 2 ----------------",
+          promptMessages[3].content
+        );
+      }
+
+      const result = await convertJson(
+        languageModel,
+        max_tokens,
+        temperature,
+        promptMessages
+      );
       return result.toDataStreamResponse();
     }
   } catch (error) {

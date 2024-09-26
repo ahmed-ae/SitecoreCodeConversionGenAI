@@ -1,10 +1,10 @@
 import { LanguageModel, streamText } from "ai";
-
+import { Message } from "./util";
 export async function convertImageToCode(
   languageModel: LanguageModel,
   maxTokens: number,
   temperature: number,
-  promptMessages: any[],
+  promptMessages: Message[],
   image: string
 ) {
   if (promptMessages.length === 2) {

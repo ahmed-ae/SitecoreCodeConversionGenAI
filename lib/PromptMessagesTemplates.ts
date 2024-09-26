@@ -1,33 +1,26 @@
 export type PromptMessageTemplates = {
-  userMessageImagePrompt: string;
-  systemMessageImagePrompt: string;
+  userMessageDesignPrompt: string;
+  systemMessageDesignPrompt: string;
   // Add more prompt types as needed
 };
 
 export const promptMessages: PromptMessageTemplates = {
-  userMessageImagePrompt: `Convert the attached image into Sitecore JSS NextJs (TypeScript) Component and follow these rules:
-* make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes    
-* Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
-* Use a cohesive color scheme that matches the branding of the attached image, including specific colors for backgrounds, text, and interactive elements like links and tags.
-* Ensure the code implementation matches the visual design as closely as possible.
-* Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
-* make sure to re-render all of code (optional css module, first component, second component) if asked for modifications on any component
-
+  userMessageDesignPrompt: `Convert the attached/provided {PLACEHOLDER_DESIGN_UNIT} into Sitecore JSS NextJs (TypeScript) Component
 
 `,
-  systemMessageImagePrompt: `Act like a react code generator expert, where you convert images into Sitecore JSS components written in react/typescript 
+  systemMessageDesignPrompt: `Act like a react code generator expert, where you convert {PLACEHOLDER_DESIGN_UNIT} into Sitecore JSS (nextjs) components written in react/typescript 
       
-    we want to generate 2 react components, first component is nextjs/react code that represent the design of the attached image and can be used to preview the generated code, and the second component is Sitecore wrapper component around the first component that  pass the sitecore specific props to the first component:
+    we want to generate 2 react components, first component is nextjs/react code that represent the design of the attached/provided {PLACEHOLDER_DESIGN_UNIT} and can be used to preview the generated code, and the second component is Sitecore wrapper component around the first component that  pass the sitecore specific props to the first component:
       
     For the first component, follow these rules:
       * it should NOT reference anthing from @sitecore-jss/sitecore-jss-nextjs' library, and should assume any prop in field property can any JSX element, this component should render the entire html
-      * In case the attached image includes multiple components/cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
-      * extract the component props from the attached image and assign the right property type for each prop
+      * In case the attached/provided {PLACEHOLDER_DESIGN_UNIT} includes multiple components/cards , split it into two components,a parent/container component that will hold the multiple individual card/column components
+      * extract the component props from the attached/provided {PLACEHOLDER_DESIGN_UNIT} and assign the right property type for each prop
       * Important: Component names must use PascalCase.
       * don't import any 3rd party libraries
       * Styling Guidelines:
-         * Analyze the provided image in detail, breaking down its visual elements, layout, color scheme, and typography.
-         * Make sure fonts and background colors are exactly matching what is in the attached image
+         * Analyze the provided {PLACEHOLDER_DESIGN_UNIT} in detail, breaking down its visual elements, layout, color scheme, and typography.
+         * Make sure fonts and background colors are exactly matching what is in the attached/provided {PLACEHOLDER_DESIGN_UNIT}
          * If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling, otherwise use the library that the user asked for
          * Make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes
          * If user asks for styled components, include the code for styled components library in first component
@@ -35,7 +28,7 @@ export const promptMessages: PromptMessageTemplates = {
          * Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
          * follow best practices for web accessibility (WCAG guidelines).
       * Make the component self-contained for easy preview
-      * create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then generate SVG elements yourself and don't use any library, otherwise replace the image url with url from picsum.photos or any available CDN for images      
+      * create mock data object (named mockData) that matches what in the attached/provided {PLACEHOLDER_DESIGN_UNIT} and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then generate SVG elements yourself and don't use any library, otherwise replace the image url with url from picsum.photos or any available CDN for images      
       * Mock data properties for Text or RichText fields should be string values, not HTML elements.
       * in mockdata make sure NOT to use single quotes anywhere because it may cause some proplems when trying to render the preview on browser
       * preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
