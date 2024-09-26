@@ -131,9 +131,11 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
   const getPreviewStyle = () => {
     switch (screenSize) {
       case "mobile":
-        return { width: "375px", height: "667px" };
+        return { width: "375px", height: "667px", margin: "0 auto" };
+      case "tablet":
+        return { width: "768px", height: "1024px", margin: "0 auto" };
       default:
-        return { width: "100%", height: "100%" };
+        return { width: "100%", height: "100%", margin: "0" };
     }
   };
 
@@ -144,6 +146,14 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
           onClick={() => setScreenSize("full")}
           className={`p-2 rounded ${
             screenSize === "full" ? "bg-blue-500 text-white" : "bg-gray-300"
+          }`}
+        >
+          <Monitor size={24} />
+        </button>
+        <button
+          onClick={() => setScreenSize("tablet")}
+          className={`p-2 rounded ${
+            screenSize === "tablet" ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
         >
           <Monitor size={24} />
@@ -161,12 +171,17 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
         <div className="absolute inset-0 checkered-background overflow-auto p-4">
           <div
             className={`bg-white ${
-              screenSize === "mobile" ? "mx-auto" : "w-full h-full"
+              screenSize === "mobile" || screenSize === "tablet"
+                ? "mx-auto"
+                : "w-full h-full"
             }`}
             style={{
               ...getPreviewStyle(),
               boxShadow:
-                screenSize === "mobile" ? "0 0 10px rgba(0,0,0,0.1)" : "none",
+                screenSize === "mobile" || screenSize === "tablet"
+                  ? "0 0 10px rgba(0,0,0,0.1)"
+                  : "none",
+              transition: "width 0.3s ease, margin 0.3s ease",
             }}
           >
             {error ? (
