@@ -10,6 +10,7 @@ import {
   LayoutTemplate,
   ChevronDown,
   HelpCircle,
+  FileJson,
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import type { Session } from "next-auth";
@@ -31,6 +32,11 @@ import CodePreview from "@/Components/previewV2";
 import posthog from "posthog-js";
 import ImageUpload from "@/Components/ImageUpload";
 import Head from "next/head";
+
+// Add this function at the top of your file, outside of the Stream component
+function minimizeJSON(json: string): string {
+  return JSON.stringify(JSON.parse(json));
+}
 
 const Stream = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -59,7 +65,7 @@ const Stream = () => {
   const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false);
   const [showTooltip1, setShowTooltip1] = useState(false);
   const { completion, isLoading, stop, complete, error } = useCompletion({
-    api: "/api/image/Convert",
+    api: "/api/design/Convert",
   });
 
   const [showPreview, setShowPreview] = useState(false);
@@ -80,6 +86,7 @@ const Stream = () => {
   const [previouslyGeneratedCode, setPreviouslyGeneratedCode] =
     useState<string>("");
   const [isPreviewReady, setIsPreviewReady] = useState(false);
+  const [fileType, setFileType] = useState<"image" | "json" | null>(null);
 
   useEffect(() => {
     const loadPreferences = async () => {
@@ -130,7 +137,7 @@ const Stream = () => {
 
   const closeModal = () => setShowModal(false);
 
-  const handleConvertImage = async (e: React.FormEvent<Element>) => {
+  const handleConvertFile = async (e: React.FormEvent<Element>) => {
     e.preventDefault();
     if (!session && !disableLoginAndMaxTries) {
       setShowLoginPrompt(true);
@@ -144,12 +151,11 @@ const Stream = () => {
       return;
     }
     if (!file) {
-      alert("Please upload an image first.");
+      alert("Please upload an image or JSON file first.");
       return;
     }
     try {
       setActiveTab("Component.tsx");
-      // Add the message to history and clear the input
       if (additionalInstructions.trim() !== "") {
         setMessageHistory((prev) => [...prev, additionalInstructions]);
       }
@@ -161,12 +167,27 @@ const Stream = () => {
         messageHistory: messageHistory,
         framework: preferences.framework,
         styling: preferences.styling,
+        fileType: fileType,
         previouslyGeneratedCode: previouslyGeneratedCode,
       };
 
-      const base64Files = await convertToBase64(file);
-      await complete(JSON.stringify(message), { body: { image: base64Files } });
-      posthog.capture("Converting Image", { userId: session?.user?.email });
+      if (fileType === "json") {
+        const jsonContent = await file.text();
+        const minimizedJSON = minimizeJSON(jsonContent);
+        await complete(JSON.stringify(message), {
+          body: { json: minimizedJSON },
+        });
+      } else {
+        const base64Files = await convertToBase64(file);
+        await complete(JSON.stringify(message), {
+          body: { image: base64Files },
+        });
+      }
+
+      posthog.capture("Converting File", {
+        userId: session?.user?.email,
+        fileType,
+      });
       const newCount = await updateUsageCount(
         session,
         preferences.lastCodeUsed,
@@ -178,8 +199,8 @@ const Stream = () => {
 
       closeModal();
     } catch (error) {
-      console.error("Error converting image:", error);
-      alert("Failed to convert image.");
+      console.error("Error converting file:", error);
+      alert("Failed to convert file.");
     }
   };
 
@@ -197,6 +218,7 @@ const Stream = () => {
     setAdditionalInstructions("");
     setMessageHistory([]);
     setPreviouslyGeneratedCode("");
+    setFileType(file.type === "application/json" ? "json" : "image");
   };
 
   const copyToClipboard = (code: string) => {
@@ -213,7 +235,7 @@ const Stream = () => {
   const handleInputKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleConvertImage(e);
+      handleConvertFile(e);
     }
   };
 
@@ -247,13 +269,13 @@ const Stream = () => {
                 setPreferences((prev) => ({ ...prev, language: lang }))
               }
               onSettingsClick={() => setShowModal(true)}
-              onConvertClick={handleConvertImage}
+              onConvertClick={handleConvertFile}
               onStopClick={stop}
               isLoading={isLoading}
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Left side - Image upload (33%) */}
+              {/* Left side - File upload (33%) */}
               <div className="flex flex-col h-full">
                 <ImageUpload onFileChange={handleFileChange} />
               </div>
@@ -272,7 +294,7 @@ const Stream = () => {
                           }`}
                           onClick={() => setActiveTab("component.module.css")}
                         >
-                          {cssModuleFilename}W
+                          {cssModuleFilename}
                         </button>
                       )}
                       <button
@@ -465,7 +487,7 @@ const Stream = () => {
                       </>
                     )}
                     <button
-                      onClick={handleConvertImage}
+                      onClick={handleConvertFile}
                       className="text-gray-400 hover:text-gray-200 p-1 ml-1"
                       disabled={isLoading}
                     >
@@ -564,7 +586,7 @@ const Stream = () => {
           onClose={closeModal}
           onSaveAndConvert={(e: React.FormEvent<Element>) => {
             handleSavePreferences();
-            handleConvertImage(e);
+            handleConvertFile(e);
             closeModal();
           }}
           onSave={() => {

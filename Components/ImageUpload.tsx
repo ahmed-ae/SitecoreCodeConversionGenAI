@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Upload } from "lucide-react";
+import { Upload, FileJson } from "lucide-react";
 import imageCompression from "browser-image-compression";
 
 interface ImageUploadProps {
@@ -9,6 +9,7 @@ interface ImageUploadProps {
 const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
   const [file, setFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isJsonFile, setIsJsonFile] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +22,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
   const handlePaste = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData.items;
     for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf("image") !== -1) {
+      if (
+        items[i].type.indexOf("image") !== -1 ||
+        items[i].type === "application/json"
+      ) {
         const pastedFile = items[i].getAsFile();
         if (pastedFile) {
           await processFile(pastedFile);
@@ -49,15 +53,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
   };
 
   const processFile = async (file: File) => {
-    const compressedFile = await compressImage(file);
-    setFile(compressedFile);
-    onFileChange(compressedFile);
-    // Create image preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(compressedFile);
+    if (file.type === "application/json") {
+      setIsJsonFile(true);
+      setFile(file);
+      setImagePreview(null);
+    } else {
+      setIsJsonFile(false);
+      const compressedFile = await compressImage(file);
+      setFile(compressedFile);
+      // Create image preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(compressedFile);
+    }
+    onFileChange(file);
   };
 
   const compressImage = async (file: File): Promise<File> => {
@@ -83,8 +94,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
       tabIndex={0}
     >
       <p className="mt-6 text-sm text-gray-400 text-center">
-        Upload an image/wireframe/screenshot for your component design to
-        convert it into Sitecore JSS (Nextjs) component.
+        Upload an image/wireframe/screenshot or JSON file for your component
+        design.
       </p>
       {imagePreview ? (
         <div className="mb-4 flex-grow flex items-center justify-center">
@@ -94,26 +105,28 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
             className="max-w-full h-auto max-h-[calc(100%-2rem)] rounded-lg"
           />
         </div>
+      ) : isJsonFile ? (
+        <FileJson className="w-24 h-24 text-gray-400 mb-8" />
       ) : (
         <Upload className="w-24 h-24 text-gray-400 mb-8" />
       )}
       <input
         type="file"
-        accept="image/*"
+        accept="image/*,application/json"
         onChange={handleFileChange}
         className="hidden"
-        id="image-upload"
+        id="file-upload"
         ref={fileInputRef}
       />
       <label
-        htmlFor="image-upload"
+        htmlFor="file-upload"
         className="bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto"
       >
-        {file ? "Change Image" : "Upload Image"}
+        {file ? "Change File" : "Upload File"}
       </label>
       {file && <p className="mt-4 text-sm text-gray-400">{file.name}</p>}
       <p className="mt-6 text-sm text-gray-400 text-center">
-        Or <b>drag / paste</b> an image here.
+        Or <b>drag / paste</b> an image or JSON file here.
       </p>
     </div>
   );
