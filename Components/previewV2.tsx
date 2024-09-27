@@ -133,7 +133,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
       case "mobile":
         return { width: "375px", height: "667px", margin: "0 auto" };
       case "tablet":
-        return { width: "768px", height: "1024px", margin: "0 auto" };
+        return { width: "700px", height: "1024px", margin: "0 auto" };
       default:
         return { width: "100%", height: "100%", margin: "0" };
     }

@@ -89,7 +89,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
   return (
     <div
       className={`flex-grow flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 mb-4 ${
-        file ? 'bg-red-50 border-red-300' : 'border-gray-600'
+        file ? 'bg-red-100 border-red-300' : 'border-gray-600'
       }`}
       onPaste={handlePaste}
       onDrop={handleDrop}
