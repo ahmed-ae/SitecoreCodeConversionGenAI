@@ -239,10 +239,7 @@ export function generateDesign2CodePrompt(
   previouslyGeneratedCode: string
 ): Message[] {
   let systemMessage = "";
-  let userPrompt1 = promptMessages.userMessageDesignPrompt.replaceAll(
-    "{PLACEHOLDER_DESIGN_UNIT}",
-    "Figma Design (JSON Format)"
-  );
+  let userPrompt1 = promptMessages.userMessageFigmaPrompt;
   let userPrompt2 = "";
   let assistantMessage = "";
 
@@ -284,10 +281,7 @@ export function generateDesign2CodePrompt(
       "\n Here is the Figma JSON that represent the design: " + json;
   }
 
-  systemMessage = promptMessages.systemMessageDesignPrompt.replaceAll(
-    "Figma Design (JSON Format)",
-    "image"
-  );
+  systemMessage = promptMessages.systemMessageFigmaPrompt;
   if (
     previouslyGeneratedCode &&
     previouslyGeneratedCode != "" &&
