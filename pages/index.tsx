@@ -88,6 +88,8 @@ const Stream = () => {
   const [isPreviewReady, setIsPreviewReady] = useState(false);
   const [fileType, setFileType] = useState<"image" | "json" | null>(null);
 
+  const disableJsonUpload = process.env.NEXT_PUBLIC_DISABLE_JSON_UPLOAD === "true";
+
   useEffect(() => {
     const loadPreferences = async () => {
       const loadedPreferences = await getPreferences(session);
@@ -277,7 +279,7 @@ const Stream = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Left side - File upload (33%) */}
               <div className="flex flex-col h-full">
-                <ImageUpload onFileChange={handleFileChange} />
+                <ImageUpload onFileChange={handleFileChange} disableJsonUpload={disableJsonUpload} />
               </div>
 
               {/* Right side - Code editors, suggestions, and input (67%) */}

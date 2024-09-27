@@ -4,9 +4,10 @@ import imageCompression from "browser-image-compression";
 
 interface ImageUploadProps {
   onFileChange: (file: File) => void;
+  disableJsonUpload: boolean;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUpload }) => {
   const [file, setFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isJsonFile, setIsJsonFile] = useState<boolean>(false);
@@ -22,10 +23,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
   const handlePaste = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData.items;
     for (let i = 0; i < items.length; i++) {
-      if (
-        items[i].type.indexOf("image") !== -1 ||
-        items[i].type === "application/json"
-      ) {
+      if (items[i].type.indexOf("image") !== -1 || (!disableJsonUpload && items[i].type === "application/json")) {
         const pastedFile = items[i].getAsFile();
         if (pastedFile) {
           await processFile(pastedFile);
@@ -53,11 +51,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
   };
 
   const processFile = async (file: File) => {
-    if (file.type === "application/json") {
+    let validFile = true;
+    if (!disableJsonUpload && file.type === "application/json") {
       setIsJsonFile(true);
       setFile(file);
       setImagePreview(null);
-    } else {
+    } else if (file.type.startsWith("image/")) {
       setIsJsonFile(false);
       file = await compressImage(file);
       setFile(file);
@@ -67,8 +66,15 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+    } else {
+      // Invalid file type
+      validFile = false;
+      return;
     }
-    onFileChange(file);
+    if(validFile)
+    {
+      onFileChange(file);
+    }
   };
 
   const compressImage = async (file: File): Promise<File> => {
@@ -100,7 +106,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
         <p className="text-red-600 font-semibold mb-4">File uploaded successfully!</p>
       ) : (
         <p className="mt-6 text-sm text-gray-400 text-center">
-          Upload an image/wireframe/screenshot or JSON file for your component design.
+          Upload an image/wireframe/screenshot{!disableJsonUpload && " or JSON file"} for your component design.
         </p>
       )}
       {imagePreview ? (
@@ -121,7 +127,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
       )}
       <input
         type="file"
-        accept="image/*,application/json"
+        accept={disableJsonUpload ? "image/*" : "image/*,application/json"}
         onChange={handleFileChange}
         className="hidden"
         id="file-upload"
@@ -135,7 +141,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
       </label>
       {file && <p className="mt-4 text-sm text-gray-400">{file.name}</p>}
       <p className="mt-6 text-sm text-gray-400 text-center">
-        Or <b>drag / paste</b> an image or JSON file here.
+        Or <b>drag / paste</b> an image{!disableJsonUpload && " or JSON file"} here.
       </p>
     </div>
   );
