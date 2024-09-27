@@ -262,9 +262,14 @@ export function generateDesign2CodePrompt(
         (messageHistory ? " \n " + messageHistory.join(" \n ") : "") +
         " ```";
     }
-
-    userPrompt1 +=
-      "\n Here is the Figma JSON that represent the design: " + json;
+      
+      if(json && json != '')
+      {
+        userPrompt1 +=
+          "\n Here is the Figma JSON that represent the design: " + json;
+        userPrompt1 += "\n";
+      }
+      
   } else {
     //If there is no previouslyGeneratedCode, we need to create user prompt 1 with custom instructions and additional instructions if available
     if (

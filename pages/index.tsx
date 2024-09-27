@@ -174,11 +174,22 @@ const Stream = () => {
       };
 
       if (fileType === "json") {
-        const jsonContent = await file.text();
-        const minimizedJSON = minimizeJSON(jsonContent);
-        await complete(JSON.stringify(message), {
-          body: { json: minimizedJSON },
-        });
+          //If this is the initial attempt to convert figma json design, then we need to send the json
+          if(!previouslyGeneratedCode)
+          {
+            const jsonContent = await file.text();
+            const minimizedJSON = minimizeJSON(jsonContent);
+            await complete(JSON.stringify(message), {
+              body: { json: minimizedJSON },
+            });
+          }
+          else
+          {
+            //This is additional attempt to make modification for the converted figma design, so we don't need tto send the json file
+            await complete(JSON.stringify(message), {
+              body: { json: null },
+            });
+          }
       } else {
         const base64Files = await convertToBase64(file);
         await complete(JSON.stringify(message), {
