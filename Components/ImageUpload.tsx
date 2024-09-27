@@ -59,14 +59,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
       setImagePreview(null);
     } else {
       setIsJsonFile(false);
-      const compressedFile = await compressImage(file);
-      setFile(compressedFile);
+      file = await compressImage(file);
+      setFile(file);
       // Create image preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
-      reader.readAsDataURL(compressedFile);
+      reader.readAsDataURL(file);
     }
     onFileChange(file);
   };
@@ -85,18 +85,24 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
       return file; // Return original file if compression fails
     }
   };
+
   return (
     <div
-      className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-lg p-6 mb-4"
+      className={`flex-grow flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 mb-4 ${
+        file ? 'bg-red-50 border-red-300' : 'border-gray-600'
+      }`}
       onPaste={handlePaste}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       tabIndex={0}
     >
-      <p className="mt-6 text-sm text-gray-400 text-center">
-        Upload an image/wireframe/screenshot or JSON file for your component
-        design.
-      </p>
+      {file ? (
+        <p className="text-red-600 font-semibold mb-4">File uploaded successfully!</p>
+      ) : (
+        <p className="mt-6 text-sm text-gray-400 text-center">
+          Upload an image/wireframe/screenshot or JSON file for your component design.
+        </p>
+      )}
       {imagePreview ? (
         <div className="mb-4 flex-grow flex items-center justify-center">
           <img
@@ -105,8 +111,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange }) => {
             className="max-w-full h-auto max-h-[calc(100%-2rem)] rounded-lg"
           />
         </div>
-      ) : isJsonFile ? (
-        <FileJson className="w-24 h-24 text-gray-400 mb-8" />
+      ) : isJsonFile && file ? (
+        <div className="flex flex-col items-center">
+          <FileJson className="w-24 h-24 text-red-400 mb-2" />
+          <p className="text-red-600 font-semibold">JSON file uploaded</p>
+        </div>
       ) : (
         <Upload className="w-24 h-24 text-gray-400 mb-8" />
       )}
