@@ -156,10 +156,7 @@ export function generateImage2CodePrompt(
   previouslyGeneratedCode: string
 ): Message[] {
   let systemMessage = "";
-  let userPrompt1 = promptMessages.userMessageDesignPrompt.replaceAll(
-    "{PLACEHOLDER_DESIGN_UNIT}",
-    "image"
-  );
+  let userPrompt1 = promptMessages.userMessageDesignPrompt;
   let userPrompt2 = "";
   let assistantMessage = "";
 
@@ -196,10 +193,7 @@ export function generateImage2CodePrompt(
     }
   }
 
-  systemMessage = promptMessages.systemMessageDesignPrompt.replaceAll(
-    "{PLACEHOLDER_DESIGN_UNIT}",
-    "image"
-  );
+  systemMessage = promptMessages.systemMessageDesignPrompt;
   if (
     previouslyGeneratedCode &&
     previouslyGeneratedCode != "" &&
