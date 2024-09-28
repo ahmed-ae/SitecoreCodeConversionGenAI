@@ -38,6 +38,10 @@ export function getLanguageModel(model: string): {
       selectedModel = process.env.GPT_4_O_MODEL_ID!;
       languageModel = openAiProvider(selectedModel);
       break;
+    case "gpt4omini":
+      selectedModel = process.env.GPT_4_O_MINI_ID!;
+      languageModel = openAiProvider(selectedModel);
+      break;
     default:
       throw new Error("Model selected not found");
   }

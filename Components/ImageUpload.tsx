@@ -95,7 +95,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
   return (
     <div
       className={`flex-grow flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 mb-4 ${
-        file ? 'bg-red-100 border-red-300' : 'border-gray-600'
+        file ? 'bg-gray-500 border-gray-200' : 'border-gray-600'
       }`}
       onPaste={handlePaste}
       onDrop={handleDrop}
@@ -103,13 +103,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
       tabIndex={0}
     >
       {file ? (
-        <p className="text-red-600 font-semibold mb-4">File uploaded successfully!</p>
+        <p className="text-white-600 font-semibold mb-4">Ready to generate code</p>
       ) : (
         <p className="mt-6 text-sm text-gray-400 text-center">
           Upload an image/wireframe/screenshot{!disableJsonUpload && " or JSON file"} for your component design.
         </p>
       )}
       {imagePreview ? (
+        <>
         <div className="mb-4 flex-grow flex items-center justify-center">
           <img
             src={imagePreview}
@@ -117,10 +118,15 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
             className="max-w-full h-auto max-h-[calc(100%-2rem)] rounded-lg"
           />
         </div>
+        
+        <div className="flex flex-col items-center">
+            <p className="text-white-600 font-semibold">Image/Wireframe is selected!</p>
+          </div>
+        </>
       ) : isJsonFile && file ? (
         <div className="flex flex-col items-center">
           <FileJson className="w-24 h-24 text-red-400 mb-2" />
-          <p className="text-red-600 font-semibold">JSON file uploaded</p>
+          <p className="text-white-600 font-semibold">Figma JSON file is selected!</p>
         </div>
       ) : (
         <Upload className="w-24 h-24 text-gray-400 mb-8" />
