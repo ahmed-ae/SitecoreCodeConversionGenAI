@@ -13,6 +13,7 @@ export const promptMessages: PromptMessageTemplates = {
 * Ensure the code implementation matches the visual design as closely as possible.
 * Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
 * make sure to re-render all of code (optional css module, first component, second component) if asked for modifications on any component
+*  Make sure the the code is pixel perfect matching the attached image
 
 `,
   systemMessageDesignPrompt: `Act like a react code generator expert, where you convert {PLACEHOLDER_DESIGN_UNIT} into Sitecore JSS (nextjs) components written in react/typescript 
