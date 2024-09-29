@@ -159,6 +159,7 @@ const Stream = () => {
     try {
       setActiveTab("Component.tsx");
       if (additionalInstructions.trim() !== "") {
+        posthog.capture("Enter Additional Instructions");
         setMessageHistory((prev) => [...prev, additionalInstructions]);
       }
       setAdditionalInstructions("");
@@ -198,8 +199,7 @@ const Stream = () => {
       }
 
       posthog.capture("Converting File", {
-        userId: session?.user?.email,
-        fileType,
+        fileType : fileType,
       });
       const newCount = await updateUsageCount(
         session,
@@ -334,7 +334,10 @@ const Stream = () => {
                       )}
                     </div>
                     <button
-                      onClick={() => setShowPreview(true)}
+                      onClick={() => {
+                        setShowPreview(true);
+                        posthog.capture("Click Preview");
+                      }}
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-200 border border-gray-600 inline-flex items-center space-x-1 mt-1 sm:mt-0 ${
                         isLoading || !completion
                           ? "bg-gray-600 text-gray-400 cursor-not-allowed"
