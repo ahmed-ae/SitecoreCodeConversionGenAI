@@ -35,7 +35,7 @@
     "next-auth": "^4.24.7",
     "node": "^22.8.0",
     "openai": "^4.33.0",
-    "posthog-js": "^1.160.3",
+    "posthog-js": "^1.165.0",
     "prisma": "^5.18.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
