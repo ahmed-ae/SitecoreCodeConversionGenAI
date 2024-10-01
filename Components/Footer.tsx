@@ -14,6 +14,13 @@ const Footer: React.FC = () => {
           Terms of Use
         </Link>
         <span className="hidden sm:inline">|</span>
+        <Link
+          href="/privacy-policy"
+          className="hover:text-gray-300 transition duration-300"
+        >
+          Privacy Policy
+        </Link>
+        <span className="hidden sm:inline">|</span>
         {/* Commented out GitHub link
         <a
           href="https://github.com/ahmed-ae/SitecoreCodeConversionGenAI"
