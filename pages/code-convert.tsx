@@ -31,7 +31,8 @@ const Stream = () => {
     CountUsage: 0,
     maxTries: 0,
     framework: "nextjs",
-    styling: "tailwind"
+    styling: "tailwind",
+    enableFigma: false,
   });
   const [showModal, setShowModal] = useState<boolean>(false);
   const { data: session } = useSession() as { data: Session | null };

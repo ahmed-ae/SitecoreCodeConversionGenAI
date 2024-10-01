@@ -48,7 +48,8 @@ export default async function handler(
 
   if (req.method === "POST") {
     //console.log("Saving User pref : ", req.body);
-    const { userId, language, model, customInstructions, framework, styling } = req.body;
+    const { userId, language, model, customInstructions, framework, styling } =
+      req.body;
     const preferences = await prisma.userPreference.upsert({
       where: { userId },
       update: { language, model, customInstructions, framework, styling },
@@ -56,9 +57,9 @@ export default async function handler(
         userId,
         language,
         model,
-        customInstructions, 
-        framework, 
-        styling
+        customInstructions,
+        framework,
+        styling,
       },
     });
     return res.json(preferences);
@@ -71,7 +72,9 @@ export default async function handler(
       create: {
         userId,
         CountUsage,
-        lastCodeUsed, framework, styling
+        lastCodeUsed,
+        framework,
+        styling,
       },
     });
     return res.json(preferences);

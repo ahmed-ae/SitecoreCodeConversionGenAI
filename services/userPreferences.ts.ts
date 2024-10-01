@@ -7,8 +7,9 @@ export interface UserPreferences {
   lastCodeUsed: string;
   CountUsage: number;
   maxTries: number;
-  styling:string,
-  framework:string
+  styling: string;
+  framework: string;
+  enableFigma: boolean;
 }
 
 export const savePreferences = async (
@@ -42,8 +43,8 @@ export const updateUsageCount = async (
   session: Session | null,
   sourceCode: string,
   currentCount: number,
-  framework:string,
-  styling:string
+  framework: string,
+  styling: string
 ): Promise<number> => {
   const newCount = currentCount + 1;
   if (session?.user?.id) {
@@ -57,7 +58,7 @@ export const updateUsageCount = async (
         lastCodeUsed: sourceCode,
         CountUsage: newCount,
         framework: framework,
-        styling: styling
+        styling: styling,
       }),
     });
     const data = await response.json();
@@ -85,7 +86,7 @@ export const getPreferences = async (
     const response = await fetch(
       `/api/user/userPreferences?userId=${session.user.id}`
     );
-    localStorage.setItem("userPreferences", '')
+    localStorage.setItem("userPreferences", "");
     return await response.json();
   } else {
     // Load preferences from local storage if user is not logged in

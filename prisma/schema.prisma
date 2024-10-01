@@ -68,6 +68,7 @@ model UserPreference {
   maxTries Int @default(25)
   framework String @default("nextjs")  
   styling   String @default("tailwind") 
+  enableFigma Boolean @default(false)
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

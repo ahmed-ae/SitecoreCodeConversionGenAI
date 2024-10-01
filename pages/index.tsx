@@ -48,6 +48,7 @@ const Stream = () => {
     maxTries: 0,
     framework: "nextjs",
     styling: "tailwind",
+    enableFigma: false,
   });
 
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -87,8 +88,7 @@ const Stream = () => {
     useState<string>("");
   const [isPreviewReady, setIsPreviewReady] = useState(false);
   const [fileType, setFileType] = useState<"image" | "json" | null>(null);
-
-  const disableJsonUpload = process.env.NEXT_PUBLIC_DISABLE_JSON_UPLOAD === "true";
+  const [jsonUploadDisabled, setJsonUploadDisabled] = useState(true);
 
   useEffect(() => {
     const loadPreferences = async () => {
@@ -97,6 +97,15 @@ const Stream = () => {
         ...prevPreferences,
         ...loadedPreferences,
       }));
+      if (process.env.NEXT_PUBLIC_DISABLE_JSON_UPLOAD === "true") {
+        if (loadedPreferences.enableFigma) {
+          setJsonUploadDisabled(false);
+        } else {
+          setJsonUploadDisabled(true);
+        }
+      } else {
+        setJsonUploadDisabled(false);
+      }
     };
 
     loadPreferences();
@@ -175,22 +184,19 @@ const Stream = () => {
       };
 
       if (fileType === "json") {
-          //If this is the initial attempt to convert figma json design, then we need to send the json
-          if(!previouslyGeneratedCode)
-          {
-            const jsonContent = await file.text();
-            const minimizedJSON = minimizeJSON(jsonContent);
-            await complete(JSON.stringify(message), {
-              body: { json: minimizedJSON },
-            });
-          }
-          else
-          {
-            //This is additional attempt to make modification for the converted figma design, so we don't need tto send the json file
-            await complete(JSON.stringify(message), {
-              body: { json: null },
-            });
-          }
+        //If this is the initial attempt to convert figma json design, then we need to send the json
+        if (!previouslyGeneratedCode) {
+          const jsonContent = await file.text();
+          const minimizedJSON = minimizeJSON(jsonContent);
+          await complete(JSON.stringify(message), {
+            body: { json: minimizedJSON },
+          });
+        } else {
+          //This is additional attempt to make modification for the converted figma design, so we don't need tto send the json file
+          await complete(JSON.stringify(message), {
+            body: { json: null },
+          });
+        }
       } else {
         const base64Files = await convertToBase64(file);
         await complete(JSON.stringify(message), {
@@ -199,7 +205,7 @@ const Stream = () => {
       }
 
       posthog.capture("Converting File", {
-        fileType : fileType,
+        fileType: fileType,
       });
       const newCount = await updateUsageCount(
         session,
@@ -290,7 +296,10 @@ const Stream = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Left side - File upload (33%) */}
               <div className="flex flex-col h-full">
-                <ImageUpload onFileChange={handleFileChange} disableJsonUpload={disableJsonUpload} />
+                <ImageUpload
+                  onFileChange={handleFileChange}
+                  disableJsonUpload={jsonUploadDisabled}
+                />
               </div>
 
               {/* Right side - Code editors, suggestions, and input (67%) */}
