@@ -38,12 +38,12 @@ function PosthogIdentify() {
 export default function MyApp({
   Component,
   pageProps: { session, ...pageProps },
-}: AppProps) {
+}: AppProps) { 
   return (
     <>
-      <Head>
+      <Head>        
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
+      </Head>      
       <SessionProvider session={session}>
         <PostHogProvider client={posthog}>
           <PosthogIdentify />

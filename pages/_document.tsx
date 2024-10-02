@@ -1,5 +1,7 @@
 import { Html, Head, Main, NextScript } from "next/document";
+import {GoogleTagManagerWithScript, GoogleTagManagerWithoutScript} from "@/Components/GoogleTagManager";
 export default function Document() {
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || '';
   return (
     <Html lang="en">
       <Head>
@@ -31,7 +33,7 @@ export default function Document() {
           property="og:image"
           content="https://sitecore-gen-ai.vercel.app/icon.svg"
         />
-
+        <GoogleTagManagerWithScript gtmId={gtmId} />
         {/* Structured Data */}
         <script type="application/ld+json">
           {`
@@ -51,6 +53,7 @@ export default function Document() {
         </script>
       </Head>
       <body>
+        <GoogleTagManagerWithoutScript gtmId={gtmId} />
         <Main />
         <NextScript />
       </body>
