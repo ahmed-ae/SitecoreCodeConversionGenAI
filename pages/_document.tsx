@@ -2,6 +2,20 @@ import { Html, Head, Main, NextScript } from "next/document";
 import {GoogleTagManagerWithScript, GoogleTagManagerWithoutScript} from "@/Components/GoogleTagManager";
 export default function Document() {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID || '';
+  const structuredData = `
+            {
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "Sitecore JSS Code Conversion Tool",
+              "description": "Convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI.",
+              "applicationCategory": "DeveloperApplication",
+              "operatingSystem": "Any",
+              "offers": {
+                "@type": "Offer",
+                "price": "0"
+              }
+            }
+          `;
   return (
     <Html lang="en">
       <Head>
@@ -34,23 +48,11 @@ export default function Document() {
           content="https://sitecore-gen-ai.vercel.app/icon.svg"
         />
         <GoogleTagManagerWithScript gtmId={gtmId} />
-        {/* Structured Data */}
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "Sitecore JSS Code Conversion Tool",
-              "description": "Convert Sitecore SXA Scriban scripts or Sitecore MVC Razor files into Sitecore JSS Next components using AI.",
-              "applicationCategory": "DeveloperApplication",
-              "operatingSystem": "Any",
-              "offers": {
-                "@type": "Offer",
-                "price": "0"
-              }
-            }
-          `}
-        </script>
+        
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </Head>
       <body>
         <GoogleTagManagerWithoutScript gtmId={gtmId} />
