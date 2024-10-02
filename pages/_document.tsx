@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 import {GoogleTagManagerWithScript, GoogleTagManagerWithoutScript} from "@/Components/GoogleTagManager";
 export default function Document() {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID || '';
-  const structuredData = `
+  const structuredData = 
             {
               "@context": "https://schema.org",
               "@type": "WebApplication",
@@ -15,7 +15,7 @@ export default function Document() {
                 "price": "0"
               }
             }
-          `;
+          ;
   return (
     <Html lang="en">
       <Head>
