@@ -7,7 +7,10 @@ interface ImageUploadProps {
   disableJsonUpload: boolean;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUpload }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({
+  onFileChange,
+  disableJsonUpload,
+}) => {
   const [file, setFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isJsonFile, setIsJsonFile] = useState<boolean>(false);
@@ -24,7 +27,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
   const handlePaste = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData.items;
     for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf("image") !== -1 || (!disableJsonUpload && items[i].type === "application/json")) {
+      if (
+        items[i].type.indexOf("image") !== -1 ||
+        (!disableJsonUpload && items[i].type === "application/json")
+      ) {
         const pastedFile = items[i].getAsFile();
         if (pastedFile) {
           await processFile(pastedFile);
@@ -86,7 +92,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
 
   const compressImage = async (file: File): Promise<File> => {
     const options = {
-      maxSizeMB: 3,
+      maxSizeMB: 1.5,
       maxWidthOrHeight: 1920,
       useWebWorker: true,
     };
@@ -102,7 +108,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
   return (
     <div
       className={`flex-grow flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 mb-4 ${
-        file ? 'bg-gray-500 border-gray-200' : 'border-gray-600'
+        file ? "bg-gray-500 border-gray-200" : "border-gray-600"
       }`}
       onPaste={handlePaste}
       onDrop={handleDrop}
@@ -115,10 +121,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
           <p className="text-white-600 font-semibold">Processing file...</p>
         </div>
       ) : file ? (
-        <p className="text-white-600 font-semibold mb-4">Ready to generate code</p>
+        <p className="text-white-600 font-semibold mb-4">
+          Ready to generate code
+        </p>
       ) : (
         <p className="mt-6 text-sm text-gray-400 text-center">
-          Upload an image/wireframe/screenshot{!disableJsonUpload && " or JSON file"} for your component design.
+          Upload an image/wireframe/screenshot
+          {!disableJsonUpload && " or JSON file"} for your component design.
         </p>
       )}
       {!isProcessing && (
@@ -133,13 +142,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
                 />
               </div>
               <div className="flex flex-col items-center">
-                <p className="text-white-600 font-semibold">Image/Wireframe is selected!</p>
+                <p className="text-white-600 font-semibold">
+                  Image/Wireframe is selected!
+                </p>
               </div>
             </>
           ) : isJsonFile && file ? (
             <div className="flex flex-col items-center">
               <FileJson className="w-24 h-24 text-red-400 mb-2" />
-              <p className="text-white-600 font-semibold">Figma JSON file is selected!</p>
+              <p className="text-white-600 font-semibold">
+                Figma JSON file is selected!
+              </p>
             </div>
           ) : (
             <Upload className="w-24 h-24 text-gray-400 mb-8" />
@@ -157,14 +170,15 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileChange, disableJsonUplo
       <label
         htmlFor="file-upload"
         className={`bg-red-400 hover:bg-red-300 text-gray-800 px-4 py-2 rounded-md transition duration-300 text-sm w-full sm:w-auto ${
-          isProcessing ? 'opacity-50 cursor-not-allowed' : ''
+          isProcessing ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         {file ? "Change File" : "Upload File"}
       </label>
       {file && <p className="mt-4 text-sm text-gray-400">{file.name}</p>}
       <p className="mt-6 text-sm text-gray-400 text-center">
-        Or <b>drag / paste</b> an image{!disableJsonUpload && " or JSON file"} here.
+        Or <b>drag / paste</b> an image{!disableJsonUpload && " or JSON file"}{" "}
+        here.
       </p>
     </div>
   );

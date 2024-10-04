@@ -149,7 +149,7 @@ export const promptMessages: PromptMessageTemplates = {
       
     `,
 
-    userMessageFigmaPrompt: `Convert the provided figma design (JSON format) into Sitecore JSS NextJs (TypeScript) Component
+  userMessageFigmaPrompt: `Convert the provided figma design (JSON format) into Sitecore JSS NextJs (TypeScript) Component
 * make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes    
 * Analyze the provided figma design in detail, breaking down its visual elements, layout, color scheme, and typography.
 * Make sure to keep the colors of buttons, fonts and other interactive elements the same as in the attached image
@@ -157,7 +157,7 @@ export const promptMessages: PromptMessageTemplates = {
 * Make sure the the code is pixel perfect matching the figma design attributes
 
 `,
-systemMessageFigmaPrompt: `Act like a react code generator expert, where you convert Figma Design (JSON Format) into Sitecore JSS (nextjs) components written in react/typescript 
+  systemMessageFigmaPrompt: `Act like a react code generator expert, where you convert Figma Design (JSON Format) into Sitecore JSS (nextjs) components written in react/typescript 
       
     we want to generate 2 react components, first component is nextjs/react code that represent the design of the provided Figma Design (JSON Format) and can be used to preview the generated code, and the second component is Sitecore wrapper component around the first component that  pass the sitecore specific props to the first component:
       
@@ -166,13 +166,36 @@ systemMessageFigmaPrompt: `Act like a react code generator expert, where you con
       * extract the component props from the provided Figma Design (JSON Format) and assign the right property type for each prop
       * Important: Component names must use PascalCase.
       * don't import any 3rd party libraries
+      * Figma Design (JSON)):When converting a Figma design JSON export to React code, pay close attention to the following attributes and their meanings
+         * Node Structure:
+            * "id": Unique identifier for each element
+            * "name": The name given to the element in Figma
+            * "type": The type of the element (e.g., FRAME, TEXT, VECTOR)
+            * "visible": Whether the element should be rendered
+         * Layout and Positioning:
+            * "x" and "y": Position coordinates
+            * "width" and "height": Dimensions of the element
+            * "rotation": Any rotation applied to the element
+            * "layoutAlign": How the element is aligned within its parent
+            * "layoutGrow": Whether the element should grow to fill available space
+            * "layoutMode": The layout mode of container elements (e.g., NONE, VERTICAL, HORIZONTAL)
+            * "primaryAxisAlignItems" and "counterAxisAlignItems": Alignment of child elements
+         * Styling:
+            * "opacity": Transparency of the element
+            * "blendMode": How the element blends with elements behind it
+            * "fills": Background colors or gradients
+            * "strokes": Border styles
+            * "effects": Any applied effects like shadows
+         * Typography (for TEXT nodes):
+            * "characters": The actual text content
+            * "fontSize": Size of the text
+            * "fontName": Font family and style
+            * "textAlignHorizontal" and "textAlignVertical": Text alignment
+            * "textAutoResize": How text should resize
+            * "textCase": Capitalization style
       * Styling Guidelines:
          * If user does not specifically ask for specific styling library to use then use Make sure to Use Tailwind CSS classes for styling, otherwise use the library that the user asked for, If user asks for styled components, include the code for styled components library in first component
 		     * Make sure the the code is pixel perfect matching the figma design attributes
-         * Make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes
-         * In case the Figma Design includes multiple components/cards, split it into two components: a parent/container component that will hold the multiple individual card/column components.
-         * Ensure the code implementation matches the visual design as closely as possible.         
-         * Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
          * follow best practices for web accessibility (WCAG guidelines).
       * Make the component self-contained for easy preview
       * create mock data object (named mockData) that matches the provided Figma Design (JSON Format) and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then generate SVG elements yourself and don't use any library, otherwise replace the image url with url from picsum.photos or any available CDN for images      

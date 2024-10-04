@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as Babel from "@babel/standalone";
-import { Smartphone, Monitor } from "lucide-react";
+import { Smartphone, Monitor, Tablet } from "lucide-react";
 
 interface CodePreviewProps {
   code: string;
@@ -131,9 +131,9 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
   const getPreviewStyle = () => {
     switch (screenSize) {
       case "mobile":
-        return { width: "375px", height: "667px", margin: "0 auto" };
+        return { width: "450px", height: "100%", margin: "0 auto" };
       case "tablet":
-        return { width: "700px", height: "1024px", margin: "0 auto" };
+        return { width: "740px", height: "100%", margin: "0 auto" };
       default:
         return { width: "100%", height: "100%", margin: "0" };
     }
@@ -156,7 +156,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
             screenSize === "tablet" ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
         >
-          <Monitor size={24} />
+          <Tablet size={24} />
         </button>
         <button
           onClick={() => setScreenSize("mobile")}
