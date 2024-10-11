@@ -156,6 +156,7 @@ export const promptMessages: PromptMessageTemplates = {
 * make sure to re-render all of code (optional css module, first component, second component) if asked for modifications on any component
 * Make sure the the code is pixel perfect matching the figma design attributes
 
+
 `,
   systemMessageFigmaPrompt: `Act like a react code generator expert, where you convert Figma Design (JSON Format) into Sitecore JSS (nextjs) components written in react/typescript 
       
@@ -166,6 +167,7 @@ export const promptMessages: PromptMessageTemplates = {
       * extract the component props from the provided Figma Design (JSON Format) and assign the right property type for each prop
       * Important: Component names must use PascalCase.
       * don't import any 3rd party libraries
+      * IMPORTANT: if user attach an image, that image is a screenshot of the figma design, use it as reference to create the component code that matches the image, if no image attach then ignore it
       * Figma Design (JSON)):When converting a Figma design JSON export to React code, pay close attention to the following attributes and their meanings
          * Node Structure:
             * "id": Unique identifier for each element

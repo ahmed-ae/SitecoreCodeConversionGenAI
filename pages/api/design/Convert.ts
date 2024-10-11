@@ -22,6 +22,7 @@ export default async function POST(req: Request) {
       framework,
       styling,
       fileType,
+      componentScreenshot,
       previouslyGeneratedCode,
     } = JSON.parse(prompt);
 
@@ -91,6 +92,7 @@ export default async function POST(req: Request) {
         languageModel,
         max_tokens,
         temperature,
+        componentScreenshot,
         promptMessages
       );
       return result.toDataStreamResponse();

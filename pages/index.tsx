@@ -172,7 +172,7 @@ const Stream = () => {
         setMessageHistory((prev) => [...prev, additionalInstructions]);
       }
       setAdditionalInstructions("");
-      const message = {
+      let message = {
         model: preferences.model,
         customInstructions: preferences.customInstructions,
         additionalInstructions: additionalInstructions,
@@ -180,13 +180,21 @@ const Stream = () => {
         framework: preferences.framework,
         styling: preferences.styling,
         fileType: fileType,
+        componentScreenshot: "",
         previouslyGeneratedCode: previouslyGeneratedCode,
       };
 
       if (fileType === "json") {
+        const jsonContent = await file.text();
+        const componentScreenshot = extractComponentScreenshot(
+          JSON.parse(jsonContent)
+        );
+        if (componentScreenshot) {
+          message.componentScreenshot = componentScreenshot;
+        }
+
         //If this is the initial attempt to convert figma json design, then we need to send the json
         if (!previouslyGeneratedCode) {
-          const jsonContent = await file.text();
           const minimizedJSON = minimizeJSON(jsonContent);
           await complete(JSON.stringify(message), {
             body: { json: minimizedJSON },
@@ -222,6 +230,36 @@ const Stream = () => {
       alert("Failed to convert file.");
     }
   };
+
+  function extractComponentScreenshot(data: any) {
+    // Check if data and nodes exist
+    if (!data || !data.nodes) {
+      console.error("Invalid data structure: data or nodes is missing");
+      return null;
+    }
+
+    const nodes = data.nodes;
+    const nodeKeys = Object.keys(nodes);
+
+    // Check if nodes object is empty
+    if (nodeKeys.length === 0) {
+      console.error("Nodes object is empty");
+      return null;
+    }
+
+    const firstNodeKey = nodeKeys[0];
+    const firstNode = nodes[firstNodeKey];
+
+    // Check if the first node exists and has a componentScreenshot property
+    if (!firstNode || !firstNode.hasOwnProperty("componentScreenshot")) {
+      console.error(
+        "First node is missing or doesn't have a componentScreenshot property"
+      );
+      return null;
+    }
+
+    return firstNode.componentScreenshot;
+  }
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
