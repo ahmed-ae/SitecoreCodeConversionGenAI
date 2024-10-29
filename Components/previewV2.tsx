@@ -90,18 +90,19 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
             <!-- Base Google Fonts -->
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Inter:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
             
             <!-- Font Awesome -->
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
             
             <style>
-              ${cssModule}
               /* Add default font family */
               body {
-                font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
               }
             </style>
+           
+            
 
             <script>
               // Function to load additional Google Fonts dynamically
@@ -143,6 +144,16 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
               // Call the function after a short delay to ensure all styles are loaded
               setTimeout(loadGoogleFonts, 100);
             </script>
+            <!-- Inject CSS Module both ways -->
+            ${
+              cssModule
+                ? `                
+                <link rel="stylesheet" href="data:text/css;base64,${btoa(
+                  cssModule
+                )}" id="css-module-link">
+                `
+                : ""
+            }
           </head>
           <body>
             <div id="root"></div>
