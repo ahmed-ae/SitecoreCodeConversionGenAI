@@ -83,7 +83,66 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
             <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
             <script src="https://unpkg.com/styled-components@6.1.13/dist/styled-components.min.js"></script>
             <script src="https://cdn.tailwindcss.com"></script>
-            <style>${cssModule}</style>
+            
+            <!-- WebFontLoader for dynamic font loading -->
+            <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+            
+            <!-- Base Google Fonts -->
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Inter:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+            
+            <!-- Font Awesome -->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+            
+            <style>
+              ${cssModule}
+              /* Add default font family */
+              body {
+                font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+              }
+            </style>
+
+            <script>
+              // Function to load additional Google Fonts dynamically
+              function loadGoogleFonts() {
+                const styleSheets = document.styleSheets;
+                const fontFamilies = new Set();
+                
+                // Extract all font-family declarations from styles
+                for (let sheet of styleSheets) {
+                  try {
+                    const rules = sheet.cssRules || sheet.rules;
+                    for (let rule of rules) {
+                      if (rule.style && rule.style.fontFamily) {
+                        const fonts = rule.style.fontFamily.split(',')
+                          .map(font => font.trim().replace(/['",]/g, ''))
+                          .filter(font => 
+                            !font.includes('system-ui') && 
+                            !font.includes('-apple-system') &&
+                            !font.match(/^(sans-serif|serif|monospace|cursive|fantasy)$/)
+                          );
+                        fonts.forEach(font => fontFamilies.add(font));
+                      }
+                    }
+                  } catch (e) {
+                    console.warn('Could not read stylesheet rules', e);
+                  }
+                }
+
+                // Load detected fonts using WebFontLoader
+                if (fontFamilies.size > 0) {
+                  WebFont.load({
+                    google: {
+                      families: Array.from(fontFamilies)
+                    }
+                  });
+                }
+              }
+
+              // Call the function after a short delay to ensure all styles are loaded
+              setTimeout(loadGoogleFonts, 100);
+            </script>
           </head>
           <body>
             <div id="root"></div>

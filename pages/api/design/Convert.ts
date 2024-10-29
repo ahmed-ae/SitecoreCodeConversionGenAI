@@ -71,6 +71,7 @@ export default async function POST(req: Request) {
         framework,
         styling,
         json,
+        componentScreenshot,
         previouslyGeneratedCode
       );
 

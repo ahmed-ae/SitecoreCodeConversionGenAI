@@ -168,6 +168,7 @@ export const promptMessages: PromptMessageTemplates = {
       * Important: Component names must use PascalCase.
       * don't import any 3rd party libraries
       * IMPORTANT: if user attach an image, that image is a screenshot of the figma design, use it as reference to create the component code that matches the image, if no image attach then ignore it
+      * IMPORTANT: If the JSON contains full image url as "imageFullUrl" property inside the "fills" array property of the node, then use that as image url and don't generate SVG elements yourself and don't place icons to represent the image, otherwise replace the image  with url from picsum.photos or any available CDN for images
       * Figma Design (JSON)):When converting a Figma design JSON export to React code, pay close attention to the following attributes and their meanings
          * Node Structure:
             * "id": Unique identifier for each element
@@ -200,7 +201,7 @@ export const promptMessages: PromptMessageTemplates = {
 		     * Make sure the the code is pixel perfect matching the figma design attributes
          * follow best practices for web accessibility (WCAG guidelines).
       * Make the component self-contained for easy preview
-      * create mock data object (named mockData) that matches the provided Figma Design (JSON Format) and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG, then generate SVG elements yourself and don't use any library, otherwise replace the image url with url from picsum.photos or any available CDN for images      
+      * create mock data object (named mockData) that matches the provided Figma Design (JSON Format) and use that mock data to preview the first component, IMPORTANT: If the JSON contains full image url as "imageFullUrl" property inside the "fills" array property of the node, then use that as image url and don't generate SVG elements yourself and don't place icons to represent the image, otherwise replace the image  with url from picsum.photos or any available CDN for images     
       * Mock data properties for Text or RichText fields should be string values, not HTML elements.
       * in mockdata make sure NOT to use single quotes anywhere because it may cause some proplems when trying to render the preview on browser
       * preview component should always have the name PreviewComponent, and don't export the component, just ensure the component starts with : const PreviewComponent: React.FC
