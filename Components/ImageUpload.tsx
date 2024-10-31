@@ -64,7 +64,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       if (!disableJsonUpload && file.type === "application/json") {
         setIsJsonFile(true);
         setFile(file);
-        setImagePreview(null);
+
+        // Read and parse JSON file
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const jsonData = JSON.parse(e.target?.result as string);
+            const screenshot = extractComponentScreenshot(jsonData);
+
+            if (screenshot) {
+              // If screenshot is found in JSON, set it as preview
+              setImagePreview(screenshot);
+            } else {
+              setImagePreview(null);
+            }
+          } catch (error) {
+            console.error("Error parsing JSON:", error);
+            setImagePreview(null);
+          }
+        };
+        reader.readAsText(file);
       } else if (file.type.startsWith("image/")) {
         setIsJsonFile(false);
         const compressedFile = await compressImage(file);
@@ -105,6 +124,36 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   };
 
+  function extractComponentScreenshot(data: any) {
+    // Check if data and nodes exist
+    if (!data || !data.nodes) {
+      console.error("Invalid data structure: data or nodes is missing");
+      return null;
+    }
+
+    const nodes = data.nodes;
+    const nodeKeys = Object.keys(nodes);
+
+    // Check if nodes object is empty
+    if (nodeKeys.length === 0) {
+      console.error("Nodes object is empty");
+      return null;
+    }
+
+    const firstNodeKey = nodeKeys[0];
+    const firstNode = nodes[firstNodeKey];
+
+    // Check if the first node exists and has a componentScreenshot property
+    if (!firstNode || !firstNode.hasOwnProperty("componentScreenshot")) {
+      console.error(
+        "First node is missing or doesn't have a componentScreenshot property"
+      );
+      return null;
+    }
+
+    return firstNode.componentScreenshot;
+  }
+
   return (
     <div
       className={`flex-grow flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 mb-4 ${
@@ -132,7 +181,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       )}
       {!isProcessing && (
         <>
-          {imagePreview ? (
+          {imagePreview && !isJsonFile ? (
             <>
               <div className="mb-4 flex-grow flex items-center justify-center">
                 <img
@@ -149,7 +198,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             </>
           ) : isJsonFile && file ? (
             <div className="flex flex-col items-center">
-              <FileJson className="w-24 h-24 text-red-400 mb-2" />
+              {imagePreview ? (
+                <div className="mb-4 flex-grow flex items-center justify-center">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="max-w-full h-auto max-h-[calc(100%-2rem)] rounded-lg"
+                  />
+                </div>
+              ) : (
+                <FileJson className="w-24 h-24 text-red-400 mb-2" />
+              )}
               <p className="text-white-600 font-semibold">
                 Figma JSON file is selected!
               </p>

@@ -24,14 +24,16 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
       // Remove import statements and exports
       let strippedCode = code.replace(/^(import|export)\s+.*$/gm, "");
 
+      // Check if code uses styled-components
+      const hasStyledComponents = strippedCode.includes("styled.");
       // Parse CSS Module
       const cssModuleObject = cssModule ? parseCSSModule(cssModule) : {};
-
+      const hasCSSModule = Object.keys(cssModuleObject).length > 0;
       // Create a style element for the CSS
       const cssModuleStyles = Object.entries(cssModuleObject)
         .map(([className, styles]) => `.${className} { ${styles} }`)
         .join("\n");
-
+      const shouldIncludeTailwind = !hasStyledComponents && !hasCSSModule;
       // Modify the createPreviewComponent function
       const modifiedCode = `
         function createPreviewComponent(React, styledComponents) {
@@ -82,7 +84,11 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
             <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
             <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
             <script src="https://unpkg.com/styled-components@6.1.13/dist/styled-components.min.js"></script>
-            <script src="https://cdn.tailwindcss.com"></script>
+             ${
+               shouldIncludeTailwind
+                 ? '<script src="https://cdn.tailwindcss.com"></script>'
+                 : ""
+             }
             
             <!-- WebFontLoader for dynamic font loading -->
             <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
@@ -205,7 +211,14 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
       case "tablet":
         return { width: "740px", height: "100%", margin: "0 auto" };
       default:
-        return { width: "100%", height: "100%", margin: "0" };
+        return {
+          width: "100%",
+          height: "100%",
+          margin: "0",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        };
     }
   };
 
@@ -243,7 +256,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
             className={`bg-white ${
               screenSize === "mobile" || screenSize === "tablet"
                 ? "mx-auto"
-                : "w-full h-full"
+                : "w-full h-full flex items-center justify-center"
             }`}
             style={{
               ...getPreviewStyle(),
