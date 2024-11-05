@@ -19,8 +19,32 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
     setIframeContent(generatedContent);
   }, [code, cssModule, screenSize]);
 
+  const detectLucideUsage = (originalCode: string) => {
+    const hasLucideImport = /import.*from ['"]lucide-react['"]/.test(
+      originalCode
+    );
+
+    return hasLucideImport;
+  };
+
+  const extractLucideImports = (originalCode: string) => {
+    const importRegex = /import\s*{([^}]+)}\s*from\s*['"]lucide-react['"]/g;
+    const imports = new Set<string>();
+
+    let match;
+    while ((match = importRegex.exec(originalCode)) !== null) {
+      const importList = match[1].split(",").map((name) => name.trim());
+      importList.forEach((name) => imports.add(name));
+    }
+
+    return Array.from(imports);
+  };
+
   const generateIframeContent = () => {
     try {
+      const hasLucideIcons = detectLucideUsage(code);
+      const lucideImports = hasLucideIcons ? extractLucideImports(code) : [];
+
       // Remove import statements and exports
       let strippedCode = code.replace(/^(import|export)\s+.*$/gm, "");
 
@@ -34,11 +58,84 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
         .map(([className, styles]) => `.${className} { ${styles} }`)
         .join("\n");
       const shouldIncludeTailwind = !hasStyledComponents && !hasCSSModule;
+
       // Modify the createPreviewComponent function
       const modifiedCode = `
         function createPreviewComponent(React, styledComponents) {
           const styled = styledComponents.default || styledComponents;
           const { useState, useEffect, useRef, useContext, useReducer, useCallback, useMemo, useLayoutEffect } = React;
+
+          ${
+            hasLucideIcons
+              ? `
+          // Create wrapper for Lucide icons
+          function createLucideIcon(name, defaults = {}) {
+            return React.forwardRef(({ 
+              color = defaults.color || 'currentColor',
+              size = defaults.size || 24,
+              strokeWidth = defaults.strokeWidth || 2,
+              className = '',
+              style,
+              ...props
+            }, ref) => {
+              const elementRef = useRef(null);
+
+              useEffect(() => {
+                const element = elementRef.current;
+                if (element && window.lucide) {
+                  try {
+                    // Create a div with the icon name
+                    element.innerHTML = \`<i data-lucide=\'\${name}\'></i>\`;
+                    
+                    // Initialize the icon
+                    window.lucide.createIcons({
+                      attrs: {
+                        'stroke-width': strokeWidth,
+                        'class': className,
+                        'width': size,
+                        'height': size,
+                        'color': color
+                      }
+                    });
+                  } catch (err) {
+                    console.error(\`Error rendering icon: \${name}\`, err);
+                  }
+                }
+              }, [color, size, strokeWidth, className]);
+
+              return React.createElement('span', {
+                ref: (el) => {
+                  elementRef.current = el;
+                  if (typeof ref === 'function') ref(el);
+                  else if (ref) ref.current = el;
+                },
+                style: { 
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: size,
+                  height: size,
+                  ...style
+                },
+                ...props
+              });
+            });
+          }
+
+          // Create icon components
+          const ${lucideImports
+            .map((name) => {
+              // Convert camelCase to kebab-case
+              const iconName = name
+                .replace(/[A-Z]/g, (m) => "-" + m.toLowerCase())
+                .replace(/^-/, "");
+              return `${name} = createLucideIcon('${iconName}')`;
+            })
+            .join(",\n          ")};
+          `
+              : ""
+          }
+
           const cssModules = ${JSON.stringify(cssModuleObject)};
           const styles = new Proxy(cssModules, {
             get: (target, prop) => {
@@ -49,7 +146,9 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
               return String(prop); // Return the prop as a fallback
             }
           });
+
           ${strippedCode}
+
           const ComponentToRender = typeof exports !== 'undefined' ? (exports.__esModule ? exports.default : exports) : (typeof PreviewComponent !== 'undefined' ? PreviewComponent : null);
           if (!ComponentToRender) {
             throw new Error('No component found to render');
@@ -84,11 +183,16 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
             <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
             <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
             <script src="https://unpkg.com/styled-components@6.1.13/dist/styled-components.min.js"></script>
-             ${
-               shouldIncludeTailwind
-                 ? '<script src="https://cdn.tailwindcss.com"></script>'
-                 : ""
-             }
+            ${
+              hasLucideIcons
+                ? `<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>`
+                : ""
+            }
+            ${
+              shouldIncludeTailwind
+                ? '<script src="https://cdn.tailwindcss.com"></script>'
+                : ""
+            }
             
             <!-- WebFontLoader for dynamic font loading -->
             <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
@@ -106,9 +210,8 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
               body {
                 font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
               }
+              ${cssModuleStyles}
             </style>
-           
-            
 
             <script>
               // Function to load additional Google Fonts dynamically
@@ -167,7 +270,12 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
               ${transpiledCode}
               
               function checkLibraries() {
-                if (window.React && window.styled && window.ReactDOM) {
+                const requiredLibraries = ['React', 'styled', 'ReactDOM'];
+                ${hasLucideIcons ? "requiredLibraries.push('lucide');" : ""}
+                
+                const allLibrariesLoaded = requiredLibraries.every(lib => window[lib]);
+                
+                if (allLibrariesLoaded) {
                   const PreviewComponent = createPreviewComponent(window.React, window.styled);
                   const root = ReactDOM.createRoot(document.getElementById('root'));
                   root.render(React.createElement(PreviewComponent));

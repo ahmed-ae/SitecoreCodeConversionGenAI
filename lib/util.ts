@@ -279,7 +279,7 @@ export function generateDesign2CodePrompt(
       "\n Here is the Figma JSON that represent the design: " + json;
   }
 
-  systemMessage = promptMessages.systemMessageFigmaPrompt;
+  systemMessage = promptMessages.systemMessageFigmaPrompt2;
   if (
     previouslyGeneratedCode &&
     previouslyGeneratedCode != "" &&

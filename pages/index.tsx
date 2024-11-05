@@ -201,8 +201,9 @@ const Stream = () => {
           });
         } else {
           //This is additional attempt to make modification for the converted figma design, so we don't need tto send the json file
+          const minimizedJSON = minimizeJSON(jsonContent);
           await complete(JSON.stringify(message), {
-            body: { json: null },
+            body: { json: minimizedJSON },
           });
         }
       } else {
