@@ -13,7 +13,7 @@ export const promptMessages: PromptMessageTemplates = {
 * make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes    
 * make sure to re-render all of code (optional css module, first component, second component) if asked for modifications on any component
 *  for mockDate object never add class name inside any  <img> or <button> or <a> when creating mock data, for example : smallImage: <img src="IMAGE-URL" alt="Icon"  /> you should not include any class name in the tag, if any styling is needed add that to the container div
-
+* for mockData object never use icons from lucide-react library 
 `,
   systemMessageDesignPrompt: `Act like a react code generator expert, where you convert image into Sitecore JSS (nextjs) components written in react/typescript 
       
@@ -176,15 +176,14 @@ export const promptMessages: PromptMessageTemplates = {
       - Analyze the provided in detail, breaking down its visual elements, layout, color scheme, and typography.
       - Make sure to Implement fully responsive design, Ensure the design is fluid and adjusts smoothly between breakpoints for different screen sizes
       - Ensure the code implementation matches the visual design as closely as possible.  
-	  - Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.
-	  - follow best practices for web accessibility (WCAG guidelines).
+      - Ensure that interactive elements (e.g., navigation menus, buttons) are usable on both touch and non-touch devices.      
+      - follow best practices for web accessibility (WCAG guidelines).
   
     3- Mock Data
-	  - 
-      - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images that can be rendered as SVG or Icons then
-			* If possible use library lucide-react library for the icon.
-			* If no proper icond is found in lucide-react then generate SVG elements yourself
-			* therwise replace the image with url from picsum.photos or any available CDN for images 
+      - create mock data object (named mockData) that matches what in the attached image and use that mock data to preview the first component, if mock data contains images or Icons then:
+        * If the image/icon can be render as SVG then generate SVG elements yourself
+        * otherwise replace the image with url from picsum.photos or any available CDN for images 
+        * never use icons from lucide-react library in mock data
       - Use only string values for text fields, not HTML
       - Avoid single quotes in mock data
       - Name mock data object as mockData
