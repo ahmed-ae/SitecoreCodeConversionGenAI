@@ -193,7 +193,7 @@ export function generateImage2CodePrompt(
     }
   }
 
-  systemMessage = promptMessages.systemMessageDesignPrompt;
+  systemMessage = promptMessages.systemMessageDesignPrompt2;
   if (
     previouslyGeneratedCode &&
     previouslyGeneratedCode != "" &&
