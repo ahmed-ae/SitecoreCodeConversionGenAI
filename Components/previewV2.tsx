@@ -58,7 +58,10 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
         .map(([className, styles]) => `.${className} { ${styles} }`)
         .join("\n");
       const shouldIncludeTailwind = !hasStyledComponents && !hasCSSModule;
-
+      // Properly encode CSS for URL
+      const encodedCSS = cssModule
+        ? encodeURIComponent(cssModule).replace(/%20/g, "+")
+        : "";
       // Modify the createPreviewComponent function
       const modifiedCode = `
         function createPreviewComponent(React, styledComponents) {
@@ -193,7 +196,22 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
                 ? '<script src="https://cdn.tailwindcss.com"></script>'
                 : ""
             }
+            <!-- Base styles -->
+            <style>
+              *, *::before, *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+              }
+              
+              html, body, #root {
+                height: 100%;
+                width: 100%;
+              }
+            </style>
             
+           <!-- Component CSS will be injected here -->
+          <style id="component-styles"></style>
             <!-- WebFontLoader for dynamic font loading -->
             <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
             
@@ -210,7 +228,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
               body {
                 font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
               }
-              ${cssModuleStyles}
             </style>
 
             <script>
@@ -253,20 +270,30 @@ const CodePreview: React.FC<CodePreviewProps> = ({ code, cssModule }) => {
               // Call the function after a short delay to ensure all styles are loaded
               setTimeout(loadGoogleFonts, 100);
             </script>
-            <!-- Inject CSS Module both ways -->
-            ${
-              cssModule
-                ? `                
-                <link rel="stylesheet" href="data:text/css;base64,${btoa(
-                  cssModule
-                )}" id="css-module-link">
-                `
-                : ""
-            }
+           
           </head>
           <body>
             <div id="root"></div>
             <script>
+            // Fetch and inject CSS
+            ${
+              cssModule
+                ? `
+              fetch('/api/render/css', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ css: ${JSON.stringify(cssModule)} })
+              })
+              .then(response => response.text())
+              .then(css => {
+                document.getElementById('component-styles').textContent = css;
+              })
+              .catch(error => console.error('Error loading CSS:', error));
+            `
+                : ""
+            }
               ${transpiledCode}
               
               function checkLibraries() {
