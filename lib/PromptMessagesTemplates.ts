@@ -299,7 +299,7 @@ export const promptMessages: PromptMessageTemplates = {
           smallImage: ImageField;
           headline: Field<string>;
           description: Field<string>;
-          ctaButton: Field<string>;
+          ctaButton: Link;
           logo: ImageField;
         };
       };
@@ -514,7 +514,7 @@ export const promptMessages: PromptMessageTemplates = {
       - Default to Tailwind CSS unless specified otherwise
       - Support styled-components when requested
       - Support CSS Modules without @apply directives when requested
-      - Match Figma design attributes precisely
+      - Match Figma design attributes precisely, If figma design nodes contan cssProps, then transform these css properties into the corresponding styling library used (Tailwind CSS, styled-components or CSS Modules)
       - If the figma design does not contain smaller screen sizes (only contains Desktop design), then you need to create a responsive design that can handle different screen sizes, make sure the responsive design account for smaller screens and can fit all the design elements in pleasing display
       - Make sure the the code is pixel perfect matching the figma design attributes
 
